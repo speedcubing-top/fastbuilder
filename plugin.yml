@@ -1,0 +1,9 @@
+name: FastBuilder
+main: speedcubing.Main
+version: 1.0
+commands:
+  stats:
+    usage: /stats
+depend:
+  - speedcubingServer
+  - speedcubingLib

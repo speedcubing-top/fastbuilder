@@ -1,0 +1,354 @@
+package speedcubing.Core;
+
+
+import cubing.bukkit.PlayerUtils;
+import cubing.bukkit.SkinUtils;
+import cubing.bukkit.api.BungeePluginMessage;
+import cubing.bukkit.api.SideBarAPI;
+import cubingserver.libs.PlayerData;
+import cubingserver.libs.Rank;
+import cubingserver.speedcubingServer;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
+import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+import speedcubing.List.ItemStackList;
+import speedcubing.List.StringList;
+import speedcubing.Main;
+import speedcubing.replay.test;
+
+import java.util.*;
+
+public class Long {
+    public static final int size = 31;
+    public static int used = 0;
+    public static boolean[] rooms = new boolean[size];
+    public static List<UUID> session = new ArrayList<>();
+    public static Map<UUID, Integer> score = new HashMap<>();
+
+    public void Load() {
+        for (int i = 0; i < size; i++) {
+            rooms[i] = true;
+        }
+    }
+
+
+    public static void Finish(Player player) {
+        World world = Bukkit.getWorld("world");
+        UUID uuid = player.getUniqueId();
+        int time = Core.times.get(uuid);
+        if (time < 140) {
+            BungeePluginMessage.switchServer(player, "Lobby");
+            return;
+        }
+        Core.waiting.add(uuid);
+        Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
+        int lang = PlayerData.getLang(uuid);
+        int msrecord = time * 5;
+        String display = Core.tickToTime(time);
+        long timeMillis = System.currentTimeMillis() / 1000L;
+        new Thread(() -> {
+            int last = speedcubingServer.connection.selectInt("playersdata", "fb_0_pb", "uuid='" + uuid + "'");
+            if (last == 0 || last > msrecord) {
+                speedcubingServer.connection.insert("fastbuilder", "uuid,at,score,mode", "'" + uuid + "'," + timeMillis + "," + msrecord + ",0");
+                speedcubingServer.connection.update("playersdata", "fb_0_pb=" + msrecord, "uuid='" + uuid + "'");
+                player.getScoreboard().getTeam(StringList.SideBar[lang][9]).setSuffix(display);
+            }
+        }).start();
+        Core.times.put(uuid, -1);
+        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+        connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
+        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + StringList.timedisplay[lang].replace("%time%", display) + "\"}")));
+        if (score.get(uuid) > time || score.get(uuid) == 0) {
+            int i;
+            for (i = 0; i < session.size(); i++) {
+                if (score.get(session.get(i)) > time || score.get(session.get(i)) == 0) {
+                    session.remove(uuid);
+                    session.add(i, uuid);
+                    break;
+                }
+            }
+            score.put(uuid, time);
+            if (i < 4) {
+                List<String> prefix = new ArrayList<>();
+                List<String> suffix = new ArrayList<>();
+                int size = session.size();
+                for (int j = i; j < 3; j++) {
+                    if (size <= j) {
+                        prefix.add("§7-,---");
+                        suffix.add("");
+                    } else {
+                        UUID ses = session.get(j);
+                        int sc = score.get(ses);
+                        if (sc == 0) {
+                            prefix.add("§7-,---");
+                            suffix.add("");
+                        } else {
+                            String[] x = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                            prefix.add(x[0]);
+                            suffix.add(x[1]);
+                        }
+                    }
+                }
+                for (int j = i; j < 3; j++) {
+                    for (Player p : world.getPlayers()) {
+                        Team t = p.getScoreboard().getTeam("§" + (j + 4) + "§f");
+                        t.setPrefix(prefix.get(j - i));
+                        t.setSuffix(suffix.get(j - i));
+                    }
+                }
+            }
+        }
+        Core.finishedtask.put(uuid, Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
+            if (Core.PlayerCoord.containsKey(uuid)) {
+                for (BlockPosition b : Core.Blocks.get(uuid)) {
+                    world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+                }
+                PlayerUtils.teleport(connection, 0.5, 100, Core.PlayerCoord.get(uuid) + 0.5, 270, 0);
+                Core.Blocks.get(uuid).clear();
+                Core.waiting.remove(uuid);
+                Inventory inventory = player.getInventory();
+                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang];
+                inventory.setItem(0, stack);
+                inventory.setItem(1, stack);
+            }
+        }, 40));
+    }
+
+    public static void Join(Player player, boolean kick) {
+        if (used == size) {
+            player.sendMessage("There is no enough servers. please report this to speedcubing.");
+            if (kick) {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        BungeePluginMessage.switchServer(player, "lobby");
+                    }
+                }, 500);
+            }
+            return;
+        }
+        int room = -1;
+        for (int h = 0; h < size; h++) {
+            if (rooms[h]) {
+                room = h;
+                break;
+            }
+        }
+        rooms[room] = false;
+        used += 1;
+        UUID uuid = player.getUniqueId();
+        int coord = roomToZ(room);
+        player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 100, coord + 0.5, 270, 0));
+        Core.PlayerCoord.put(uuid, coord);
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        int lang = PlayerData.getLang(uuid);
+        String[] sidebar = StringList.SideBar[lang];
+        objective.setDisplayName(sidebar[13]);
+        new Thread(() -> {
+            if (!Core.integerCache.containsKey(uuid))
+                Core.integerCache.put(uuid, ArrayUtils.toObject(speedcubingServer.connection.selectInts("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "uuid='" + uuid + "'")));
+            int a = speedcubingServer.connection.selectInt("playersdata", "fb_0_pb", "uuid='" + uuid + "'");
+            SideBarAPI.sidebarTeams(scoreboard, new String[][]{
+                    {sidebar[12]},
+                    {sidebar[11]},
+                    {sidebar[10]},
+                    {"", sidebar[9], a == 0 ? "§7-,---" : Core.msToTime(a)},
+                    {sidebar[8]},
+                    {sidebar[7]},
+                    {"", sidebar[6], ""},
+                    {"", sidebar[5], ""},
+                    {"", sidebar[4], ""},
+                    {sidebar[3]},
+                    {sidebar[2]},
+                    {"", sidebar[1], "§7-,---"},
+                    {sidebar[0]},
+            }, new int[]{12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
+            int size = session.size();
+            for (int j = 0; j < 3; j++) {
+                String prefix, suffix;
+                if (size <= j) {
+                    prefix = "§7-,---";
+                    suffix = "";
+                } else {
+                    UUID ses = session.get(j);
+                    int sc = score.get(ses);
+                    if (sc == 0) {
+                        prefix = "§7-,---";
+                        suffix = "";
+                    } else {
+                        String[] xx = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        prefix = xx[0];
+                        suffix = xx[1];
+                    }
+                }
+                Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
+                t.setPrefix(prefix);
+                t.setSuffix(suffix);
+            }
+            player.setScoreboard(scoreboard);
+            Inventory inventory = player.getInventory();
+            inventory.clear();
+            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang];
+            inventory.setItem(0, stack);
+            inventory.setItem(1, stack);
+            inventory.setItem(2, ItemStackList.pickaxe[lang]);
+            inventory.setItem(7, ItemStackList.Settings[lang]);
+            inventory.setItem(8, ItemStackList.navigator[lang]);
+        }).start();
+        session.add(uuid);
+        Core.times.put(uuid, -1);
+        score.put(uuid, 0);
+        Core.Blocks.put(uuid, new HashSet<>());
+    }
+
+    public static void Quit(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (Core.MainTimer.containsKey(uuid))
+            Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
+        World world = Bukkit.getWorld("world");
+        for (BlockPosition b : Core.Blocks.get(uuid)) {
+            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+        }
+        if (player.getName().equals("speedcubing"))
+            new test().reset();
+        Core.Blocks.get(uuid).clear();
+        Core.times.put(uuid, -1);
+        Core.waiting.remove(uuid);
+        int x = session.indexOf(uuid);
+        session.remove(uuid);
+        score.remove(uuid);
+        if (x != -1 && x < 3) {
+            List<String> prefix = new ArrayList<>();
+            List<String> suffix = new ArrayList<>();
+            int size = session.size();
+            for (int j = x; j < 3; j++) {
+                if (size <= j) {
+                    prefix.add("§7-,---");
+                    suffix.add("");
+                } else {
+                    UUID ses = session.get(j);
+                    int sc = score.get(ses);
+                    if (sc == 0) {
+                        prefix.add("§7-,---");
+                        suffix.add("");
+                    } else {
+                        String[] xx = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        prefix.add(xx[0]);
+                        suffix.add(xx[1]);
+                    }
+                }
+            }
+            for (Player p : world.getPlayers()) {
+                if (!p.getName().equals(player.getName())) {
+                    Scoreboard scoreboard = p.getScoreboard();
+                    for (int j = x; j < 3; j++) {
+                        Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
+                        t.setPrefix(prefix.get(j - x));
+                        t.setSuffix(suffix.get(j - x));
+                    }
+                }
+            }
+        }
+        used -= 1;
+        rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
+    }
+
+    public static void validPlaceBlock(Player player, BlockPosition b) {
+        UUID uuid = player.getUniqueId();
+        int lang = PlayerData.getLang(uuid);
+        if (Core.times.get(uuid) == -1) {
+            if (player.getName().equals("speedcubing")) {
+                new test().reset();
+                test.StartSkin = SkinUtils.getProfileSkin(((CraftPlayer) player).getHandle().getProfile());
+                test.StartLocation = player.getLocation();
+                test.BlockTicks.add(0);
+                test.BlockActions.add(b);
+            }
+            Core.times.put(uuid, 0);
+            Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
+                int up = Core.times.get(uuid) + 1;
+                Core.times.put(uuid, up);
+                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(Core.tickToTime(up));
+                if (up >= 2400) {
+                    Fell(player, false);
+                    player.sendMessage(StringList.cancelled[lang]);
+                }
+            }, 0, 1));
+        } else {
+            test.BlockTicks.add(Core.times.get(uuid));
+            test.BlockActions.add(b);
+        }
+        Core.Blocks.get(uuid).add(b);
+        Inventory inventory = player.getInventory();
+        int empty = 1 - player.getInventory().getHeldItemSlot();
+        if (inventory.getItem(empty) == null)
+            inventory.setItem(empty, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
+    }
+
+    public static void Fell(Player player, boolean fell) {
+        UUID uuid = player.getUniqueId();
+        if (Core.waiting.contains(uuid)) {
+            Bukkit.getScheduler().cancelTask(Core.finishedtask.get(uuid));
+            World world = player.getWorld();
+            for (BlockPosition b : Core.Blocks.get(uuid)) {
+                world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+            }
+            Core.Blocks.get(uuid).clear();
+            Core.waiting.remove(uuid);
+            Inventory inventory = player.getInventory();
+            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][PlayerData.getLang(uuid)];
+            inventory.setItem(0, stack);
+            inventory.setItem(1, stack);
+        } else {
+            if (Core.times.get(uuid) != -1) {
+                Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
+                org.bukkit.World world = player.getWorld();
+                for (BlockPosition b : Core.Blocks.get(uuid)) {
+                    world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+                }
+                Core.Blocks.get(uuid).clear();
+                Inventory inventory = player.getInventory();
+                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][PlayerData.getLang(uuid)];
+                inventory.setItem(0, stack);
+                inventory.setItem(1, stack);
+                Core.times.put(uuid, -1);
+                new test().reset();
+            } else if (!fell) {
+                int coord = Core.PlayerCoord.get(uuid);
+                int oldroom = coordToRoom(coord);
+                int newroom = Core.cal(oldroom, player.getLocation().getZ() > coord, rooms);
+                if (newroom == -1)
+                    player.sendMessage(StringList.nomapsavaliable[PlayerData.getLang(uuid)]);
+                else {
+                    Core.PlayerCoord.put(uuid, roomToZ(newroom));
+                    rooms[oldroom] = true;
+                    rooms[newroom] = false;
+                }
+            }
+            player.closeInventory();
+        }
+        PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, 0.5, 100, Core.PlayerCoord.get(uuid) + 0.5, 270, 0);
+    }
+
+    public static int roomToZ(int room) {
+        return 6 * (room * (int) Math.pow(-1, room + 1) + room % 2);
+    }
+
+    public static int coordToRoom(int z) {
+        return z == 0 ? 0 : Math.abs(z / 6) - (Math.abs(z / 12) + z / 12) / (z / 6);
+    }
+}
