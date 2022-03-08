@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import speedcubing.All.Chat;
 import speedcubing.Core.Long;
 
 public class PlayerJoin implements Listener {
@@ -15,7 +14,6 @@ public class PlayerJoin implements Listener {
         if (player.isOnline()) {
             player.setGameMode(GameMode.SURVIVAL);
             Long.Join(player, true);
-            new Chat().PacketInject(player);
         }
     }
 }

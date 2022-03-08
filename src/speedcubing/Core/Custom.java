@@ -15,6 +15,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -133,7 +134,7 @@ public class Custom {
             }
         }
         int lang = PlayerData.getLang(uuid);
-        Inventory inventory = player.getInventory();
+        PlayerInventory inventory = player.getInventory();
         inventory.clear();
         inventory.setItem(0, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
         inventory.setItem(1, ItemStackList.pickaxe[lang]);
@@ -141,6 +142,7 @@ public class Custom {
         inventory.setItem(8, ItemStackList.navigator[lang]);
         inventory.setItem(5, ItemStackList.Length[lang]);
         inventory.setItem(6, ItemStackList.Height[lang]);
+        inventory.setHeldItemSlot(0);
         Core.times.put(uuid, -1);
         Blockplaced.put(uuid, 0);
         hits.put(uuid, new HashSet<>());
@@ -301,6 +303,7 @@ public class Custom {
             }
         }
         player.closeInventory();
+        player.getInventory().setHeldItemSlot(0);
         PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, -0.5, 100, coord + 0.5, 270, 0);
     }
 

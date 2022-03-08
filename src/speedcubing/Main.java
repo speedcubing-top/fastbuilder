@@ -1,20 +1,17 @@
 package speedcubing;
 
 
+import cubing.bukkit.Event.ServerEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
-import speedcubing.All.SocketServer;
 import speedcubing.BukkitCommands.stats;
 import speedcubing.BukkitEventListener.*;
 import speedcubing.Core.Long;
 import speedcubing.Core.Short;
 import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
-
-import java.sql.ResultSet;
-import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
@@ -52,13 +49,13 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
         new Long().Load();
-        new Short().Load();
+        new speedcubing.Core.Short().Load();
         new Inclined().Load();
         new OneStack().Load();
         new InclinedShort().Load();
         new ItemStackList().Load();
         new BlockEditor().Load();
-        new SocketServer().Load();
         new Custom().Load();
+        ServerEventManager.registerEventListener(new ServerEvent());
     }
 }
