@@ -1,6 +1,6 @@
 package speedcubing.BukkitEventListener;
 
-import cubingserver.libs.PlayerData;
+import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -68,7 +68,7 @@ public class InventoryClick implements Listener {
                         switch (e.getAction()) {
                             case PICKUP_ALL: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = PlayerData.getLang(uuid);
+                                int lang = User.getLang(uuid);
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 1) {
@@ -86,7 +86,7 @@ public class InventoryClick implements Listener {
                             break;
                             case PICKUP_HALF: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = PlayerData.getLang(uuid);
+                                int lang = User.getLang(uuid);
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 20) {
@@ -109,7 +109,7 @@ public class InventoryClick implements Listener {
                         break;
                     case 15:
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[PlayerData.getLang(player.getUniqueId())]);
+                            player.openInventory(ItemStackList.ResetConfirm[User.getLang(player.getUniqueId())]);
                         else if (player.getInventory().getItem(5) != null) {
                             UUID uuid = player.getUniqueId();
                             Integer[] center = Custom.Center.get(uuid);
@@ -148,7 +148,7 @@ public class InventoryClick implements Listener {
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_4_pb=0", "uuid='" + uuid + "'")).start();
                                 break;
                         }
-                        player.getScoreboard().getTeam(StringList.SideBar[PlayerData.getLang(uuid)][9]).setSuffix("§7-,---");
+                        player.getScoreboard().getTeam(StringList.SideBar[User.getLang(uuid)][9]).setSuffix("§7-,---");
                         player.closeInventory();
                         break;
                     case 15:

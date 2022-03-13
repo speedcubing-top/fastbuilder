@@ -1,7 +1,7 @@
 package speedcubing.BukkitEventListener;
 
-import cubing.bukkit.ItemUtils;
-import cubingserver.libs.PlayerData;
+import cubing.bukkit.ItemBuilder;
+import cubingserver.libs.User;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -17,8 +17,6 @@ import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 public class PlayerInteract implements Listener {
@@ -66,29 +64,50 @@ public class PlayerInteract implements Listener {
                         }
                         break;
                     case REDSTONE_COMPARATOR: {
-                        int lang = PlayerData.getLang(player.getUniqueId());
+                        int lang = User.getLang(player.getUniqueId());
                         Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
                         String[] hit = StringList.FallDelayLore[lang];
-                        inventory.setItem(11, ItemUtils.item(Material.RAW_FISH, hit[0], 1, 3, false, false, null, null, null, Arrays.asList(hit[1], hit[2].replace("%int%", Integer.toString(Core.integerCache.get(player.getUniqueId())[1])), hit[3], hit[4], hit[5])));
+                        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(Core.integerCache.get(player.getUniqueId())[1])), hit[3], hit[4], hit[5]).build());
                         inventory.setItem(13, ItemStackList.openkit[lang]);
                         if (!player.getWorld().getName().equals("Custom"))
                             inventory.setItem(15, ItemStackList.Reset[lang]);
                         else if (player.getInventory().getItem(5) != null) {
                             String[] lore = StringList.LoopLore[lang];
-                            inventory.setItem(15, ItemUtils.item(Material.MINECART, lore[0], 1, -1, false, false, null, null, null, Arrays.asList(lore[1], Custom.hits.get(uuid).isEmpty() ? lore[3] : lore[2])));
+                            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], Custom.hits.get(uuid).isEmpty() ? lore[3] : lore[2]).build());
                         }
                         player.openInventory(inventory);
                     }
                     break;
                     case COMPASS: {
-                        int lang = PlayerData.getLang(player.getUniqueId());
+                        int lang = User.getLang(player.getUniqueId());
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);
-                        inventory.setItem(10, ItemUtils.item(Material.SANDSTONE, StringList.typename[0][lang], 51, 2, player.getWorld().getName().equals("world"), false, null, null, null, null));
-                        inventory.setItem(11, ItemUtils.item(Material.SANDSTONE, StringList.typename[1][lang], 28, 1, player.getWorld().getName().equals("Short"), false, null, null, null, null));
-                        inventory.setItem(12, ItemUtils.item(Material.SANDSTONE_STAIRS, StringList.typename[3][lang], 28, 1, player.getWorld().getName().equals("Onestack"), false, null, null, null, null));
-                        inventory.setItem(13, ItemUtils.item(Material.STEP, StringList.typename[2][lang], 50, 1, player.getWorld().getName().equals("Inclined"), false, null, null, null, null));
-                        inventory.setItem(14, ItemUtils.item(Material.STEP, StringList.typename[4][lang], 30, 1, player.getWorld().getName().equals("Inclinedshort"), false, null, null, null, null));
-                        inventory.setItem(16, ItemUtils.item(Material.SANDSTONE, StringList.typename[5][lang], 1, 1, player.getWorld().getName().equals("Custom"), false, null, null, null, null));
+                        ItemBuilder[] builders = {
+                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0][lang]),
+                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1][lang]),
+                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[3][lang]),
+                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[2][lang]),
+                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4][lang]),
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5][lang])
+                        };
+                        switch (player.getWorld().getName()) {
+                            case "world":
+                                builders[0].glow();
+                                break;
+                            case "Short":
+                                builders[1].glow();break;
+                            case "Onestack":
+                                builders[2].glow();break;
+                            case "Inclined":
+                                builders[3].glow();break;
+                            case "Inclinedshort":
+                                builders[4].glow();break;
+                        }
+                        inventory.setItem(10, builders[0].build());
+                        inventory.setItem(11, builders[1].build());
+                        inventory.setItem(12, builders[2].build());
+                        inventory.setItem(13, builders[3].build());
+                        inventory.setItem(14, builders[4].build());
+                        inventory.setItem(16, builders[5].build());
                         player.openInventory(inventory);
                     }
                     break;
@@ -137,7 +156,7 @@ public class PlayerInteract implements Listener {
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = -2; Y <= 1; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z).setType(Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] -i - Y * i + 98, coord + Z).getType());
+                            world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z).setType(Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType());
                         }
                     }
                 }
@@ -148,7 +167,7 @@ public class PlayerInteract implements Listener {
             }
         }
         if (c) {
-            int lang = PlayerData.getLang(uuid);
+            int lang = User.getLang(uuid);
             player.updateInventory();
             player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[lang] : ItemStackList.Height[lang]);
             player.getScoreboard().getTeam(StringList.CustomSideBar[lang][horizontal ? 7 : 4]).setSuffix(Integer.toString(settings[horizontal ? 0 : 1] + i));

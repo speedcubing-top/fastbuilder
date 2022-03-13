@@ -1,8 +1,6 @@
 package speedcubing.List;
 
-import cubing.bukkit.ItemUtils;
-import cubingserver.configcache;
-import org.bukkit.Material;
+import cubingserver.config;
 
 public class StringList {
     public static final String[][] typename = {
@@ -48,16 +46,16 @@ public class StringList {
             "§aTime: §e%time%"
     };
     public static final String[][] SideBar = {
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + configcache.SERVERIP, "§3FastBuilder"}
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"}
     };
     public static final String[][] CustomSideBar = {
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + configcache.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + configcache.SERVERIP, "§3FastBuilder"}
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
+            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"}
     };
 
     public static final String[] hover = {

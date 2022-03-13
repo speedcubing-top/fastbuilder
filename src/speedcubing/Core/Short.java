@@ -4,8 +4,7 @@ package speedcubing.Core;
 import cubing.bukkit.PlayerUtils;
 import cubing.bukkit.api.BungeePluginMessage;
 import cubing.bukkit.api.SideBarAPI;
-import cubingserver.libs.PlayerData;
-import cubingserver.libs.Rank;
+import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
@@ -50,7 +49,7 @@ public class Short {
         }
         Core.waiting.add(uuid);
         Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-        int lang = PlayerData.getLang(uuid);
+        int lang = User.getLang(uuid);
         int msrecord = time * 5;
         String display = Core.tickToTime(time);
         long timeMillis = System.currentTimeMillis() / 1000L;
@@ -92,7 +91,7 @@ public class Short {
                             prefix.add("§7-,---");
                             suffix.add("");
                         } else {
-                            String[] xx = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                            String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                             prefix.add(xx[0]);
                             suffix.add(xx[1]);
                         }
@@ -116,7 +115,7 @@ public class Short {
                 Core.Blocks.get(uuid).clear();
                 Core.waiting.remove(player.getUniqueId());
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][PlayerData.getLang(uuid)];
+                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
             }
@@ -145,7 +144,7 @@ public class Short {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        int lang = PlayerData.getLang(uuid);
+        int lang = User.getLang(uuid);
         String[] sidebar = StringList.SideBar[lang];
         objective.setDisplayName(sidebar[13]);
         int a = speedcubingServer.connection.selectInt("playersdata", "fb_1_pb", "uuid='" + uuid + "'");
@@ -177,7 +176,7 @@ public class Short {
                     prefix = "§7-,---";
                     suffix = "";
                 } else {
-                    String[] xx = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                    String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                     prefix = xx[0];
                     suffix = xx[1];
                 }
@@ -230,7 +229,7 @@ public class Short {
                         prefix.add("§7-,---");
                         suffix.add("");
                     } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(Rank.format(ses)[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                         prefix.add(xx[0]);
                         suffix.add(xx[1]);
                     }
@@ -253,7 +252,7 @@ public class Short {
 
     public static void validPlaceBlock(Player player, BlockPosition b) {
         UUID uuid = player.getUniqueId();
-        int lang = PlayerData.getLang(uuid);
+        int lang = User.getLang(uuid);
         if (Core.times.get(uuid) == -1) {
             Core.times.put(uuid, 0);
             Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
@@ -284,7 +283,7 @@ public class Short {
             Core.Blocks.get(uuid).clear();
             Core.waiting.remove(uuid);
             Inventory inventory = player.getInventory();
-            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][PlayerData.getLang(uuid)];
+            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
@@ -296,7 +295,7 @@ public class Short {
                 }
                 Core.Blocks.get(uuid).clear();
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][PlayerData.getLang(uuid)];
+                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
                 Core.times.put(uuid, -1);
@@ -304,7 +303,7 @@ public class Short {
                 int coord = Core.PlayerCoord.get(uuid);
                 int oldroom = coordToRoom(coord);
                 int newroom = Core.cal(oldroom, player.getLocation().getZ() > coord, rooms);
-                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[PlayerData.getLang(uuid)]);
+                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToZ(newroom));
                     rooms[oldroom] = true;
