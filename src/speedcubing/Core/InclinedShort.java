@@ -1,7 +1,6 @@
 package speedcubing.Core;
 
 import cubing.spigot.lib.bukkit.PlayerUtils;
-import cubing.spigot.lib.bukkit.api.BungeePluginMessage;
 import cubing.spigot.lib.bukkit.api.SideBarAPI;
 import cubingserver.PluginMessage;
 import cubingserver.libs.User;
