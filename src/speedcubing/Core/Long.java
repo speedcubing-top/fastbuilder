@@ -1,10 +1,11 @@
 package speedcubing.Core;
 
 
-import cubing.bukkit.PlayerUtils;
-import cubing.bukkit.SkinUtils;
-import cubing.bukkit.api.BungeePluginMessage;
-import cubing.bukkit.api.SideBarAPI;
+import com.mojang.authlib.GameProfile;
+import cubing.spigot.lib.bukkit.PlayerUtils;
+import com.mojang.authlib.properties.Property;
+import cubing.spigot.lib.bukkit.api.SideBarAPI;
+import cubingserver.PluginMessage;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
 import net.minecraft.server.v1_8_R3.BlockPosition;
@@ -26,6 +27,7 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.replay.test;
+import sun.java2d.cmm.Profile;
 
 import java.util.*;
 
@@ -48,7 +50,7 @@ public class Long {
         UUID uuid = player.getUniqueId();
         int time = Core.times.get(uuid);
         if (time < 140) {
-            BungeePluginMessage.switchServer(player, "Lobby");
+            PluginMessage.switchServer(player, "Lobby");
             return;
         }
         Core.waiting.add(uuid);
@@ -133,7 +135,7 @@ public class Long {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        BungeePluginMessage.switchServer(player, "lobby");
+                        PluginMessage.switchServer(player, "lobby");
                     }
                 }, 500);
             }
@@ -274,7 +276,8 @@ public class Long {
         if (Core.times.get(uuid) == -1) {
             if (player.getName().equals("speedcubing")) {
                 new test().reset();
-                test.StartSkin = SkinUtils.getProfileSkin(((CraftPlayer) player).getHandle().getProfile());
+                Property profile = ((CraftPlayer) player).getProfile().getProperties().get("textures").iterator().next();
+                test.StartSkin = new String[]{profile.getValue()};
                 test.StartLocation = player.getLocation();
                 test.BlockTicks.add(0);
                 test.BlockActions.add(b);

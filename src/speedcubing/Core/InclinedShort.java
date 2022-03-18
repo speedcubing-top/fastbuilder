@@ -1,8 +1,9 @@
 package speedcubing.Core;
 
-import cubing.bukkit.PlayerUtils;
-import cubing.bukkit.api.BungeePluginMessage;
-import cubing.bukkit.api.SideBarAPI;
+import cubing.spigot.lib.bukkit.PlayerUtils;
+import cubing.spigot.lib.bukkit.api.BungeePluginMessage;
+import cubing.spigot.lib.bukkit.api.SideBarAPI;
+import cubingserver.PluginMessage;
 import cubingserver.libs.User;
 
 import cubingserver.speedcubingServer;
@@ -44,7 +45,7 @@ public class InclinedShort {
         UUID uuid = player.getUniqueId();
         int time = Core.times.get(uuid);
         if (time < 40) {
-            BungeePluginMessage.switchServer(player, "Lobby");
+            PluginMessage.switchServer(player, "Lobby");
             return;
         }
         Core.waiting.add(uuid);

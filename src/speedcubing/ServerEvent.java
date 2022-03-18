@@ -1,15 +1,16 @@
 package speedcubing;
 
-import cubing.bukkit.Event.ServerEventHandler;
-import cubing.bukkit.Event.events.PlayInChatEvent;
-import cubing.bukkit.PlayerUtils;
-import cubing.utils.Console;
+import cubing.spigot.lib.bukkit.Event.ServerEventHandler;
+import cubing.spigot.lib.bukkit.Event.events.PlayInChatEvent;
+import cubing.spigot.lib.bukkit.PlayerUtils;
+import cubing.spigot.lib.utils.Console;
 import cubingserver.StringList.GlobalString;
 import cubingserver.customEvents.UDPEvent;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
 import cubingserver.things.events.PlayerJoin;
 import net.md_5.bungee.api.chat.*;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class ServerEvent {
             speedcubingServer.AllPlayers = Integer.parseInt(rs[2]);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 int lang = User.getLang(p.getUniqueId());
-                PlayerUtils.sendTabHeaderFooter(((CraftPlayer) p).getHandle().playerConnection, GlobalString.LobbyTabList[0][lang], GlobalString.LobbyTabList[1][lang].replace("%int%", rs[2]));
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerListHeaderFooter(GlobalString.LobbyTabList[0][lang], GlobalString.LobbyTabList[1][lang].replace("%int%", rs[2])));
             }
         }
     }

@@ -1,9 +1,10 @@
 package speedcubing.Core;
 
 
-import cubing.bukkit.PlayerUtils;
-import cubing.bukkit.api.BungeePluginMessage;
-import cubing.bukkit.api.SideBarAPI;
+import cubing.spigot.lib.bukkit.PlayerUtils;
+import cubing.spigot.lib.bukkit.api.BungeePluginMessage;
+import cubing.spigot.lib.bukkit.api.SideBarAPI;
+import cubingserver.PluginMessage;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
 import net.minecraft.server.v1_8_R3.*;
@@ -45,7 +46,7 @@ public class Custom {
     public static void Finish(Player player, boolean pressure) {
         UUID uuid = player.getUniqueId();
         if (Core.times.get(uuid) == -1) {
-            BungeePluginMessage.switchServer(player, "Lobby");
+            PluginMessage.switchServer(player, "Lobby");
             return;
         }
         Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
