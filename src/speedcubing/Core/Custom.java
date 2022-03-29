@@ -1,8 +1,8 @@
 package speedcubing.Core;
 
 
+import cubing.lib.utils.Console;
 import cubing.spigot.lib.bukkit.PlayerUtils;
-import cubing.spigot.lib.bukkit.api.BungeePluginMessage;
 import cubing.spigot.lib.bukkit.api.SideBarAPI;
 import cubingserver.PluginMessage;
 import cubingserver.libs.User;
@@ -122,6 +122,7 @@ public class Custom {
                 break;
             }
         }
+        Console.sendColoredConsole("§bCustom " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
@@ -152,6 +153,7 @@ public class Custom {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         String[] sidebar = StringList.CustomSideBar[lang];
         objective.setDisplayName(sidebar[11]);
+       final int r = room;
         new Thread(() -> {
             Integer[] Settings = ArrayUtils.toObject(speedcubingServer.connection.selectInts("playersdata", "customfb_x,customfb_y", "uuid='" + uuid + "'"));
             LengthSettings.put(uuid, Settings);
@@ -179,6 +181,7 @@ public class Custom {
                     }
                 }
                 player.teleport(new Location(world, -0.5, 100, coord + 0.5, 270, 0));
+                Console.sendColoredConsole("§bCustom " + player.getName() + " §c"+ r);
                 Core.PlayerCoord.put(uuid, coord);
                 AddBB(5 + Settings[0], Settings[1], coord, uuid);
             });
@@ -229,6 +232,7 @@ public class Custom {
         finishedOnce.remove(uuid);
         hits.remove(uuid);
         used -= 1;
+        Console.sendColoredConsole("§bCustom " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
     }
 

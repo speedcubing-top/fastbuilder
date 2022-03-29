@@ -49,12 +49,12 @@ public class ServerEvent {
                 String[] formats = User.getFormat(User.getRank(player.getUniqueId()));
                 String playerName = player.getName();
                 BaseComponent[] empty = TextComponent.fromLegacyText("");
-                BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + formats[1] + playerName);
+                BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
                 TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
                 TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
                 String[] format = GlobalString.MessageFormat[0];
                 for (int i = 0; i < second.length; i++) {
-                    second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[0] + playerName)).create()));
+                    second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
                     second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
                     first[i].addExtra(second[i]);
                     first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
@@ -62,7 +62,7 @@ public class ServerEvent {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.spigot().sendMessage(first[User.getLang(p.getUniqueId())]);
                 }
-                Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + formats[1] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
+                Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0]  + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
                 speedcubingServer.lastmsg.put(uuid, message);
             }
         } else e.setCancelled(false);

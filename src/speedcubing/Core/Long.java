@@ -1,9 +1,9 @@
 package speedcubing.Core;
 
 
-import com.mojang.authlib.GameProfile;
-import cubing.spigot.lib.bukkit.PlayerUtils;
 import com.mojang.authlib.properties.Property;
+import cubing.lib.utils.Console;
+import cubing.spigot.lib.bukkit.PlayerUtils;
 import cubing.spigot.lib.bukkit.api.SideBarAPI;
 import cubingserver.PluginMessage;
 import cubingserver.libs.User;
@@ -27,7 +27,6 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.replay.test;
-import sun.java2d.cmm.Profile;
 
 import java.util.*;
 
@@ -97,7 +96,7 @@ public class Long {
                             prefix.add("§7-,---");
                             suffix.add("");
                         } else {
-                            String[] x = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                            String[] x = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                             prefix.add(x[0]);
                             suffix.add(x[1]);
                         }
@@ -148,11 +147,13 @@ public class Long {
                 break;
             }
         }
+        Console.sendColoredConsole("§bLong " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
         int coord = roomToZ(room);
         player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 100, coord + 0.5, 270, 0));
+        Console.sendColoredConsole("§bLong " + player.getName() + " §c" + room);
         Core.PlayerCoord.put(uuid, coord);
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
@@ -192,7 +193,7 @@ public class Long {
                         prefix = "§7-,---";
                         suffix = "";
                     } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                         prefix = xx[0];
                         suffix = xx[1];
                     }
@@ -249,7 +250,7 @@ public class Long {
                         prefix.add("§7-,---");
                         suffix.add("");
                     } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                         prefix.add(xx[0]);
                         suffix.add(xx[1]);
                     }
@@ -267,6 +268,7 @@ public class Long {
             }
         }
         used -= 1;
+        Console.sendColoredConsole("§bLong " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
     }
 
@@ -339,6 +341,7 @@ public class Long {
                     player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToZ(newroom));
+                    Console.sendColoredConsole("§bLong " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }

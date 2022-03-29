@@ -1,6 +1,7 @@
 package speedcubing.Core;
 
 
+import cubing.lib.utils.Console;
 import cubing.spigot.lib.bukkit.PlayerUtils;
 import cubing.spigot.lib.bukkit.api.BungeePluginMessage;
 import cubing.spigot.lib.bukkit.api.SideBarAPI;
@@ -93,7 +94,7 @@ public class Inclined {
                             prefix.add("§7-,---");
                             suffix.add("");
                         } else {
-                            String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                            String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                             prefix.add(xx[0]);
                             suffix.add(xx[1]);
                         }
@@ -138,11 +139,13 @@ public class Inclined {
                 break;
             }
         }
+        Console.sendColoredConsole("§bInC " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
         int coord = roomToCoord(room);
         player.teleport(new Location(Bukkit.getWorld("Inclined"), coord + 0.5, 100, coord + 0.5, 225, 0));
+        Console.sendColoredConsole("§bInC " + player.getName() + " §c" + room);
         Core.PlayerCoord.put(uuid, coord);
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
@@ -179,7 +182,7 @@ public class Inclined {
                     prefix = "§7-,---";
                     suffix = "";
                 } else {
-                    String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                    String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                     prefix = xx[0];
                     suffix = xx[1];
                 }
@@ -232,7 +235,7 @@ public class Inclined {
                         prefix.add("§7-,---");
                         suffix.add("");
                     } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[0] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                         prefix.add(xx[0]);
                         suffix.add(xx[1]);
                     }
@@ -250,6 +253,7 @@ public class Inclined {
             }
         }
         used -= 1;
+        Console.sendColoredConsole("§bInc " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
     }
 
@@ -310,6 +314,7 @@ public class Inclined {
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToCoord(newroom));
+                    Console.sendColoredConsole("§bInclined " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }
