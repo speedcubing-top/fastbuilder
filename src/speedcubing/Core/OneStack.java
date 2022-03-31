@@ -1,13 +1,12 @@
 package speedcubing.Core;
 
-import cubing.lib.utils.Console;
 import cubing.lib.bukkit.PlayerUtils;
 import cubing.lib.bukkit.SideBarAPI;
+import cubing.lib.utils.Console;
 import cubingserver.libs.User;
-
 import cubingserver.speedcubingServer;
 import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.*;
@@ -65,7 +64,7 @@ public class OneStack {
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + StringList.timedisplay[lang].replace("%time%", display) + "\"}")));
+        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
         if (score.get(uuid) > time || score.get(uuid) == 0) {
             int i;
             for (i = 0; i < session.size(); i++) {

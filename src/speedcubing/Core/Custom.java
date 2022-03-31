@@ -56,7 +56,7 @@ public class Custom {
 
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + StringList.timedisplay[lang].replace("%time%", Core.tickToTime(Core.times.get(uuid))) + "\"}")));
+        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", Core.tickToTime(Core.times.get(uuid))))));
 
         Core.times.put(uuid, -1);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
