@@ -34,8 +34,6 @@ public class Reflection {
     }
 
     public void sendPacket(Packet<?> packet) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            sendPacket(packet, player);
-        }
+        Bukkit.getOnlinePlayers().forEach(a -> sendPacket(packet, a));
     }
 }

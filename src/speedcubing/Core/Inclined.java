@@ -1,17 +1,14 @@
 package speedcubing.Core;
 
 
-import cubing.lib.utils.Console;
 import cubing.lib.bukkit.PlayerUtils;
 import cubing.lib.bukkit.SideBarAPI;
-import cubingserver.PluginMessage;
+import cubing.lib.utils.Console;
 import cubingserver.libs.User;
-
 import cubingserver.speedcubingServer;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.*;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -38,90 +35,6 @@ public class Inclined {
         for (int i = 0; i < size; i++) {
             rooms[i] = true;
         }
-    }
-
-    public static void Finish(Player player) {
-        World world = Bukkit.getWorld("Inclined");
-        UUID uuid = player.getUniqueId();
-        int time = Core.times.get(uuid);
-        if (time < 110) {
-            PluginMessage.switchServer(player, "Lobby");
-            return;
-        }
-        Core.waiting.add(uuid);
-        Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-        int lang = User.getLang(uuid);
-        int msrecord = time * 5;
-        String display = Core.tickToTime(time);
-        long timeMillis = System.currentTimeMillis() / 1000L;
-        new Thread(() -> {
-            int last = speedcubingServer.connection.selectInt("playersdata", "fb_3_pb", "uuid='" + uuid + "'");
-            if (last == 0 || last > msrecord) {
-                speedcubingServer.connection.insert("fastbuilder", "uuid,at,score,mode", "'" + uuid + "'," + timeMillis + "," + msrecord + ",3");
-                speedcubingServer.connection.update("playersdata", "fb_3_pb=" + msrecord, "uuid='" + uuid + "'");
-                player.getScoreboard().getTeam(StringList.SideBar[lang][9]).setSuffix(display);
-            }
-        }).start();
-        Core.times.put(uuid, -1);
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
-        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
-        if (score.get(uuid) > time || score.get(uuid) == 0) {
-            int i;
-            for (i = 0; i < session.size(); i++) {
-                if (score.get(session.get(i)) > time || score.get(session.get(i)) == 0) {
-                    session.remove(uuid);
-                    session.add(i, uuid);
-                    break;
-                }
-            }
-            score.put(uuid, time);
-            if (i < 4) {
-                List<String> prefix = new ArrayList<>();
-                List<String> suffix = new ArrayList<>();
-                int size = session.size();
-                for (int j = i; j < 3; j++) {
-                    if (size <= j) {
-                        prefix.add("§7-,---");
-                        suffix.add("");
-                    } else {
-                        UUID ses = session.get(j);
-                        int sc = score.get(ses);
-                        if (sc == 0) {
-                            prefix.add("§7-,---");
-                            suffix.add("");
-                        } else {
-                            String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
-                            prefix.add(xx[0]);
-                            suffix.add(xx[1]);
-                        }
-                    }
-                }
-                for (int j = i; j < 3; j++) {
-                    for (Player p : world.getPlayers()) {
-                        Team t = p.getScoreboard().getTeam("§" + (j + 4) + "§f");
-                        t.setPrefix(prefix.get(j - i));
-                        t.setSuffix(suffix.get(j - i));
-                    }
-                }
-            }
-        }
-        Core.finishedtask.put(uuid, Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
-            if (Core.PlayerCoord.containsKey(uuid)) {
-                int fixed = Core.PlayerCoord.get(uuid);
-                for (BlockPosition b : Core.Blocks.get(uuid)) {
-                    world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-                }
-                PlayerUtils.teleport(connection, fixed + 0.5, 100, fixed + 0.5, 225, 0);
-                Core.Blocks.get(uuid).clear();
-                Core.waiting.remove(uuid);
-                Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
-                inventory.setItem(0, stack);
-                inventory.setItem(1, stack);
-            }
-        }, 40));
     }
 
     public static void Join(Player player) {
@@ -206,50 +119,7 @@ public class Inclined {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        if (Core.MainTimer.containsKey(uuid))
-            Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-        World world = Bukkit.getWorld("Inclined");
-        for (BlockPosition b : Core.Blocks.get(uuid)) {
-            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-        }
-        Core.Blocks.get(uuid).clear();
-        Core.times.put(uuid, -1);
-        Core.waiting.remove(uuid);
-        int x = session.indexOf(uuid);
-        session.remove(uuid);
-        score.remove(uuid);
-        if (x != -1 && x < 3) {
-            List<String> prefix = new ArrayList<>();
-            List<String> suffix = new ArrayList<>();
-            int size = session.size();
-            for (int j = x; j < 3; j++) {
-                if (size <= j) {
-                    prefix.add("§7-,---");
-                    suffix.add("");
-                } else {
-                    UUID ses = session.get(j);
-                    int sc = score.get(ses);
-                    if (sc == 0) {
-                        prefix.add("§7-,---");
-                        suffix.add("");
-                    } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
-                        prefix.add(xx[0]);
-                        suffix.add(xx[1]);
-                    }
-                }
-            }
-            for (Player p : world.getPlayers()) {
-                if (!p.getName().equals(player.getName())) {
-                    Scoreboard scoreboard = p.getScoreboard();
-                    for (int j = x; j < 3; j++) {
-                        Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
-                        t.setPrefix(prefix.get(j - x));
-                        t.setSuffix(suffix.get(j - x));
-                    }
-                }
-            }
-        }
+        Core.updateSidebar(player.getName(), uuid, session, score, "Inclined");
         used -= 1;
         Console.sendColoredConsole("§bInc " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
@@ -281,10 +151,7 @@ public class Inclined {
         UUID uuid = player.getUniqueId();
         if (Core.waiting.contains(uuid)) {
             Bukkit.getScheduler().cancelTask(Core.finishedtask.get(uuid));
-            World world = player.getWorld();
-            for (BlockPosition b : Core.Blocks.get(uuid)) {
-                world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-            }
+            Core.clear(uuid,player.getWorld());
             Core.Blocks.get(uuid).clear();
             Core.waiting.remove(uuid);
             Inventory inventory = player.getInventory();
@@ -294,10 +161,7 @@ public class Inclined {
         } else {
             if (Core.times.get(uuid) != -1) {
                 Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-                org.bukkit.World world = player.getWorld();
-                for (BlockPosition b : Core.Blocks.get(uuid)) {
-                    world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-                }
+                Core.clear(uuid,player.getWorld());
                 Core.Blocks.get(uuid).clear();
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];

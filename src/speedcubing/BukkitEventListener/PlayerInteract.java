@@ -29,21 +29,22 @@ public class PlayerInteract implements Listener {
         if (player.getGameMode() == GameMode.SURVIVAL) {
             if (e.getAction() == Action.PHYSICAL) {
                 if (e.getClickedBlock().getType() == Material.GOLD_PLATE) {
-                    switch (player.getWorld().getName()) {
+                    String name = player.getWorld().getName();
+                    switch (name) {
                         case "world":
-                            Long.Finish(player);
+                            Core.finish(name, 0, false, player, Long.session, Long.score, 146);
                             break;
                         case "Short":
-                            Short.Finish(player);
-                            break;
-                        case "Inclined":
-                            Inclined.Finish(player);
+                            Core.finish(name, 1, false, player, Short.session, Short.score, 76);
                             break;
                         case "Onestack":
-                            OneStack.Finish(player);
+                            Core.finish(name, 2, false, player, OneStack.session, OneStack.score, 220);
+                            break;
+                        case "Inclined":
+                            Core.finish(name, 3, false, player, Inclined.session, Inclined.score, 110);
                             break;
                         case "Inclinedshort":
-                            InclinedShort.Finish(player);
+                            Core.finish(name, 4, false, player, InclinedShort.session, InclinedShort.score, 40);
                             break;
                         case "Custom":
                             Custom.Finish(player, true);
@@ -94,13 +95,17 @@ public class PlayerInteract implements Listener {
                                 builders[0].glow();
                                 break;
                             case "Short":
-                                builders[1].glow();break;
+                                builders[1].glow();
+                                break;
                             case "Onestack":
-                                builders[2].glow();break;
+                                builders[2].glow();
+                                break;
                             case "Inclined":
-                                builders[3].glow();break;
+                                builders[3].glow();
+                                break;
                             case "Inclinedshort":
-                                builders[4].glow();break;
+                                builders[4].glow();
+                                break;
                         }
                         inventory.setItem(10, builders[0].build());
                         inventory.setItem(11, builders[1].build());

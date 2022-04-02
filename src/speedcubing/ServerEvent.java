@@ -60,9 +60,7 @@ public class ServerEvent {
                     first[i].addExtra(second[i]);
                     first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
                 }
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.spigot().sendMessage(first[User.getLang(p.getUniqueId())]);
-                }
+                Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getLang(a.getUniqueId())]));
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0]  + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
                 speedcubingServer.lastmsg.put(uuid, message);
             }

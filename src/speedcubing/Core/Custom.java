@@ -64,9 +64,7 @@ public class Custom {
             Core.waiting.add(uuid);
             Core.finishedtask.put(uuid, Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
                 if (Core.PlayerCoord.containsKey(uuid)) {
-                    for (BlockPosition b : Core.Blocks.get(uuid)) {
-                        world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-                    }
+                    Core.clear(uuid,world);
                     Core.Blocks.get(uuid).clear();
                     PlayerUtils.teleport(connection, -0.5, 100, Core.PlayerCoord.get(uuid) + 0.5, 270, 0);
                     Core.waiting.remove(uuid);
@@ -76,9 +74,7 @@ public class Custom {
                 }
             }, 40));
         } else {
-            for (BlockPosition b : Core.Blocks.get(uuid)) {
-                world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-            }
+            Core.clear(uuid,world);
             Core.Blocks.get(uuid).clear();
             finishedOnce.add(uuid);
             Integer[] center = Center.get(uuid);
@@ -194,10 +190,7 @@ public class Custom {
         if (Core.MainTimer.containsKey(uuid))
             Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
         World world = Bukkit.getWorld("Custom");
-        for (BlockPosition b : Core.Blocks.get(uuid)) {
-            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-        }
-
+        Core.clear(uuid,world);
         int coord = Core.PlayerCoord.get(uuid);
         Integer[] center = Center.get(uuid);
         Integer[] Settings = LengthSettings.get(uuid);
@@ -261,9 +254,7 @@ public class Custom {
     public static void Fell(Player player) {
         UUID uuid = player.getUniqueId();
         World world = player.getWorld();
-        for (BlockPosition b : Core.Blocks.get(uuid)) {
-            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
-        }
+        Core.clear(uuid,world);
         Core.Blocks.get(uuid).clear();
         int coord = Core.PlayerCoord.get(uuid);
         Inventory inventory = player.getInventory();
