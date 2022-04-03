@@ -160,7 +160,7 @@ public class InclinedShort {
         } else {
             if (Core.times.get(uuid) != -1) {
                 Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-                Core.clear(uuid,player.getWorld());
+                Core.clear(uuid, player.getWorld());
                 Core.Blocks.get(uuid).clear();
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
