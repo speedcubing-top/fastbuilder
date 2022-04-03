@@ -12,7 +12,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import speedcubing.List.ItemStackList;
 
-import java.util.Collections;
 import java.util.UUID;
 
 public class BlockEditor {
@@ -47,7 +46,7 @@ public class BlockEditor {
         int x = Core.integerCache.get(uuid)[0];
         int index = x - length;
         if (index >= 0)
-            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.blockeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.blockeditor[index][lang].clone(), GlobalString.selected[lang])));
         player.openInventory(inv);
     }
 
@@ -81,7 +80,7 @@ public class BlockEditor {
                         }
                         int set = Core.integerCache.get(uuid)[0];
                         if (set < 6)
-                            inv.setItem((set < 3) ? set + 10 : set + 11, ItemUtils.glow(ItemUtils.setLore(ItemStackList.sandstoneeditor[set][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem((set < 3) ? set + 10 : set + 11, ItemUtils.glow(ItemUtils.setLore(ItemStackList.sandstoneeditor[set][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -95,7 +94,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - ItemStackList.sandstoneeditor.length;
                         if (index < ItemStackList.wooleditor.length && index >= 0)
-                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.wooleditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.wooleditor[index][lang].clone(),GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -109,7 +108,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length);
                         if (index < ItemStackList.oreblockeditor.length && index >= 0)
-                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreblockeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreblockeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -123,7 +122,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length);
                         if (index < ItemStackList.oreeditor.length && index >= 0)
-                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreeditor[index][lang].clone(),GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -137,7 +136,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length);
                         if (index < ItemStackList.quartzeditor.length && index >= 0)
-                            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.quartzeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.quartzeditor[index][lang].clone(),GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -160,7 +159,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length);
                         if (index < ItemStackList.woodeditor.length && index >= 0)
-                            inv.setItem((index < 3 ? index + 1 : (index < 6 ? index + 2 : (index < 9 ? index + 4 : index + 5))), ItemUtils.glow(ItemUtils.setLore(ItemStackList.woodeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem((index < 3 ? index + 1 : (index < 6 ? index + 2 : (index < 9 ? index + 4 : index + 5))), ItemUtils.glow(ItemUtils.setLore(ItemStackList.woodeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -174,7 +173,7 @@ public class BlockEditor {
                         }
                         int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length);
                         if (index < ItemStackList.clayeditor.length && index >= 0)
-                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.clayeditor[index][lang].clone(), Collections.singletonList(GlobalString.selected[lang]))));
+                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.clayeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
