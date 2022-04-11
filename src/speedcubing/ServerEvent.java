@@ -1,22 +1,18 @@
 package speedcubing;
 
-import cubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
-import cubing.lib.utils.Console;
 import cubing.lib.bukkit.Event.ServerEventHandler;
 import cubing.lib.bukkit.Event.events.PlayInChatEvent;
+import cubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
+import cubing.lib.utils.Console;
 import cubingserver.StringList.GlobalString;
 import cubingserver.customEvents.UDPEvent;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
-import cubingserver.things.events.PlayerJoin;
 import net.md_5.bungee.api.chat.*;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import speedcubing.List.StringList;
-
-import java.util.UUID;
 
 public class ServerEvent {
 
@@ -34,37 +30,24 @@ public class ServerEvent {
 
     @ServerEventHandler
     public void PlayInChatEvent(PlayInChatEvent e) {
-        e.setCancelled(true);
         Player player = e.player;
         String message = e.packet.a();
-        long time = System.currentTimeMillis();
-        UUID uuid = player.getUniqueId();
-        boolean spam = PlayerJoin.Canspam.contains(uuid);
-        if (!spam && time - speedcubingServer.spam.get(uuid) < 500)
-            player.sendMessage(GlobalString.spam[User.getLang(uuid)]);
-        else if (message.charAt(0) != '/') {
-            if (!spam && speedcubingServer.lastmsg.get(uuid).equals(message))
-                player.sendMessage(GlobalString.samemsg[User.getLang(uuid)]);
-            else {
-                speedcubingServer.lastmsg.put(uuid, message);
-                String[] formats = User.getFormat(User.getRank(player.getUniqueId()));
-                String playerName = player.getName();
-                BaseComponent[] empty = TextComponent.fromLegacyText("");
-                BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
-                TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
-                TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
-                String[] format = GlobalString.MessageFormat[0];
-                for (int i = 0; i < second.length; i++) {
-                    second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
-                    second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
-                    first[i].addExtra(second[i]);
-                    first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
-                }
-                Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getLang(a.getUniqueId())]));
-                Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0]  + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
-                speedcubingServer.lastmsg.put(uuid, message);
+        if (message.charAt(0) != '/') {
+            String[] formats = User.getFormat(User.getRank(player.getUniqueId()));
+            String playerName = player.getName();
+            BaseComponent[] empty = TextComponent.fromLegacyText("");
+            BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
+            TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
+            TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
+            String[] format = GlobalString.MessageFormat[0];
+            for (int i = 0; i < second.length; i++) {
+                second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
+                second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
+                first[i].addExtra(second[i]);
+                first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
             }
-        } else e.setCancelled(false);
-        speedcubingServer.spam.put(uuid, time);
+            Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getLang(a.getUniqueId())]));
+            Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
+        }
     }
 }
