@@ -33,6 +33,7 @@ public class ServerEvent {
         Player player = e.player;
         String message = e.packet.a();
         if (message.charAt(0) != '/') {
+            e.setCancelled(true);
             String[] formats = User.getFormat(User.getRank(player.getUniqueId()));
             String playerName = player.getName();
             BaseComponent[] empty = TextComponent.fromLegacyText("");
