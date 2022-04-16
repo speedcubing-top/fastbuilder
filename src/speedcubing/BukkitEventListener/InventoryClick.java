@@ -134,6 +134,7 @@ public class InventoryClick implements Listener {
                         switch (player.getWorld().getName()) {
                             case "world":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_0_pb=0", "uuid='" + uuid + "'")).start();
+                                Long.session.remove(uuid);
                                 break;
                             case "Short":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_1_pb=0", "uuid='" + uuid + "'")).start();

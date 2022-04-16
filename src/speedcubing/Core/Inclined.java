@@ -119,7 +119,7 @@ public class Inclined {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        Core.updateSidebar(player.getName(), uuid, session, score, "Inclined");
+        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Inclined"));
         used -= 1;
         Console.sendColoredConsole("§bInc " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;

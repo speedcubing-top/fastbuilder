@@ -149,16 +149,7 @@ public class Core {
         }, 40));
     }
 
-    public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, String w) {
-        World world = Bukkit.getWorld(w);
-        if (MainTimer.containsKey(uuid))
-            Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
-        clear(uuid, world);
-//        if (player.getName().equals("speedcubing"))
-//            new test().reset();
-        Blocks.get(uuid).clear();
-        times.put(uuid, -1);
-        waiting.remove(uuid);
+    public static void a(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world) {
         int x = session.indexOf(uuid);
         session.remove(uuid);
         score.remove(uuid);
@@ -194,5 +185,17 @@ public class Core {
                 }
             }
         }
+    }
+
+    public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world) {
+        if (MainTimer.containsKey(uuid))
+            Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
+        clear(uuid, world);
+//        if (player.getName().equals("speedcubing"))
+//            new test().reset();
+        Blocks.get(uuid).clear();
+        times.put(uuid, -1);
+        waiting.remove(uuid);
+        a(name,uuid,session,score,world);
     }
 }
