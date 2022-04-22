@@ -119,7 +119,7 @@ public class Short {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Short"));
+        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Short"),true);
         used -= 1;
         Console.sendColoredConsole("§bShort " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;

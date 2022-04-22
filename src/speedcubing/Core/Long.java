@@ -135,7 +135,7 @@ public class Long {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("world"));
+        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("world"),true);
         used -= 1;
         Console.sendColoredConsole("§bLong " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;

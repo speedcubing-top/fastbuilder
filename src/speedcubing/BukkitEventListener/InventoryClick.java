@@ -134,19 +134,23 @@ public class InventoryClick implements Listener {
                         switch (player.getWorld().getName()) {
                             case "world":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_0_pb=0", "uuid='" + uuid + "'")).start();
-                                Long.session.remove(uuid);
+                                Core.updateSidebar(player.getName(), uuid, Long.session, Long.score, player.getWorld(),false);
                                 break;
                             case "Short":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_1_pb=0", "uuid='" + uuid + "'")).start();
+                                Core.updateSidebar(player.getName(), uuid, Short.session, Short.score, player.getWorld(),false);
                                 break;
                             case "Inclined":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_2_pb=0", "uuid='" + uuid + "'")).start();
+                                Core.updateSidebar(player.getName(), uuid, Inclined.session, Inclined.score, player.getWorld(),false);
                                 break;
                             case "Onestack":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_3_pb=0", "uuid='" + uuid + "'")).start();
+                                Core.updateSidebar(player.getName(), uuid, OneStack.session, OneStack.score, player.getWorld(),false);
                                 break;
                             case "Inclinedshort":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_4_pb=0", "uuid='" + uuid + "'")).start();
+                                Core.updateSidebar(player.getName(), uuid, InclinedShort.session, InclinedShort.score, player.getWorld(),false);
                                 break;
                         }
                         player.getScoreboard().getTeam(StringList.SideBar[User.getLang(uuid)][9]).setSuffix("§7-,---");

@@ -150,9 +150,26 @@ public class Core {
     }
 
     public static void a(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world) {
+    }
+
+    public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world, boolean quit) {
+//        if (player.getName().equals("speedcubing"))
+//            new test().reset();
         int x = session.indexOf(uuid);
-        session.remove(uuid);
-        score.remove(uuid);
+        if (quit) {
+            if (MainTimer.containsKey(uuid))
+                Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
+            clear(uuid, world);
+            Blocks.get(uuid).clear();
+            times.put(uuid, -1);
+            waiting.remove(uuid);
+            session.remove(uuid);
+            score.remove(uuid);
+        } else {
+            session.remove(uuid);
+            session.add(uuid);
+            score.put(uuid,0);
+        }
         if (x != -1 && x < 3) {
             List<String> prefix = new ArrayList<>();
             List<String> suffix = new ArrayList<>();
@@ -185,17 +202,5 @@ public class Core {
                 }
             }
         }
-    }
-
-    public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world) {
-        if (MainTimer.containsKey(uuid))
-            Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
-        clear(uuid, world);
-//        if (player.getName().equals("speedcubing"))
-//            new test().reset();
-        Blocks.get(uuid).clear();
-        times.put(uuid, -1);
-        waiting.remove(uuid);
-        a(name,uuid,session,score,world);
     }
 }
