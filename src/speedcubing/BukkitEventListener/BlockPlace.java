@@ -29,14 +29,14 @@ public class BlockPlace implements Listener {
             int z = block.getZ();
             switch (player.getWorld().getName()) {
                 case "world":
-                    if (x < 3 || x > 56 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (x < 3 || x > 57 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
                     } else
                         Long.validPlaceBlock(player, new BlockPosition(x, y, z));
                     break;
                 case "Short":
-                    if (x < 3 || x > 33 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (x < 3 || x > 34 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
                     } else Short.validPlaceBlock(player, new BlockPosition(x, y, z));

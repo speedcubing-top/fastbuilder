@@ -5,6 +5,9 @@ import cubing.lib.bukkit.Event.ServerEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import speedcubing.BukkitCommands.stats;
 import speedcubing.BukkitEventListener.*;
@@ -12,7 +15,7 @@ import speedcubing.Core.Long;
 import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements Listener {
 
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new FoodLevelChange(), this);
@@ -56,5 +59,17 @@ public class Main extends JavaPlugin {
         new BlockEditor().Load();
         new Custom().Load();
         ServerEventManager.registerListeners(new ServerEvent());
+        Bukkit.getPluginManager().registerEvents(this,this);
+    }
+
+
+    @EventHandler
+    public void dwwa(PlayerTeleportEvent e) {
+        if (e.getCause() == PlayerTeleportEvent.TeleportCause.COMMAND) {
+            if (e.getFrom().getWorld() != e.getTo().getWorld()) {
+                e.setCancelled(true);
+                e.getPlayer().sendMessage("Cancelled.");
+            }
+        }
     }
 }

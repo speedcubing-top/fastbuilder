@@ -202,5 +202,7 @@ public class Core {
                 }
             }
         }
+        System.out.println(score);
+        System.out.println(session);
     }
 }

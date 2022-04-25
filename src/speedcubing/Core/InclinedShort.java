@@ -175,7 +175,7 @@ public class InclinedShort {
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToCoord(newroom));
-                    Console.sendColoredConsole("§bCustom " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
+                    Console.sendColoredConsole("§bInS " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }
