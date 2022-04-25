@@ -41,10 +41,10 @@ public class PlayerInteract implements Listener {
                             Core.finish(name, 2, false, player, OneStack.session, OneStack.score, 220);
                             break;
                         case "Inclined":
-                            Core.finish(name, 3, false, player, Inclined.session, Inclined.score, 110);
+                            Core.finish(name, 3, true, player, Inclined.session, Inclined.score, 110);
                             break;
                         case "Inclinedshort":
-                            Core.finish(name, 4, false, player, InclinedShort.session, InclinedShort.score, 40);
+                            Core.finish(name, 4, true, player, InclinedShort.session, InclinedShort.score, 40);
                             break;
                         case "Custom":
                             Custom.Finish(player, true);
