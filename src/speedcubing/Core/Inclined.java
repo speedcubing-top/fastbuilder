@@ -50,13 +50,11 @@ public class Inclined {
                 break;
             }
         }
-        Console.sendColoredConsole("§bInC " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
         int coord = roomToCoord(room);
         player.teleport(new Location(Bukkit.getWorld("Inclined"), coord + 0.5, 100, coord + 0.5, 225, 0));
-        Console.sendColoredConsole("§bInC " + player.getName() + " §c" + room);
         Core.PlayerCoord.put(uuid, coord);
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
@@ -121,30 +119,7 @@ public class Inclined {
         UUID uuid = player.getUniqueId();
         Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Inclined"),true);
         used -= 1;
-        Console.sendColoredConsole("§bInc " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
-    }
-
-    public static void validPlaceBlock(Player player, BlockPosition b) {
-        UUID uuid = player.getUniqueId();
-        int lang = User.getLang(uuid);
-        if (Core.times.get(uuid) == -1) {
-            Core.times.put(uuid, 0);
-            Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                int up = Core.times.get(uuid) + 1;
-                Core.times.put(uuid, up);
-                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(Core.tickToTime(up));
-                if (up >= 2400) {
-                    Fell(player, false);
-                    player.sendMessage(StringList.cancelled[lang]);
-                }
-            }, 0, 1));
-        }
-        Core.Blocks.get(uuid).add(b);
-        Inventory inventory = player.getInventory();
-        int empty = 1 - player.getInventory().getHeldItemSlot();
-        if (inventory.getItem(empty) == null)
-            inventory.setItem(empty, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
     }
 
     public static void Fell(Player player, boolean fell) {
@@ -176,7 +151,6 @@ public class Inclined {
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToCoord(newroom));
-                    Console.sendColoredConsole("§bInC " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }

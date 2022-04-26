@@ -1,14 +1,11 @@
 package speedcubing.Core;
 
 
-import com.mojang.authlib.properties.Property;
 import cubing.lib.bukkit.PlayerUtils;
 import cubing.lib.bukkit.SideBarAPI;
-import cubing.lib.utils.Console;
 import cubingserver.PluginMessage;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
-import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,7 +20,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
-import speedcubing.Main;
 import speedcubing.replay.test;
 
 import java.util.*;
@@ -61,13 +57,11 @@ public class Long {
                 break;
             }
         }
-        Console.sendColoredConsole("§bLong " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
         int coord = roomToZ(room);
         player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 100, coord + 0.5, 270, 0));
-        Console.sendColoredConsole("§bLong " + player.getName() + " §c" + room);
         Core.PlayerCoord.put(uuid, coord);
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
@@ -137,41 +131,7 @@ public class Long {
         UUID uuid = player.getUniqueId();
         Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("world"),true);
         used -= 1;
-        Console.sendColoredConsole("§bLong " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
-    }
-
-    public static void validPlaceBlock(Player player, BlockPosition b) {
-        UUID uuid = player.getUniqueId();
-        int lang = User.getLang(uuid);
-        if (Core.times.get(uuid) == -1) {
-            if (player.getName().equals("speedcubing")) {
-                new test().reset();
-                Property profile = ((CraftPlayer) player).getProfile().getProperties().get("textures").iterator().next();
-                test.StartSkin = new String[]{profile.getValue()};
-                test.StartLocation = player.getLocation();
-                test.BlockTicks.add(0);
-                test.BlockActions.add(b);
-            }
-            Core.times.put(uuid, 0);
-            Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                int up = Core.times.get(uuid) + 1;
-                Core.times.put(uuid, up);
-                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(Core.tickToTime(up));
-                if (up >= 2400) {
-                    Fell(player, false);
-                    player.sendMessage(StringList.cancelled[lang]);
-                }
-            }, 0, 1));
-        } else {
-            test.BlockTicks.add(Core.times.get(uuid));
-            test.BlockActions.add(b);
-        }
-        Core.Blocks.get(uuid).add(b);
-        Inventory inventory = player.getInventory();
-        int empty = 1 - player.getInventory().getHeldItemSlot();
-        if (inventory.getItem(empty) == null)
-            inventory.setItem(empty, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
     }
 
     public static void Fell(Player player, boolean fell) {
@@ -204,7 +164,6 @@ public class Long {
                     player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToZ(newroom));
-                    Console.sendColoredConsole("§bLong " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }

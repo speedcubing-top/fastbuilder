@@ -2,10 +2,8 @@ package speedcubing.Core;
 
 import cubing.lib.bukkit.PlayerUtils;
 import cubing.lib.bukkit.SideBarAPI;
-import cubing.lib.utils.Console;
 import cubingserver.libs.User;
 import cubingserver.speedcubingServer;
-import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -19,7 +17,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
-import speedcubing.Main;
 
 import java.util.*;
 
@@ -49,14 +46,12 @@ public class OneStack {
                 break;
             }
         }
-        Console.sendColoredConsole("§bOs " + player.getName() + " §e" + room);
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
         int coord = roomToZ(room);
 
         player.teleport(new Location(Bukkit.getWorld("Onestack"), 0.5, 100, coord + 0.5, 270, 0));
-        Console.sendColoredConsole("§bOs " + player.getName() + " §c" + room);
         Core.PlayerCoord.put(uuid, coord);
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
@@ -119,32 +114,9 @@ public class OneStack {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Onestack"),true);
+        Core.updateSidebar(player.getName(), uuid, session, score, Bukkit.getWorld("Onestack"), true);
         used -= 1;
-        Console.sendColoredConsole("§bOs " + player.getName() + " §a" + coordToRoom(Core.PlayerCoord.get(uuid)));
         rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
-    }
-
-    public static void validPlaceBlock(Player player, BlockPosition b) {
-        UUID uuid = player.getUniqueId();
-        int lang = User.getLang(uuid);
-        if (Core.times.get(uuid) == -1) {
-            Core.times.put(uuid, 0);
-            Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                int up = Core.times.get(uuid) + 1;
-                Core.times.put(uuid, up);
-                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(Core.tickToTime(up));
-                if (up >= 2400) {
-                    Fell(player, false);
-                    player.sendMessage(StringList.cancelled[lang]);
-                }
-            }, 0, 1));
-        }
-        Core.Blocks.get(uuid).add(b);
-        Inventory inventory = player.getInventory();
-        int empty = 1 - player.getInventory().getHeldItemSlot();
-        if (inventory.getItem(empty) == null)
-            inventory.setItem(empty, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
     }
 
     public static void Fell(Player player, boolean fell) {
@@ -175,7 +147,6 @@ public class OneStack {
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToZ(newroom));
-                    Console.sendColoredConsole("§bOs " + player.getName() + " §6" + oldroom + "§5->§6" + newroom);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }

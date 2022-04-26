@@ -3,7 +3,6 @@ package speedcubing;
 import cubing.lib.bukkit.Event.ServerEventHandler;
 import cubing.lib.bukkit.Event.events.PlayInChatEvent;
 import cubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
-import cubing.lib.utils.Console;
 import cubingserver.StringList.GlobalString;
 import cubingserver.customEvents.UDPEvent;
 import cubingserver.libs.User;
@@ -48,7 +47,6 @@ public class ServerEvent {
                 first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
             }
             Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getLang(a.getUniqueId())]));
-            Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
         }
     }
 }

@@ -1,5 +1,6 @@
 package speedcubing.Core;
 
+import com.mojang.authlib.properties.Property;
 import cubing.lib.bukkit.PlayerUtils;
 import cubing.lib.bukkit.SideBarAPI;
 import cubingserver.PluginMessage;
@@ -22,6 +23,7 @@ import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
+import speedcubing.replay.test;
 
 import java.util.*;
 
@@ -149,7 +151,53 @@ public class Core {
         }, 40));
     }
 
-    public static void a(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world) {
+    public static boolean validPlaceBlock(Player player, BlockPosition b) {
+        UUID uuid = player.getUniqueId();
+        int lang = User.getLang(uuid);
+        if (times.get(uuid) == -1) {
+            if (b.getY() > 100)
+                return true;
+            if (player.getName().equals("speedcubing") && player.getWorld().getName().equals("world")) {
+                new test().reset();
+                Property profile = ((CraftPlayer) player).getProfile().getProperties().get("textures").iterator().next();
+                test.StartSkin = new String[]{profile.getValue()};
+                test.StartLocation = player.getLocation();
+                test.BlockTicks.add(0);
+                test.BlockActions.add(b);
+            }
+            times.put(uuid, 0);
+            MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
+                int up = times.get(uuid) + 1;
+                times.put(uuid, up);
+                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(tickToTime(up));
+                if (up >= 2400) {
+                    switch (player.getWorld().getName()) {
+                        case "Short":
+                            Short.Fell(player, false);
+                            break;
+                        case "Inclined":
+                            Inclined.Fell(player, false);
+                            break;
+                        case "Onestack":
+                            OneStack.Fell(player, false);
+                            break;
+                        case "Inclinedshort":
+                            InclinedShort.Fell(player, false);
+                            break;
+                    }
+                    player.sendMessage(StringList.cancelled[lang]);
+                }
+            }, 0, 1));
+        } else if (player.getWorld().getName().equals("world")) {
+            test.BlockTicks.add(Core.times.get(uuid));
+            test.BlockActions.add(b);
+        }
+        Blocks.get(uuid).add(b);
+        Inventory inventory = player.getInventory();
+        int empty = 1 - player.getInventory().getHeldItemSlot();
+        if (inventory.getItem(empty) == null)
+            inventory.setItem(empty, ItemStackList.Blocks[integerCache.get(uuid)[0]][lang]);
+        return false;
     }
 
     public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world, boolean quit) {
@@ -168,7 +216,7 @@ public class Core {
         } else {
             session.remove(uuid);
             session.add(uuid);
-            score.put(uuid,0);
+            score.put(uuid, 0);
         }
         if (x != -1 && x < 3) {
             List<String> prefix = new ArrayList<>();
@@ -202,7 +250,5 @@ public class Core {
                 }
             }
         }
-        System.out.println(score);
-        System.out.println(session);
     }
 }
