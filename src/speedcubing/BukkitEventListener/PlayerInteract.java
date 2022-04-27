@@ -1,7 +1,7 @@
 package speedcubing.BukkitEventListener;
 
-import cubing.lib.bukkit.ItemBuilder;
-import cubingserver.libs.User;
+import speedcubing.lib.bukkit.ItemBuilder;
+import speedcubing.server.libs.User;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.*;
 import org.bukkit.block.Block;

@@ -1,7 +1,7 @@
 package speedcubing.List;
 
-import cubing.lib.bukkit.ItemBuilder;
-import cubingserver.StringList.GlobalString;
+import speedcubing.lib.bukkit.ItemBuilder;
+import speedcubing.server.StringList.GlobalString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;

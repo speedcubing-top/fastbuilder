@@ -1,6 +1,6 @@
 package speedcubing.List;
 
-import cubingserver.config;
+import speedcubing.server.config;
 
 public class StringList {
     public static final String[][] typename = {

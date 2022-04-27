@@ -2,7 +2,7 @@ package speedcubing.replay;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import cubing.lib.bukkit.EntityPlayerUtils;
+import speedcubing.lib.bukkit.EntityPlayerUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

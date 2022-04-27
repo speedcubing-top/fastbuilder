@@ -1,8 +1,8 @@
 package speedcubing.BukkitEventListener;
 
 
-import cubingserver.speedcubingServer;
-import cubingserver.things.events.PlayerJoin;
+import speedcubing.server.speedcubingServer;
+import speedcubing.server.things.events.PlayerJoin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package speedcubing;
 
 
-import cubing.lib.bukkit.Event.ServerEventManager;
+import speedcubing.spigot.Event.ServerEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;

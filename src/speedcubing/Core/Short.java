@@ -1,10 +1,10 @@
 package speedcubing.Core;
 
 
-import cubing.lib.bukkit.PlayerUtils;
-import cubing.lib.bukkit.SideBarAPI;
-import cubingserver.libs.User;
-import cubingserver.speedcubingServer;
+import speedcubing.lib.bukkit.PlayerUtils;
+import speedcubing.lib.bukkit.SideBarAPI;
+import speedcubing.server.libs.User;
+import speedcubing.server.speedcubingServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
