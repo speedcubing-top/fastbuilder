@@ -1,5 +1,6 @@
 package speedcubing;
 
+import speedcubing.lib.utils.Console;
 import speedcubing.spigot.Event.ServerEventHandler;
 import speedcubing.spigot.Event.events.PlayInChatEvent;
 import speedcubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
@@ -47,6 +48,7 @@ public class ServerEvent {
                 first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
             }
             Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getLang(a.getUniqueId())]));
+            Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
         }
     }
 }
