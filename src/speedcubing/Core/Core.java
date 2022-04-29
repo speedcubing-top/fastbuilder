@@ -172,6 +172,9 @@ public class Core {
                 player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(tickToTime(up));
                 if (up >= 2400) {
                     switch (player.getWorld().getName()) {
+                        case "world":
+                            Long.Fell(player, false);
+                            break;
                         case "Short":
                             Short.Fell(player, false);
                             break;
