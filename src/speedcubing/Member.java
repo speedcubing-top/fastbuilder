@@ -2,11 +2,12 @@ package speedcubing;
 
 import speedcubing.server.libs.User;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Member extends User {
-    public static Map<UUID, Member> users;
+    public static Map<UUID, Member> users = new HashMap<>();
 
     public static Member getMember(UUID uuid) {
         return users.get(uuid);
