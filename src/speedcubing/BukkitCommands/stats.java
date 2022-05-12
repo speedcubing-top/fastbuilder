@@ -38,7 +38,7 @@ public class stats implements CommandExecutor, TabCompleter {
 //                    else if (target < 0)
 //                        commandSender.sendMessage("the minimum index is 1 !");
 //                    else {
-//                        String[] out = StringList.ranks[User.getLang(uuid)];
+//                        String[] out = StringList.ranks[Member.getMember(uuid).lang];
 //                        int[] scores = {
 //                                speedcubingServer.connection.selectInt("playersdata", "fastbuild_long_pb", "fastbuild_long_pb > 0 AND NOT uuid IN (SELECT uuid FROM banlist) ORDER BY fastbuild_long_pb ASC LIMIT " + target + ",1"),
 //                                speedcubingServer.connection.selectInt("playersdata", "fastbuild_short_pb", "fastbuild_short_pb > 0 AND NOT uuid IN (SELECT uuid FROM banlist) ORDER BY fastbuild_short_pb ASC LIMIT " + target + ",1"),
@@ -113,14 +113,14 @@ public class stats implements CommandExecutor, TabCompleter {
 //                    }
 //                    String id = result[0];
 //                    if (id.equals("invalidName")) {
-//                        commandSender.sendMessage(GlobalString.invalidName[User.getLang(uuid)]);
+//                        commandSender.sendMessage(GlobalString.invalidName[Member.getMember(uuid).lang]);
 //                    } else {
 //                        id = UUIDUtils.addDash(id);
 //                        if (!speedcubingServer.connection.isStringExist("playersdata", "uuid='" + id + "'"))
 //                            commandSender.sendMessage("Error: No results");
 //                        else {
 //                            String[] format = Rank.format(id);
-//                            String out = StringList.Stats[User.getLang(uuid)].replace("%player%", format[0] + format[1] + result[1]);
+//                            String out = StringList.Stats[Member.getMember(uuid).lang].replace("%player%", format[0] + format[1] + result[1]);
 //                            int[] ints = speedcubingServer.connection.selectInts("playersdata", "fastbuild_long_pb,fastbuild_short_pb,fastbuild_inclined_pb,fastbuild_onestack_pb,fastbuild_inclinedshort_pb", "uuid='" + id + "'");
 //                            if (ints[0] == 0)
 //                                out = out.replace("%db% §8[§b#%pos%§8/§b#%all%§8]", "null");

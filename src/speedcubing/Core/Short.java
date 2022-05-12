@@ -1,6 +1,7 @@
 package speedcubing.Core;
 
 
+import speedcubing.Member;
 import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.server.libs.User;
@@ -19,6 +20,7 @@ import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 
+import javax.print.attribute.standard.Media;
 import java.util.*;
 
 public class Short {
@@ -56,7 +58,7 @@ public class Short {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         String[] sidebar = StringList.SideBar[lang];
         objective.setDisplayName(sidebar[13]);
         int a = speedcubingServer.connection.selectInt("playersdata", "fb_1_pb", "uuid='" + uuid + "'");
@@ -88,7 +90,7 @@ public class Short {
                     prefix = "§7-,---";
                     suffix = "";
                 } else {
-                    String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
+                    String[] xx = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
                     prefix = xx[0];
                     suffix = xx[1];
                 }
@@ -127,7 +129,7 @@ public class Short {
             Core.Blocks.get(uuid).clear();
             Core.waiting.remove(uuid);
             Inventory inventory = player.getInventory();
-            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
+            ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][Member.getMember(uuid).lang];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
@@ -136,7 +138,7 @@ public class Short {
                 Core.clear(uuid, player.getWorld());
                 Core.Blocks.get(uuid).clear();
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][User.getLang(uuid)];
+                ItemStack stack = ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][Member.getMember(uuid).lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
                 Core.times.put(uuid, -1);
@@ -144,7 +146,7 @@ public class Short {
                 int coord = Core.PlayerCoord.get(uuid);
                 int oldroom = coordToRoom(coord);
                 int newroom = Core.cal(oldroom, player.getLocation().getZ() > coord, rooms);
-                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[User.getLang(uuid)]);
+                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[Member.getMember(uuid).lang]);
                 else {
                     Core.PlayerCoord.put(uuid, roomToZ(newroom));
                     rooms[oldroom] = true;

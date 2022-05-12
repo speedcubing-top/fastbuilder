@@ -1,5 +1,6 @@
 package speedcubing.BukkitEventListener;
 
+import speedcubing.Member;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 import org.bukkit.GameMode;
@@ -68,7 +69,7 @@ public class InventoryClick implements Listener {
                         switch (e.getAction()) {
                             case PICKUP_ALL: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = User.getLang(uuid);
+                                int lang = Member.getMember(uuid).lang;
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 1) {
@@ -86,7 +87,7 @@ public class InventoryClick implements Listener {
                             break;
                             case PICKUP_HALF: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = User.getLang(uuid);
+                                int lang = Member.getMember(uuid).lang;
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 20) {
@@ -109,7 +110,7 @@ public class InventoryClick implements Listener {
                         break;
                     case 15:
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[User.getLang(player.getUniqueId())]);
+                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player.getUniqueId()).lang]);
                         else if (player.getInventory().getItem(5) != null) {
                             UUID uuid = player.getUniqueId();
                             Integer[] center = Custom.Center.get(uuid);
@@ -153,7 +154,7 @@ public class InventoryClick implements Listener {
                                 Core.updateSidebar(player.getName(), uuid, InclinedShort.session, InclinedShort.score, player.getWorld(),false);
                                 break;
                         }
-                        player.getScoreboard().getTeam(StringList.SideBar[User.getLang(uuid)][9]).setSuffix("§7-,---");
+                        player.getScoreboard().getTeam(StringList.SideBar[Member.getMember(uuid).lang][9]).setSuffix("§7-,---");
                         player.closeInventory();
                         break;
                     case 15:

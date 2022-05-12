@@ -1,8 +1,9 @@
 package speedcubing.BukkitEventListener;
 
 
+import speedcubing.Member;
 import speedcubing.server.speedcubingServer;
-import speedcubing.server.things.events.PlayerJoin;
+import speedcubing.server.listeners.PlayerJoin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ public class PlayerQuit implements Listener {
             Core.finishedtask.remove(uuid);
             Core.PlayerCoord.remove(uuid);
             Core.times.remove(uuid);
+            Member.users.remove(uuid);
         }
     }
 }

@@ -1,6 +1,7 @@
 package speedcubing.Core;
 
 import com.mojang.authlib.properties.Property;
+import speedcubing.Member;
 import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.server.PluginMessage;
@@ -82,7 +83,7 @@ public class Core {
         }
         waiting.add(uuid);
         Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         int msrecord = time * 5;
         String display = tickToTime(time);
         long timeMillis = System.currentTimeMillis() / 1000L;
@@ -124,7 +125,7 @@ public class Core {
                             prefix.add("§7-,---");
                             suffix.add("");
                         } else {
-                            String[] x = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
+                            String[] x = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
                             prefix.add(x[0]);
                             suffix.add(x[1]);
                         }
@@ -153,7 +154,7 @@ public class Core {
 
     public static boolean validPlaceBlock(Player player, BlockPosition b) {
         UUID uuid = player.getUniqueId();
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         if (times.get(uuid) == -1) {
             if (b.getY() > 100)
                 return true;
@@ -236,7 +237,7 @@ public class Core {
                         prefix.add("§7-,---");
                         suffix.add("");
                     } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(User.getFormat(User.getRank(ses))[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
+                        String[] xx = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
                         prefix.add(xx[0]);
                         suffix.add(xx[1]);
                     }

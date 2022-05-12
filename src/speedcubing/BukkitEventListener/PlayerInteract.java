@@ -1,5 +1,7 @@
 package speedcubing.BukkitEventListener;
 
+import com.avaje.ebeaninternal.server.lib.util.MailEvent;
+import speedcubing.Member;
 import speedcubing.lib.bukkit.ItemBuilder;
 import speedcubing.server.libs.User;
 import net.minecraft.server.v1_8_R3.BlockPosition;
@@ -65,7 +67,7 @@ public class PlayerInteract implements Listener {
                         }
                         break;
                     case REDSTONE_COMPARATOR: {
-                        int lang = User.getLang(player.getUniqueId());
+                        int lang = Member.getMember(player.getUniqueId()).lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
                         String[] hit = StringList.FallDelayLore[lang];
                         inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(Core.integerCache.get(player.getUniqueId())[1])), hit[3], hit[4], hit[5]).build());
@@ -80,7 +82,7 @@ public class PlayerInteract implements Listener {
                     }
                     break;
                     case COMPASS: {
-                        int lang = User.getLang(player.getUniqueId());
+                        int lang = Member.getMember(player.getUniqueId()).lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);
                         ItemBuilder[] builders = {
                                 new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0][lang]),
@@ -172,7 +174,7 @@ public class PlayerInteract implements Listener {
             }
         }
         if (c) {
-            int lang = User.getLang(uuid);
+            int lang = Member.getMember(uuid).lang;
             player.updateInventory();
             player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[lang] : ItemStackList.Height[lang]);
             player.getScoreboard().getTeam(StringList.CustomSideBar[lang][horizontal ? 7 : 4]).setSuffix(Integer.toString(settings[horizontal ? 0 : 1] + i));

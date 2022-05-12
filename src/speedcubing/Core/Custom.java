@@ -1,6 +1,7 @@
 package speedcubing.Core;
 
 
+import speedcubing.Member;
 import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.server.PluginMessage;
@@ -50,7 +51,7 @@ public class Custom {
         }
         Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
         World world = Bukkit.getWorld("Custom");
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(Core.times.get(uuid)));
 
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
@@ -129,7 +130,7 @@ public class Custom {
                 }
             }
         }
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
         inventory.setItem(0, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
@@ -226,7 +227,7 @@ public class Custom {
 
     public static void validPlaceBlock(Player player, BlockPosition b) {
         UUID uuid = player.getUniqueId();
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         Inventory inventory = player.getInventory();
         if (Core.times.get(uuid) == -1) {
             Core.times.put(uuid, 0);
@@ -253,7 +254,7 @@ public class Custom {
         Core.Blocks.get(uuid).clear();
         int coord = Core.PlayerCoord.get(uuid);
         Inventory inventory = player.getInventory();
-        int lang = User.getLang(uuid);
+        int lang = Member.getMember(uuid).lang;
         inventory.setItem(5, ItemStackList.Length[lang]);
         inventory.setItem(6, ItemStackList.Height[lang]);
         if (Core.waiting.contains(uuid)) {
