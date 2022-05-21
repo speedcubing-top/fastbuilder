@@ -5,7 +5,6 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.server.PluginMessage;
-import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
@@ -63,16 +62,6 @@ public class Core {
         }
     }
 
-    public static void set1(int i, World world, List<String> prefix, List<String> suffix) {
-        for (int j = i; j < 3; j++) {
-            for (Player p : world.getPlayers()) {
-                Team t = p.getScoreboard().getTeam("§" + (j + 4) + "§f");
-                t.setPrefix(prefix.get(j - i));
-                t.setSuffix(suffix.get(j - i));
-            }
-        }
-    }
-
     public static void finish(String w, int type, boolean inclined, Player player, List<UUID> session, Map<UUID, Integer> score, int limit) {
         World world = Bukkit.getWorld(w);
         UUID uuid = player.getUniqueId();
@@ -111,27 +100,14 @@ public class Core {
             }
             score.put(uuid, time);
             if (i < 4) {
-                List<String> prefix = new ArrayList<>();
-                List<String> suffix = new ArrayList<>();
-                int size = session.size();
+                List<String>[] s = getSideBar(i, session, score);
                 for (int j = i; j < 3; j++) {
-                    if (size <= j) {
-                        prefix.add("§7-,---");
-                        suffix.add("");
-                    } else {
-                        UUID ses = session.get(j);
-                        int sc = score.get(ses);
-                        if (sc == 0) {
-                            prefix.add("§7-,---");
-                            suffix.add("");
-                        } else {
-                            String[] x = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
-                            prefix.add(x[0]);
-                            suffix.add(x[1]);
-                        }
+                    for (Player p : world.getPlayers()) {
+                        Team t = p.getScoreboard().getTeam("§" + (j + 4) + "§f");
+                        t.setPrefix(s[0].get(j - i));
+                        t.setSuffix(s[1].get(j - i));
                     }
                 }
-                set1(i, world, prefix, suffix);
             }
         }
         finishedtask.put(uuid, Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
@@ -207,7 +183,7 @@ public class Core {
     public static void updateSidebar(String name, UUID uuid, List<UUID> session, Map<UUID, Integer> score, World world, boolean quit) {
 //        if (player.getName().equals("speedcubing"))
 //            new test().reset();
-        int x = session.indexOf(uuid);
+        int i = session.indexOf(uuid);
         if (quit) {
             if (MainTimer.containsKey(uuid))
                 Bukkit.getScheduler().cancelTask(MainTimer.get(uuid));
@@ -222,37 +198,42 @@ public class Core {
             session.add(uuid);
             score.put(uuid, 0);
         }
-        if (x != -1 && x < 3) {
-            List<String> prefix = new ArrayList<>();
-            List<String> suffix = new ArrayList<>();
-            int size = session.size();
-            for (int j = x; j < 3; j++) {
-                if (size <= j) {
-                    prefix.add("§7-,---");
-                    suffix.add("");
-                } else {
-                    UUID ses = session.get(j);
-                    int sc = score.get(ses);
-                    if (sc == 0) {
-                        prefix.add("§7-,---");
-                        suffix.add("");
-                    } else {
-                        String[] xx = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
-                        prefix.add(xx[0]);
-                        suffix.add(xx[1]);
-                    }
-                }
-            }
+        if (i != -1 && i < 3) {
+            List<String>[] s = getSideBar(i, session, score);
             for (Player p : world.getPlayers()) {
                 if (!p.getName().equals(name)) {
                     Scoreboard scoreboard = p.getScoreboard();
-                    for (int j = x; j < 3; j++) {
+                    for (int j = i; j < 3; j++) {
                         Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
-                        t.setPrefix(prefix.get(j - x));
-                        t.setSuffix(suffix.get(j - x));
+                        t.setPrefix(s[0].get(j - i));
+                        t.setSuffix(s[1].get(j - i));
                     }
                 }
             }
         }
+    }
+
+    public static List<String>[] getSideBar(int i, List<UUID> session, Map<UUID, Integer> score) {
+        List<String> prefix = new ArrayList<>();
+        List<String> suffix = new ArrayList<>();
+        int size = session.size();
+        for (int j = i; j < 3; j++) {
+            if (size <= j) {
+                prefix.add("§7-,---");
+                suffix.add("");
+            } else {
+                UUID ses = session.get(j);
+                int sc = score.get(ses);
+                if (sc == 0) {
+                    prefix.add("§7-,---");
+                    suffix.add("");
+                } else {
+                    String[] x = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
+                    prefix.add(x[0]);
+                    suffix.add(x[1]);
+                }
+            }
+        }
+        return new List[]{prefix, suffix};
     }
 }
