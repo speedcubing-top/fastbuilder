@@ -1,6 +1,5 @@
 package speedcubing.BukkitEventListener;
 
-import speedcubing.Member;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 import org.bukkit.GameMode;
@@ -69,7 +68,7 @@ public class InventoryClick implements Listener {
                         switch (e.getAction()) {
                             case PICKUP_ALL: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = Member.getMember(uuid).lang;
+                                int lang = User.getUser(uuid).lang;
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 1) {
@@ -87,7 +86,7 @@ public class InventoryClick implements Listener {
                             break;
                             case PICKUP_HALF: {
                                 UUID uuid = player.getUniqueId();
-                                int lang = Member.getMember(uuid).lang;
+                                int lang = User.getUser(uuid).lang;
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
                                 int x = Core.integerCache.get(uuid)[1];
                                 if (x != 20) {
@@ -110,7 +109,7 @@ public class InventoryClick implements Listener {
                         break;
                     case 15:
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player.getUniqueId()).lang]);
+                            player.openInventory(ItemStackList.ResetConfirm[User.getUser(player.getUniqueId()).lang]);
                         else if (player.getInventory().getItem(5) != null) {
                             UUID uuid = player.getUniqueId();
                             Integer[] center = Custom.Center.get(uuid);
@@ -135,26 +134,26 @@ public class InventoryClick implements Listener {
                         switch (player.getWorld().getName()) {
                             case "world":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_0_pb=0", "uuid='" + uuid + "'")).start();
-                                Core.updateSidebar(player.getName(), uuid, Long.session, Long.score, player.getWorld(),false);
+                                Core.updateSidebar(player.getName(), uuid, Long.session, Long.score, player.getWorld(), false);
                                 break;
                             case "Short":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_1_pb=0", "uuid='" + uuid + "'")).start();
-                                Core.updateSidebar(player.getName(), uuid, Short.session, Short.score, player.getWorld(),false);
+                                Core.updateSidebar(player.getName(), uuid, Short.session, Short.score, player.getWorld(), false);
                                 break;
                             case "Inclined":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_2_pb=0", "uuid='" + uuid + "'")).start();
-                                Core.updateSidebar(player.getName(), uuid, Inclined.session, Inclined.score, player.getWorld(),false);
+                                Core.updateSidebar(player.getName(), uuid, Inclined.session, Inclined.score, player.getWorld(), false);
                                 break;
                             case "Onestack":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_3_pb=0", "uuid='" + uuid + "'")).start();
-                                Core.updateSidebar(player.getName(), uuid, OneStack.session, OneStack.score, player.getWorld(),false);
+                                Core.updateSidebar(player.getName(), uuid, OneStack.session, OneStack.score, player.getWorld(), false);
                                 break;
                             case "Inclinedshort":
                                 new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_4_pb=0", "uuid='" + uuid + "'")).start();
-                                Core.updateSidebar(player.getName(), uuid, InclinedShort.session, InclinedShort.score, player.getWorld(),false);
+                                Core.updateSidebar(player.getName(), uuid, InclinedShort.session, InclinedShort.score, player.getWorld(), false);
                                 break;
                         }
-                        player.getScoreboard().getTeam(StringList.SideBar[Member.getMember(uuid).lang][9]).setSuffix("§7-,---");
+                        player.getScoreboard().getTeam(StringList.SideBar[User.getUser(uuid).lang][9]).setSuffix("§7-,---");
                         player.closeInventory();
                         break;
                     case 15:

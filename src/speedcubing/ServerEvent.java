@@ -9,6 +9,7 @@ import speedcubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
 import speedcubing.lib.utils.Console;
 import speedcubing.server.events.SocketEvent;
 import speedcubing.server.libs.GlobalString;
+import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 import speedcubing.spigot.Event.ServerEventHandler;
 import speedcubing.spigot.Event.events.PlayInChatEvent;
@@ -21,7 +22,7 @@ public class ServerEvent {
         if (rs[0].equals("online") && rs[1].equals("1")) {
             speedcubingServer.AllPlayers = Integer.parseInt(rs[2]);
             for (Player p : Bukkit.getOnlinePlayers()) {
-                int lang = Member.getMember(p.getUniqueId()).lang;
+                int lang = User.getUser(p.getUniqueId()).lang;
                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(OutPlayerListHeaderFooter.a(GlobalString.LobbyTabList[0][lang], GlobalString.LobbyTabList[1][lang].replace("%int%", rs[2])));
             }
         }
@@ -33,7 +34,7 @@ public class ServerEvent {
         if (message.charAt(0) != '/') {
             Player player = e.player;
             e.setCancelled(true);
-            String[] formats = speedcubingServer.getFormat(Member.getMember(player.getUniqueId()).rank);
+            String[] formats = speedcubingServer.getFormat(User.getUser(player.getUniqueId()).rank);
             String playerName = player.getName();
             BaseComponent[] empty = TextComponent.fromLegacyText("");
             BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
@@ -46,7 +47,7 @@ public class ServerEvent {
                 first[i].addExtra(second[i]);
                 first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
             }
-            Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[Member.getMember(a.getUniqueId()).lang]));
+            Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[User.getUser(a.getUniqueId()).lang]));
             Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
         }
     }
