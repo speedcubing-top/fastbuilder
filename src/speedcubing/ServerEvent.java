@@ -2,12 +2,9 @@ package speedcubing;
 
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import speedcubing.List.StringList;
-import speedcubing.lib.bukkit.packetwrapper.OutPlayerListHeaderFooter;
 import speedcubing.lib.utils.Console;
-import speedcubing.server.events.SocketEvent;
 import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
@@ -15,19 +12,6 @@ import speedcubing.spigot.Event.ServerEventHandler;
 import speedcubing.spigot.Event.events.PlayInChatEvent;
 
 public class ServerEvent {
-
-    @ServerEventHandler
-    public void SocketEvent(SocketEvent e) {
-        String[] rs = e.rs;
-        if (rs[0].equals("online") && rs[1].equals("1")) {
-            speedcubingServer.AllPlayers = Integer.parseInt(rs[2]);
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                User user = User.getUser(p.getUniqueId());
-                if (user != null)
-                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(OutPlayerListHeaderFooter.a(GlobalString.LobbyTabList[0][user.lang], GlobalString.LobbyTabList[1][user.lang].replace("%int%", rs[2])));
-            }
-        }
-    }
 
     @ServerEventHandler
     public void PlayInChatEvent(PlayInChatEvent e) {
