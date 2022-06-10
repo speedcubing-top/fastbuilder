@@ -67,7 +67,7 @@ public class Main extends JavaPlugin implements Listener {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                speedcubingServer.tcp.sendClean(25576 - Bukkit.getPort() % 2, "online||" + Bukkit.getOnlinePlayers().size());
+                speedcubingServer.tcp.sendClean(25576 - Bukkit.getPort() % 2, "online|2|" + Bukkit.getOnlinePlayers().size());
             }
         }, 0, 1000);
     }
