@@ -1,6 +1,7 @@
 package speedcubing;
 
 
+import speedcubing.server.speedcubingServer;
 import speedcubing.spigot.Event.ServerEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -14,6 +15,9 @@ import speedcubing.BukkitEventListener.*;
 import speedcubing.Core.Long;
 import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -60,6 +64,12 @@ public class Main extends JavaPlugin implements Listener {
         new Custom().Load();
         ServerEventManager.registerListeners(new ServerEvent());
         Bukkit.getPluginManager().registerEvents(this,this);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                speedcubingServer.tcp.sendClean(25576 - Bukkit.getPort() % 2, "online||" + Bukkit.getOnlinePlayers().size());
+            }
+        }, 0, 1000);
     }
 
 
