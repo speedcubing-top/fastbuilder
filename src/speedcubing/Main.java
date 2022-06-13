@@ -1,8 +1,6 @@
 package speedcubing;
 
 
-import speedcubing.server.speedcubingServer;
-import speedcubing.spigot.Event.ServerEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;
@@ -15,6 +13,8 @@ import speedcubing.BukkitEventListener.*;
 import speedcubing.Core.Long;
 import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
+import speedcubing.lib.event.LibEventManager;
+import speedcubing.server.speedcubingServer;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,7 +62,7 @@ public class Main extends JavaPlugin implements Listener {
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();
-        ServerEventManager.registerListeners(new ServerEvent());
+        LibEventManager.registerListeners(new ServerEvent());
         Bukkit.getPluginManager().registerEvents(this,this);
         new Timer().schedule(new TimerTask() {
             @Override

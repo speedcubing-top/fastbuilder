@@ -4,16 +4,16 @@ import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import speedcubing.List.StringList;
+import speedcubing.lib.event.LibEventHandler;
 import speedcubing.lib.utils.Console;
+import speedcubing.server.events.packet.PlayInChatEvent;
 import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
-import speedcubing.spigot.Event.ServerEventHandler;
-import speedcubing.spigot.Event.events.PlayInChatEvent;
 
 public class ServerEvent {
 
-    @ServerEventHandler
+    @LibEventHandler
     public void PlayInChatEvent(PlayInChatEvent e) {
         String message = e.packet.a();
         if (message.charAt(0) != '/') {
