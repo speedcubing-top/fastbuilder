@@ -4,9 +4,9 @@ import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import speedcubing.List.StringList;
-import speedcubing.lib.event.LibEventHandler;
+import speedcubing.lib.bukkit.event.PlayInChatEvent;
+import speedcubing.lib.eventbus.LibEventHandler;
 import speedcubing.lib.utils.Console;
-import speedcubing.server.events.packet.PlayInChatEvent;
 import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
@@ -18,7 +18,7 @@ public class ServerEvent {
         String message = e.packet.a();
         if (message.charAt(0) != '/') {
             Player player = e.player;
-            e.setCancelled(true);
+            e.isCancelled = true;
             String[] formats = speedcubingServer.getFormat(User.getUser(player.getUniqueId()).rank);
             String playerName = player.getName();
             BaseComponent[] empty = TextComponent.fromLegacyText("");

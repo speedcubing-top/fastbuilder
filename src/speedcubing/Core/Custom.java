@@ -1,11 +1,6 @@
 package speedcubing.Core;
 
 
-import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.lib.bukkit.SideBarAPI;
-import speedcubing.server.PluginMessage;
-import speedcubing.server.libs.User;
-import speedcubing.server.speedcubingServer;
 import net.minecraft.server.v1_8_R3.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
@@ -22,6 +17,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
+import speedcubing.lib.bukkit.BungeePluginMessage;
+import speedcubing.lib.bukkit.PlayerUtils;
+import speedcubing.lib.bukkit.SideBarAPI;
+import speedcubing.server.libs.User;
+import speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ public class Custom {
     public static void Finish(Player player, boolean pressure) {
         UUID uuid = player.getUniqueId();
         if (Core.times.get(uuid) == -1) {
-            PluginMessage.switchServer(player, "Lobby");
+            BungeePluginMessage .switchServer(player, "Lobby");
             return;
         }
         Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));

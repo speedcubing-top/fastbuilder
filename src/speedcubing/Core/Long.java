@@ -1,11 +1,6 @@
 package speedcubing.Core;
 
 
-import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.lib.bukkit.SideBarAPI;
-import speedcubing.server.PluginMessage;
-import speedcubing.server.libs.User;
-import speedcubing.server.speedcubingServer;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +15,12 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
+import speedcubing.lib.bukkit.BungeePluginMessage;
+import speedcubing.lib.bukkit.PlayerUtils;
+import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.replay.test;
+import speedcubing.server.libs.User;
+import speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
@@ -44,7 +44,7 @@ public class Long {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        PluginMessage.switchServer(player, "lobby");
+                        BungeePluginMessage.switchServer(player, "lobby");
                     }
                 }, 500);
             }

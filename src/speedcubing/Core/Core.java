@@ -1,11 +1,6 @@
 package speedcubing.Core;
 
 import com.mojang.authlib.properties.Property;
-import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.lib.bukkit.SideBarAPI;
-import speedcubing.server.PluginMessage;
-import speedcubing.server.libs.User;
-import speedcubing.server.speedcubingServer;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -23,7 +18,12 @@ import org.bukkit.scoreboard.Team;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
+import speedcubing.lib.bukkit.BungeePluginMessage;
+import speedcubing.lib.bukkit.PlayerUtils;
+import speedcubing.lib.bukkit.SideBarAPI;
 import speedcubing.replay.test;
+import speedcubing.server.libs.User;
+import speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
@@ -67,7 +67,7 @@ public class Core {
         UUID uuid = player.getUniqueId();
         int time = times.get(uuid);
         if (time < limit) {
-            PluginMessage.switchServer(player, "Lobby");
+            BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
         waiting.add(uuid);

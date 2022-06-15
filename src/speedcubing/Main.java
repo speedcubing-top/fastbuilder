@@ -13,7 +13,7 @@ import speedcubing.BukkitEventListener.*;
 import speedcubing.Core.Long;
 import speedcubing.Core.*;
 import speedcubing.List.ItemStackList;
-import speedcubing.lib.event.LibEventManager;
+import speedcubing.lib.eventbus.LibEventManager;
 import speedcubing.server.speedcubingServer;
 
 import java.util.Timer;

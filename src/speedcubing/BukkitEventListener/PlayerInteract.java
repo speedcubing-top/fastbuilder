@@ -1,6 +1,6 @@
 package speedcubing.BukkitEventListener;
 
-import speedcubing.lib.bukkit.ItemBuilder;
+import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.*;
 import org.bukkit.block.Block;
