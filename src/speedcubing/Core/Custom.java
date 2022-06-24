@@ -17,6 +17,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
+import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBarAPI;
@@ -44,41 +45,39 @@ public class Custom {
 
     public static void Finish(Player player, boolean pressure) {
         UUID uuid = player.getUniqueId();
-        if (Core.times.get(uuid) == -1) {
-            BungeePluginMessage .switchServer(player, "Lobby");
+        Member member = Member.getMember(uuid);
+        if (member.times == -1) {
+            BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
-        Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
+        Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
-        int lang = User.getUser(uuid).lang;
-        player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(Core.times.get(uuid)));
+        int lang = member.user.lang;
+        player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(member.times));
 
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", Core.tickToTime(Core.times.get(uuid))))));
+        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", Core.tickToTime(member.times)))));
 
-        Core.times.put(uuid, -1);
+        member.times = -1;
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         if (pressure) {
-            Core.waiting.add(uuid);
-            Core.finishedtask.put(uuid, Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
-                if (Core.PlayerCoord.containsKey(uuid)) {
-                    Core.clear(uuid,world);
-                    Core.Blocks.get(uuid).clear();
-                    PlayerUtils.teleport(connection, -0.5, 100, Core.PlayerCoord.get(uuid) + 0.5, 270, 0);
-                    Core.waiting.remove(uuid);
+            member.waiting = true;
+            member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
+                if (Member.getMember(uuid) != null) {
+                    member.clear(world);
+                    PlayerUtils.teleport(connection, -0.5, 100, member.PlayerCoord + 0.5, 270, 0);
+                    member.waiting = false;
                     Inventory inventory = player.getInventory();
                     inventory.setItem(5, ItemStackList.Length[lang]);
                     inventory.setItem(6, ItemStackList.Height[lang]);
                 }
-            }, 40));
+            }, 40);
         } else {
-            Core.clear(uuid,world);
-            Core.Blocks.get(uuid).clear();
+            member.clear(world);
             finishedOnce.add(uuid);
             Integer[] center = Center.get(uuid);
             Integer[] Settings = LengthSettings.get(uuid);
-            int coord = Core.PlayerCoord.get(uuid);
 
             hits.get(uuid).clear();
             if (Settings[1] + center[1] + 99 > 255) {
@@ -88,18 +87,18 @@ public class Custom {
             for (int X = -2; X <= 2; X++) {
                 for (int Y = 97; Y <= 99; Y++) {
                     for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                        world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
                     }
                 }
             }
             for (int X = -2; X <= 2; X++) {
                 for (int Y = 100; Y >= 97; Y--) {
                     for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, coord + Z).setType(Material.AIR);
+                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                     }
                 }
             }
-            AddBB(5 + Settings[0] + center[0], Settings[1] + center[1], coord, uuid);
+            AddBB(5 + Settings[0] + center[0], Settings[1] + center[1], member.PlayerCoord, uuid);
             Center.put(uuid, new Integer[]{5 + Settings[0] + center[0], Settings[1] + center[1]});
         }
     }
@@ -120,6 +119,7 @@ public class Custom {
         rooms[room] = false;
         used += 1;
         UUID uuid = player.getUniqueId();
+        Member member = Member.getMember(uuid);
         int coord = 250 * (room * (int) Math.pow(-1, room + 1) + room % 2);
         World world = Bukkit.getWorld("Custom");
         for (int x = -2; x <= 2; x++) {
@@ -129,17 +129,17 @@ public class Custom {
                 }
             }
         }
-        int lang = User.getUser(uuid).lang;
+        int lang = member.user.lang;
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
-        inventory.setItem(0, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
+        inventory.setItem(0, ItemStackList.Blocks[member.integerCache[0]][lang]);
         inventory.setItem(1, ItemStackList.pickaxe[lang]);
         inventory.setItem(7, ItemStackList.Settings[lang]);
         inventory.setItem(8, ItemStackList.navigator[lang]);
         inventory.setItem(5, ItemStackList.Length[lang]);
         inventory.setItem(6, ItemStackList.Height[lang]);
         inventory.setHeldItemSlot(0);
-        Core.times.put(uuid, -1);
+        member.times = -1;
         Blockplaced.put(uuid, 0);
         hits.put(uuid, new HashSet<>());
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -174,7 +174,7 @@ public class Custom {
                     }
                 }
                 player.teleport(new Location(world, -0.5, 100, coord + 0.5, 270, 0));
-                Core.PlayerCoord.put(uuid, coord);
+                member.PlayerCoord = coord;
                 AddBB(5 + Settings[0], Settings[1], coord, uuid);
             });
         }).start();
@@ -183,11 +183,11 @@ public class Custom {
 
     public static void Quit(Player player) {
         UUID uuid = player.getUniqueId();
-        if (Core.MainTimer.containsKey(uuid))
-            Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
+        Member member = Member.getMember(uuid);
+        if (member.MainTimer != -1)
+            Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
-        Core.clear(uuid,world);
-        int coord = Core.PlayerCoord.get(uuid);
+        member.clear(world);
         Integer[] center = Center.get(uuid);
         Integer[] Settings = LengthSettings.get(uuid);
         boolean f = finishedOnce.contains(uuid);
@@ -195,8 +195,8 @@ public class Custom {
             for (int Y = 100; Y >= 97; Y--) {
                 for (int Z = -2; Z <= 2; Z++) {
                     if (f)
-                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, coord + Z).setType(Material.AIR);
-                    world.getBlockAt(center[0] + X, center[1] + Y, coord + Z).setType(Material.AIR);
+                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                    world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                 }
             }
         }
@@ -204,13 +204,12 @@ public class Custom {
             for (int X = -2; X <= 2; X++) {
                 for (int Y = 97; Y <= 99; Y++) {
                     for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(X, Y, coord + Z).setType(Material.AIR);
+                        world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(Material.AIR);
                     }
                 }
             }
-        Core.Blocks.get(uuid).clear();
-        Core.times.put(uuid, -1);
-        Core.waiting.remove(uuid);
+        member.times = -1;
+        member.waiting = false;
         new Thread(() -> {
             Integer[] i = LengthSettings.get(uuid);
             speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "uuid='" + uuid + "'");
@@ -221,48 +220,45 @@ public class Custom {
         finishedOnce.remove(uuid);
         hits.remove(uuid);
         used -= 1;
-        rooms[coordToRoom(Core.PlayerCoord.get(uuid))] = true;
+        rooms[coordToRoom(member.PlayerCoord)] = true;
     }
 
     public static void validPlaceBlock(Player player, BlockPosition b) {
         UUID uuid = player.getUniqueId();
-        int lang = User.getUser(uuid).lang;
+        Member member = Member.getMember(uuid);
+        int lang = member.user.lang;
         Inventory inventory = player.getInventory();
-        if (Core.times.get(uuid) == -1) {
-            Core.times.put(uuid, 0);
-            Core.MainTimer.put(uuid, Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                int up = Core.times.get(uuid) + 1;
-                Core.times.put(uuid, up);
-                player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(up));
-            }, 0, 1));
+        if (member.times == -1) {
+            member.times = 0;
+            member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
+                member.times += 1;
+                player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(member.times));
+            }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
         }
-        Core.Blocks.get(uuid).add(b);
+        member.Blocks.add(b);
         Blockplaced.put(uuid, Blockplaced.get(uuid) + 1);
         if (Blockplaced.get(uuid) > 32) {
             Blockplaced.put(uuid, 0);
-            inventory.setItem(0, ItemStackList.Blocks[Core.integerCache.get(uuid)[0]][lang]);
+            inventory.setItem(0, ItemStackList.Blocks[member.integerCache[0]][lang]);
         }
     }
 
     public static void Fell(Player player) {
         UUID uuid = player.getUniqueId();
+        Member member = Member.getMember(uuid);
         World world = player.getWorld();
-        Core.clear(uuid,world);
-        Core.Blocks.get(uuid).clear();
-        int coord = Core.PlayerCoord.get(uuid);
+        member.clear(world);
         Inventory inventory = player.getInventory();
-        int lang = User.getUser(uuid).lang;
-        inventory.setItem(5, ItemStackList.Length[lang]);
-        inventory.setItem(6, ItemStackList.Height[lang]);
-        if (Core.waiting.contains(uuid)) {
-            Bukkit.getScheduler().cancelTask(Core.finishedtask.get(uuid));
-            Core.waiting.remove(uuid);
+        inventory.setItem(5, ItemStackList.Length[member.user.lang]);
+        inventory.setItem(6, ItemStackList.Height[member.user.lang]);
+        if (member.waiting) {
+            Bukkit.getScheduler().cancelTask(member.finishedtask);
+            member.waiting = false;
         } else {
-            if (Core.MainTimer.containsKey(uuid))
-                Bukkit.getScheduler().cancelTask(Core.MainTimer.get(uuid));
-            Core.times.put(uuid, -1);
+            Bukkit.getScheduler().cancelTask(member.MainTimer);
+            member.times = -1;
             if (finishedOnce.contains(uuid)) {
 
                 Integer[] center = Center.get(uuid);
@@ -271,9 +267,9 @@ public class Custom {
                     for (int Y = 100; Y >= 97; Y--) {
                         for (int Z = -2; Z <= 2; Z++) {
                             if (Y != 100)
-                                world.getBlockAt(X, Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
-                            world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], coord + Z).setType(Material.AIR);
-                            world.getBlockAt(center[0] + X, center[1] + Y, coord + Z).setType(Material.AIR);
+                                world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                            world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z).setType(Material.AIR);
+                            world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                         }
                     }
                 }
@@ -283,11 +279,11 @@ public class Custom {
                     for (int X = -2; X <= 2; X++) {
                         for (int Y = 97; Y <= 100; Y++) {
                             for (int Z = -2; Z <= 2; Z++) {
-                                world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
                             }
                         }
                     }
-                    AddBB(5 + Settings[0], Settings[1], coord, uuid);
+                    AddBB(5 + Settings[0], Settings[1], member.PlayerCoord, uuid);
                     Center.put(uuid, new Integer[]{5 + Settings[0], Settings[1]});
                 }
 
@@ -295,7 +291,7 @@ public class Custom {
         }
         player.closeInventory();
         player.getInventory().setHeldItemSlot(0);
-        PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, -0.5, 100, coord + 0.5, 270, 0);
+        PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, -0.5, 100, member.PlayerCoord + 0.5, 270, 0);
     }
 
     public static int coordToRoom(int z) {

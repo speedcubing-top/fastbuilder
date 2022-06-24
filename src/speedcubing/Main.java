@@ -10,8 +10,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import speedcubing.BukkitCommands.stats;
 import speedcubing.BukkitEventListener.*;
-import speedcubing.Core.Long;
+import speedcubing.Core.timed.*;
 import speedcubing.Core.*;
+import speedcubing.Core.timed.Long;
+import speedcubing.Core.timed.Short;
 import speedcubing.List.ItemStackList;
 import speedcubing.lib.eventbus.LibEventManager;
 import speedcubing.server.speedcubingServer;
@@ -20,6 +22,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends JavaPlugin implements Listener {
+    public static TimedMode Long;
+    public static TimedMode Short;
+    public static TimedMode Inclined;
+    public static TimedMode OneStack;
+    public static TimedMode InclinedShort;
 
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new FoodLevelChange(), this);
@@ -54,11 +61,11 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getWorld("world").setTime(6000);
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
-        new Long().Load();
-        new speedcubing.Core.Short().Load();
-        new Inclined().Load();
-        new OneStack().Load();
-        new InclinedShort().Load();
+        Long = new Long();
+        Short = new Short();
+        Inclined = new Inclined();
+        OneStack = new OneStack();
+        InclinedShort = new InclinedShort();
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();

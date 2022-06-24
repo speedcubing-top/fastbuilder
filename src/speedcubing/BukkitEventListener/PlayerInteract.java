@@ -1,6 +1,5 @@
 package speedcubing.BukkitEventListener;
 
-import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -10,11 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import speedcubing.Core.Long;
-import speedcubing.Core.Short;
-import speedcubing.Core.*;
+import speedcubing.Core.Core;
+import speedcubing.Core.Custom;
+import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
+import speedcubing.Member;
+import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.server.libs.User;
 
 import java.util.UUID;
@@ -24,32 +25,16 @@ public class PlayerInteract implements Listener {
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (Core.waiting.contains(uuid))
+        Member member = Member.getMember(uuid);
+        if (member.waiting)
             return;
         if (player.getGameMode() == GameMode.SURVIVAL) {
             if (e.getAction() == Action.PHYSICAL) {
                 if (e.getClickedBlock().getType() == Material.GOLD_PLATE) {
-                    String name = player.getWorld().getName();
-                    switch (name) {
-                        case "world":
-                            Core.finish(name, 0, false, player, Long.session, Long.score, 146);
-                            break;
-                        case "Short":
-                            Core.finish(name, 1, false, player, Short.session, Short.score, 76);
-                            break;
-                        case "Onestack":
-                            Core.finish(name, 2, false, player, OneStack.session, OneStack.score, 220);
-                            break;
-                        case "Inclined":
-                            Core.finish(name, 3, true, player, Inclined.session, Inclined.score, 110);
-                            break;
-                        case "Inclinedshort":
-                            Core.finish(name, 4, true, player, InclinedShort.session, InclinedShort.score, 40);
-                            break;
-                        case "Custom":
-                            Custom.Finish(player, true);
-                            break;
-                    }
+                    if (player.getWorld().getName().equals("Custom"))
+                        Custom.Finish(player, true);
+                    else
+                        member.finish(false, player);
                 }
             } else {
                 Action action = e.getAction();
@@ -58,9 +43,9 @@ public class PlayerInteract implements Listener {
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
                             BlockPosition position = new BlockPosition(b.getX(), b.getY(), b.getZ());
-                            if (Core.Blocks.get(uuid).contains(position)) {
+                            if (member.Blocks.contains(position)) {
                                 b.setType(Material.AIR);
-                                Core.Blocks.get(uuid).remove(position);
+                                member.Blocks.remove(position);
                             }
                         }
                         break;
@@ -68,7 +53,7 @@ public class PlayerInteract implements Listener {
                         int lang = User.getUser(player.getUniqueId()).lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
                         String[] hit = StringList.FallDelayLore[lang];
-                        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(Core.integerCache.get(player.getUniqueId())[1])), hit[3], hit[4], hit[5]).build());
+                        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(member.integerCache[1])), hit[3], hit[4], hit[5]).build());
                         inventory.setItem(13, ItemStackList.openkit[lang]);
                         if (!player.getWorld().getName().equals("Custom"))
                             inventory.setItem(15, ItemStackList.Reset[lang]);
@@ -90,23 +75,8 @@ public class PlayerInteract implements Listener {
                                 new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4][lang]),
                                 new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5][lang])
                         };
-                        switch (player.getWorld().getName()) {
-                            case "world":
-                                builders[0].glow();
-                                break;
-                            case "Short":
-                                builders[1].glow();
-                                break;
-                            case "Onestack":
-                                builders[2].glow();
-                                break;
-                            case "Inclined":
-                                builders[3].glow();
-                                break;
-                            case "Inclinedshort":
-                                builders[4].glow();
-                                break;
-                        }
+                        if (!player.getWorld().getName().equals("Custom"))
+                            builders[Core.getInstance(player.getWorld().getName()).sqlId].glow();
                         inventory.setItem(10, builders[0].build());
                         inventory.setItem(11, builders[1].build());
                         inventory.setItem(12, builders[2].build());
@@ -132,7 +102,7 @@ public class PlayerInteract implements Listener {
     public void EditLength(boolean horizontal, int i, Player player, UUID uuid) {
         Integer[] center = Custom.Center.get(uuid);
         Integer[] settings = Custom.LengthSettings.get(uuid);
-        int coord = Core.PlayerCoord.get(uuid);
+        int coord = Member.getMember(uuid).PlayerCoord;
         World world = Bukkit.getWorld("Custom");
         boolean c = true;
         boolean UnLoop = Custom.hits.get(uuid).isEmpty();

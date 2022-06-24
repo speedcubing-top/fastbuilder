@@ -8,7 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import speedcubing.Core.Core;
-import speedcubing.Core.Long;
+import speedcubing.Core.timed.Long;
+import speedcubing.Main;
+import speedcubing.Member;
 import speedcubing.server.listeners.PlayerJoin;
 import speedcubing.server.speedcubingServer;
 
@@ -21,21 +23,17 @@ public class PlayerQuit implements Listener {
         UUID uuid = player.getUniqueId();
         if (PlayerJoin.JoinPackets.containsKey(uuid)) {
             if (player.getWorld().getName().equals("world"))
-                Long.Quit(player);
+                Main.Long.Quit(player);
             else player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 1000, 0.5, 0, 0));
+            Member member = Member.getMember(uuid);
             new Thread(() -> {
-                Integer[] x = Core.integerCache.get(uuid);
+                int[] x = member.integerCache;
                 speedcubingServer.connection.update("playersdata",
                         "fastbuild_blockskin=" + x[0] +
                                 ",fastbuild_falldelay=" + x[1]
                         , "uuid='" + uuid + "'");
-                Core.integerCache.remove(uuid);
             }).start();
-            Core.Blocks.remove(uuid);
-            Core.MainTimer.remove(uuid);
-            Core.finishedtask.remove(uuid);
-            Core.PlayerCoord.remove(uuid);
-            Core.times.remove(uuid);
+            Member.users.remove(uuid);
         }
     }
 }

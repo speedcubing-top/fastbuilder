@@ -1,5 +1,6 @@
 package speedcubing.Core;
 
+import speedcubing.Member;
 import speedcubing.lib.bukkit.inventory.ItemUtils;
 import speedcubing.server.libs.GlobalString;
 import org.bukkit.Bukkit;
@@ -34,8 +35,8 @@ public class BlockEditor {
 
     public static void createMainPage(Player player) {
         player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
-        UUID uuid = player.getUniqueId();
-        int lang = User.getUser(uuid).lang;
+        Member member = Member.getMember(player.getUniqueId());
+        int lang = member.user.lang;
         Inventory inv = Bukkit.createInventory(BlockHolder, 27, ItemStackList.blockedit[lang]);
         for (int i = 0; i < ItemStackList.categoryblockeditor.length; i++) {
             inv.setItem(i + 1, ItemStackList.categoryblockeditor[i][lang]);
@@ -43,8 +44,7 @@ public class BlockEditor {
         for (int i = 0; i < ItemStackList.blockeditor.length; i++) {
             inv.setItem(i + 12, ItemStackList.blockeditor[i][lang]);
         }
-        int x = Core.integerCache.get(uuid)[0];
-        int index = x - length;
+        int index = member.integerCache[0] - length;
         if (index >= 0)
             inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.blockeditor[index][lang].clone(), GlobalString.selected[lang])));
         player.openInventory(inv);
@@ -57,7 +57,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + length - 12;
                 UUID uuid = player.getUniqueId();
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 int lang = User.getUser(uuid).lang;
                 ItemStack stack = ItemStackList.Blocks[x][lang];
@@ -78,7 +78,7 @@ public class BlockEditor {
                         for (int i = 3; i < 6; i++) {
                             inv.setItem(i + 11, ItemStackList.sandstoneeditor[i][lang]);
                         }
-                        int set = Core.integerCache.get(uuid)[0];
+                        int set = Member.getMember(uuid).integerCache[0];
                         if (set < 6)
                             inv.setItem((set < 3) ? set + 10 : set + 11, ItemUtils.glow(ItemUtils.setLore(ItemStackList.sandstoneeditor[set][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
@@ -92,9 +92,9 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.wooleditor.length; i++) {
                             inv.setItem(i, ItemStackList.wooleditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - ItemStackList.sandstoneeditor.length;
+                        int index =Member.getMember(uuid).integerCache[0] - ItemStackList.sandstoneeditor.length;
                         if (index < ItemStackList.wooleditor.length && index >= 0)
-                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.wooleditor[index][lang].clone(),GlobalString.selected[lang])));
+                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.wooleditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -106,7 +106,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.oreblockeditor.length; i++) {
                             inv.setItem(i + 10, ItemStackList.oreblockeditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length);
+                        int index = Member.getMember(uuid).integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length);
                         if (index < ItemStackList.oreblockeditor.length && index >= 0)
                             inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreblockeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
@@ -120,9 +120,9 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.oreeditor.length; i++) {
                             inv.setItem(i + 10, ItemStackList.oreeditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length);
+                        int index = Member.getMember(uuid).integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length);
                         if (index < ItemStackList.oreeditor.length && index >= 0)
-                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreeditor[index][lang].clone(),GlobalString.selected[lang])));
+                            inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -134,9 +134,9 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.quartzeditor.length; i++) {
                             inv.setItem(i + 12, ItemStackList.quartzeditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length);
+                        int index = Member.getMember(uuid).integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length);
                         if (index < ItemStackList.quartzeditor.length && index >= 0)
-                            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.quartzeditor[index][lang].clone(),GlobalString.selected[lang])));
+                            inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.quartzeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
                     }
                     break;
@@ -157,7 +157,7 @@ public class BlockEditor {
                         for (int i = 9; i < 12; i++) {
                             inv.setItem(i + 5, ItemStackList.woodeditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length);
+                        int index = Member.getMember(uuid).integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length);
                         if (index < ItemStackList.woodeditor.length && index >= 0)
                             inv.setItem((index < 3 ? index + 1 : (index < 6 ? index + 2 : (index < 9 ? index + 4 : index + 5))), ItemUtils.glow(ItemUtils.setLore(ItemStackList.woodeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
@@ -171,7 +171,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.clayeditor.length; i++) {
                             inv.setItem(i, ItemStackList.clayeditor[i][lang]);
                         }
-                        int index = Core.integerCache.get(uuid)[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length);
+                        int index = Member.getMember(uuid).integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length);
                         if (index < ItemStackList.clayeditor.length && index >= 0)
                             inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.clayeditor[index][lang].clone(), GlobalString.selected[lang])));
                         player.openInventory(inv);
@@ -186,7 +186,7 @@ public class BlockEditor {
                 int x = RawSlot > 12 ? RawSlot - 11 : RawSlot - 10;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -200,7 +200,7 @@ public class BlockEditor {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -214,7 +214,7 @@ public class BlockEditor {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length - 10;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -228,7 +228,7 @@ public class BlockEditor {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length - 10;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -242,7 +242,7 @@ public class BlockEditor {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length - 12;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -256,7 +256,7 @@ public class BlockEditor {
                 int x = (RawSlot < 4 ? RawSlot - 1 : (RawSlot < 8 ? RawSlot - 2 : (RawSlot < 13 ? RawSlot - 4 : RawSlot - 5))) + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);
@@ -270,7 +270,7 @@ public class BlockEditor {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length;
                 UUID uuid = player.getUniqueId();
                 int lang = User.getUser(uuid).lang;
-                Core.integerCache.get(uuid)[0] = x;
+                Member.getMember(uuid).integerCache[0] = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][lang];
                 player.getInventory().setItem(0, stack);

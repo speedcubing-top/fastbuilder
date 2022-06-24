@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import speedcubing.Core.Core;
 import speedcubing.Core.Custom;
 import speedcubing.Main;
+import speedcubing.Member;
 
 public class BlockPlace implements Listener {
     @EventHandler
@@ -19,7 +20,8 @@ public class BlockPlace implements Listener {
         Block block = e.getBlock();
         Player player = e.getPlayer();
         if (player.getGameMode() == GameMode.SURVIVAL) {
-            if (Core.waiting.contains(player.getUniqueId()) || block.getType().equals(Material.REDSTONE_COMPARATOR_OFF)) {
+            Member member = Member.getMember(player.getUniqueId());
+            if (member.waiting || block.getType().equals(Material.REDSTONE_COMPARATOR_OFF)) {
                 e.setCancelled(true);
                 return;
             }
@@ -28,37 +30,37 @@ public class BlockPlace implements Listener {
             int z = block.getZ();
             switch (player.getWorld().getName()) {
                 case "world":
-                    if (x < 3 || x > 57 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (x < 3 || x > 57 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
-                    } else e.setCancelled(Core.validPlaceBlock(player, new BlockPosition(x, y, z)));
+                    } else e.setCancelled(member.validPlaceBlock(player, new BlockPosition(x, y, z)));
                     break;
                 case "Short":
-                    if (x < 3 || x > 34 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (x < 3 || x > 34 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
-                    } else e.setCancelled(Core.validPlaceBlock(player, new BlockPosition(x, y, z)));
+                    } else e.setCancelled(member.validPlaceBlock(player, new BlockPosition(x, y, z)));
                     break;
                 case "Inclined":
-                    if (Math.abs(x + z - 2 * Core.PlayerCoord.get(player.getUniqueId())) > 10 || x - z < 1 || x - z > 58 || y < 92) {
+                    if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
-                    } else e.setCancelled(Core.validPlaceBlock(player, new BlockPosition(x, y, z)));
+                    } else e.setCancelled(member.validPlaceBlock(player, new BlockPosition(x, y, z)));
                     break;
                 case "Onestack":
-                    if (x < 3 || x > 33 || Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (x < 3 || x > 33 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
-                    } else e.setCancelled(Core.validPlaceBlock(player, new BlockPosition(x, y, z)));
+                    } else e.setCancelled(member.validPlaceBlock(player, new BlockPosition(x, y, z)));
                     break;
                 case "Inclinedshort":
-                    if (Math.abs(x + z - 2 * Core.PlayerCoord.get(player.getUniqueId())) > 10 || x - z < 1 || x - z > 38 || y < 92) {
+                    if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
-                    } else e.setCancelled(Core.validPlaceBlock(player, new BlockPosition(x, y, z)));
+                    } else e.setCancelled(member.validPlaceBlock(player, new BlockPosition(x, y, z)));
                     break;
                 case "Custom":
-                    if (Math.abs(z - Core.PlayerCoord.get(player.getUniqueId())) > 6 || y < 92) {
+                    if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                         e.setCancelled(true);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.sendBlockChange(block.getLocation(), Material.AIR, (byte) 0), 10);
                     } else Custom.validPlaceBlock(player, new BlockPosition(x, y, z));
