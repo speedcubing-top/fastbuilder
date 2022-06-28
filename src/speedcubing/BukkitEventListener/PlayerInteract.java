@@ -15,6 +15,7 @@ import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Member;
+import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.server.libs.User;
 
@@ -34,7 +35,7 @@ public class PlayerInteract implements Listener {
                     if (player.getWorld().getName().equals("Custom"))
                         Custom.Finish(player, true);
                     else
-                        member.finish(false, player);
+                        member.finish(player);
                 }
             } else {
                 Action action = e.getAction();
@@ -145,7 +146,7 @@ public class PlayerInteract implements Listener {
             int lang = User.getUser(uuid).lang;
             player.updateInventory();
             player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[lang] : ItemStackList.Height[lang]);
-            player.getScoreboard().getTeam(StringList.CustomSideBar[lang][horizontal ? 7 : 4]).setSuffix(Integer.toString(settings[horizontal ? 0 : 1] + i));
+            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
             Custom.LengthSettings.get(uuid)[horizontal ? 0 : 1] += i;
             center[horizontal ? 0 : 1] += i;
             if (!UnLoop) Custom.AddBB(center[0], center[1], coord, uuid);

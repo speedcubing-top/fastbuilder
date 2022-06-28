@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import speedcubing.replay.test;
+import speedcubing.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
 public class stats implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-//        commandSender.sendMessage("currently unavailable to use.");
-//        if (commandSender.getName().equals("oEthereum")) {
-//            if (strings.length == 0)
-//                new test().init((Player) commandSender);
-//            else
-//                new test().start((Player) commandSender);
-//        }
+        commandSender.sendMessage("currently unavailable to use.");
+        if (commandSender.getName().equals("speedcubing")) {
+            if (strings.length == 0)
+                Member.getMember(((Player)commandSender).getUniqueId()).replay.spawnReplay((Player) commandSender);
+            else
+                Member.getMember(((Player)commandSender).getUniqueId()).replay.start();
+        }
 //        if (User.getRank(((Player) commandSender).getUniqueId()).equals("owner")) {
 //            String player;
 //            if (strings.length == 0)

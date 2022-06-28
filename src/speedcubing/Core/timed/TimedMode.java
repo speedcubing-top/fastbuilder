@@ -8,18 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import speedcubing.Core.Core;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.lib.bukkit.SideBarAPI;
-import speedcubing.server.libs.User;
+import speedcubing.lib.bukkit.SideBar;
+import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
 
 import java.util.*;
@@ -70,54 +66,39 @@ public class TimedMode {
         used += 1;
         UUID uuid = player.getUniqueId();
         Member member = Member.getMember(uuid);
+        member.replay = new Replay(world, player);
         int coord = roomToCoord(room);
         player.teleport(new Location(world, (inclined ? coord : 0) + 0.5, 100, coord + 0.5, inclined ? 225 : 270, 0));
         member.PlayerCoord = coord;
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         int lang = member.user.lang;
         String[] sidebar = StringList.SideBar[lang];
-        objective.setDisplayName(sidebar[13]);
         int a = speedcubingServer.connection.selectInt("playersdata", "fb_" + sqlId + "_pb", "uuid='" + uuid + "'");
-        SideBarAPI.sidebarTeams(scoreboard, new String[][]{
-                {sidebar[12]},
-                {sidebar[11]},
-                {sidebar[10]},
-                {"", sidebar[9], a == 0 ? "§7-,---" : Core.msToTime(a)},
-                {sidebar[8]},
-                {sidebar[7]},
-                {"", sidebar[6], ""},
-                {"", sidebar[5], ""},
-                {"", sidebar[4], ""},
-                {sidebar[3]},
-                {sidebar[2]},
-                {"", sidebar[1], "§7-,---"},
-                {sidebar[0]},
-        }, new int[]{12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
+        SideBar sideBar = new SideBar(player, sidebar[0])
+                .staticLine(sidebar[1], 12)
+                .staticLine(sidebar[2], 11)
+                .staticLine(sidebar[3], 10)
+                .changeableLine(sidebar[4] + (a == 0 ? "§7-,---" : Core.msToTime(a)), 9)
+                .staticLine(sidebar[5], 8)
+                .staticLine(sidebar[6], 7);
         int size = session.size();
         for (int j = 0; j < 3; j++) {
-            String prefix, suffix;
-            if (size <= j) {
-                prefix = "§7-,---";
-                suffix = "";
-            } else {
+            String result;
+            if (size <= j)
+                result = "§7-,---";
+            else {
                 UUID ses = session.get(j);
                 int sc = score.get(ses);
-                if (sc == 0) {
-                    prefix = "§7-,---";
-                    suffix = "";
-                } else {
-                    String[] xx = SideBarAPI.prefixSuffixSplit(speedcubingServer.getFormat(Member.getMember(ses).user.rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc));
-                    prefix = xx[0];
-                    suffix = xx[1];
-                }
+                if (sc == 0)
+                    result = "§7-,---";
+                else
+                    result = speedcubingServer.getFormat(Member.getMember(ses).user.rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc);
             }
-            Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
-            t.setPrefix(prefix);
-            t.setSuffix(suffix);
+            sideBar.changeableLine(result, 6 - j);
         }
-        player.setScoreboard(scoreboard);
+        sideBar.staticLine(sidebar[7], 3)
+                .staticLine(sidebar[8], 2)
+                .changeableLine(sidebar[9] + "§7-,---", 1)
+                .staticLine(sidebar[10], 0).create();
         PlayerInventory inventory = player.getInventory();
         ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][lang];
         inventory.clear();
@@ -165,7 +146,7 @@ public class TimedMode {
             }
             player.closeInventory();
         }
-        PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, (inclined ? member.PlayerCoord : 0) + 0.5, 100, member.PlayerCoord + 0.5, inclined ? 225 : 270, 0);
+        player.teleport(new Location(player.getWorld(), (inclined ? member.PlayerCoord : 0) + 0.5, 100, member.PlayerCoord + 0.5, inclined ? 225 : 270, 0));
     }
 
 

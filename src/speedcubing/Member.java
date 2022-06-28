@@ -1,28 +1,22 @@
 package speedcubing;
 
-import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
-import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import speedcubing.Core.Core;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.replay.test;
+import speedcubing.lib.bukkit.SideBar;
+import speedcubing.replay.Replay;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
@@ -46,6 +40,7 @@ public class Member {
     public Set<BlockPosition> Blocks = new HashSet<>();
     public int PlayerCoord;
     public UUID uuid;
+    public Replay replay;
 
     public Member(UUID uuid) {
         this.user = User.getUser(uuid);
@@ -61,7 +56,7 @@ public class Member {
         Blocks.clear();
     }
 
-    public void finish(boolean inclined, Player player) {
+    public void finish(Player player) {
         TimedMode mode = Core.getInstance(player.getWorld().getName());
         int time = times;
         if (time < mode.limit) {
@@ -79,7 +74,7 @@ public class Member {
             if (last == 0 || last > msrecord) {
                 speedcubingServer.connection.insert("fastbuilder", "uuid,at,score,mode", "'" + uuid + "'," + timeMillis + "," + msrecord + "," + mode.sqlId);
                 speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "uuid='" + uuid + "'");
-                player.getScoreboard().getTeam(StringList.SideBar[lang][9]).setSuffix(display);
+                SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
             }
         }).start();
         times = -1;
@@ -98,12 +93,10 @@ public class Member {
             }
             mode.score.put(uuid, time);
             if (i < 4) {
-                List<String>[] s = Core.getSideBar(i, mode.session, mode.score);
+                List<String> s = Core.getSideBar(i, mode.session, mode.score);
                 for (int j = i; j < 3; j++) {
                     for (Player p : mode.world.getPlayers()) {
-                        Team t = p.getScoreboard().getTeam("§" + (j + 4) + "§f");
-                        t.setPrefix(s[0].get(j - i));
-                        t.setSuffix(s[1].get(j - i));
+                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
                     }
                 }
             }
@@ -111,10 +104,10 @@ public class Member {
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(mode.world);
-                if (inclined)
-                    PlayerUtils.teleport(connection, PlayerCoord + 0.5, 100, PlayerCoord + 0.5, 225, 0);
+                if (mode.inclined)
+                    player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, PlayerCoord + 0.5, 225, 0));
                 else
-                    PlayerUtils.teleport(connection, 0.5, 100, PlayerCoord + 0.5, 270, 0);
+                    player.teleport(new Location(player.getWorld(), 0.5, 100, PlayerCoord + 0.5, 270, 0));
                 waiting = false;
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[integerCache[0]][lang];
@@ -129,26 +122,22 @@ public class Member {
         if (times == -1) {
             if (b.getY() > 100)
                 return true;
-            if (player.getName().equals("speedcubing") && player.getWorld().getName().equals("world")) {
-                new test().reset();
-                Property profile = ((CraftPlayer) player).getProfile().getProperties().get("textures").iterator().next();
-                test.StartSkin = new String[]{profile.getValue()};
-                test.StartLocation = player.getLocation();
-                test.BlockTicks.add(0);
-                test.BlockActions.add(b);
-            }
+            replay.reset();
+            replay.StartLocation = player.getLocation();
+            replay.BlockTicks.add(0);
+            replay.BlockActions.add(b);
             times = 0;
             MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 times += 1;
-                player.getScoreboard().getTeam(StringList.SideBar[lang][1]).setSuffix(Core.tickToTime(times));
+                SideBar.getSidebar(player).setLine(StringList.SideBar[lang][9] + Core.tickToTime(times), 12);
                 if (times >= 2400) {
                     Core.getInstance(player.getWorld().getName()).Fell(player, false);
                     player.sendMessage(StringList.cancelled[lang]);
                 }
             }, 0, 1);
-        } else if (player.getWorld().getName().equals("world")) {
-            test.BlockTicks.add(times);
-            test.BlockActions.add(b);
+        } else {
+            replay.BlockTicks.add(times);
+            replay.BlockActions.add(b);
         }
         Blocks.add(b);
         Inventory inventory = player.getInventory();
@@ -175,14 +164,11 @@ public class Member {
             mode.score.put(uuid, 0);
         }
         if (i != -1 && i < 3) {
-            List<String>[] s = Core.getSideBar(i, mode.session, mode.score);
+            List<String> s = Core.getSideBar(i, mode.session, mode.score);
             for (Player p : mode.world.getPlayers()) {
                 if (!p.getName().equals(name)) {
-                    Scoreboard scoreboard = p.getScoreboard();
                     for (int j = i; j < 3; j++) {
-                        Team t = scoreboard.getTeam("§" + (j + 4) + "§f");
-                        t.setPrefix(s[0].get(j - i));
-                        t.setSuffix(s[1].get(j - i));
+                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
                     }
                 }
             }

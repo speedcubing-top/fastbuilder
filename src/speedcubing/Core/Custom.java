@@ -11,17 +11,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.PlayerUtils;
-import speedcubing.lib.bukkit.SideBarAPI;
-import speedcubing.server.libs.User;
+import speedcubing.lib.bukkit.SideBar;
 import speedcubing.server.speedcubingServer;
 
 import java.util.*;
@@ -53,12 +49,10 @@ public class Custom {
         Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
-        player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(member.times));
-
+        SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 10);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", Core.tickToTime(member.times)))));
-
         member.times = -1;
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         if (pressure) {
@@ -66,7 +60,7 @@ public class Custom {
             member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
                 if (Member.getMember(uuid) != null) {
                     member.clear(world);
-                    PlayerUtils.teleport(connection, -0.5, 100, member.PlayerCoord + 0.5, 270, 0);
+                    player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
                     member.waiting = false;
                     Inventory inventory = player.getInventory();
                     inventory.setItem(5, ItemStackList.Length[lang]);
@@ -142,30 +136,24 @@ public class Custom {
         member.times = -1;
         Blockplaced.put(uuid, 0);
         hits.put(uuid, new HashSet<>());
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         String[] sidebar = StringList.CustomSideBar[lang];
-        objective.setDisplayName(sidebar[11]);
         new Thread(() -> {
             Integer[] Settings = ArrayUtils.toObject(speedcubingServer.connection.selectInts("playersdata", "customfb_x,customfb_y", "uuid='" + uuid + "'"));
             LengthSettings.put(uuid, Settings);
-            SideBarAPI.sidebarTeams(scoreboard, new String[][]{
-                    {sidebar[10]},
-                    {sidebar[9]},
-                    {sidebar[8]},
-                    {"", sidebar[7], Integer.toString(Settings[0])},
-                    {sidebar[6]},
-                    {sidebar[5]},
-                    {"", sidebar[4], Integer.toString(Settings[1])},
-                    {sidebar[3]},
-                    {sidebar[2]},
-                    {"", sidebar[1], "§7-,---"},
-                    {sidebar[0]},
-            }, new int[]{10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
-            player.setScoreboard(scoreboard);
-            Center.put(uuid, new Integer[]{5 + Settings[0], Settings[1]});
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                new SideBar(player, sidebar[0])
+                        .staticLine(sidebar[1], 10)
+                        .staticLine(sidebar[2], 9)
+                        .staticLine(sidebar[3], 8)
+                        .changeableLine(sidebar[4] + Settings[0], 7)
+                        .staticLine(sidebar[5], 6)
+                        .staticLine(sidebar[6], 5)
+                        .changeableLine(sidebar[7] + Settings[1], 4)
+                        .staticLine(sidebar[8], 3)
+                        .staticLine(sidebar[9], 2)
+                        .changeableLine(sidebar[10] + "§7-,---", 1)
+                        .staticLine(sidebar[11], 0).create();
+                Center.put(uuid, new Integer[]{5 + Settings[0], Settings[1]});
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = 97; Y <= 99; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
@@ -232,7 +220,7 @@ public class Custom {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 member.times += 1;
-                player.getScoreboard().getTeam(StringList.CustomSideBar[lang][1]).setSuffix(Core.tickToTime(member.times));
+                SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 10);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
@@ -291,7 +279,7 @@ public class Custom {
         }
         player.closeInventory();
         player.getInventory().setHeldItemSlot(0);
-        PlayerUtils.teleport(((CraftPlayer) player).getHandle().playerConnection, -0.5, 100, member.PlayerCoord + 0.5, 270, 0);
+        player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
     }
 
     public static int coordToRoom(int z) {

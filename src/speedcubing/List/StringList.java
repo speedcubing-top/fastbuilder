@@ -28,10 +28,10 @@ public class StringList {
             "§cThe maximum value is 20"
     };
     public static String[][] LoopLore = {
-            {"§bLoop the bridging arena","", "§dCurrent: §aOn", "§dCurrent: §cOff"},
-            {"§bLoop the bridging arena","", "§dCurrent: §aOn", "§dCurrent: §cOff"},
-            {"§bLoop the bridging arena","", "§dCurrent: §aOn", "§dCurrent: §cOff"},
-            {"§bLoop the bridging arena","", "§dCurrent: §aOn", "§dCurrent: §cOff"}
+            {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
+            {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
+            {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
+            {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"}
     };
     public static String[][] FallDelayLore = {
             {"§bRespawn Delay", "", "§dCurrent: §e%int%§d block(s)", "§aLeft--§8/§cRight++", "", "§cdefault: 5"},
@@ -46,16 +46,16 @@ public class StringList {
             "§aTime: §e%time%"
     };
     public static final String[][] SideBar = {
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§6§f", "§5§f", "§4§f", "§aSession Top 3:", "§8", "§2§8» §e", "§b§lPersonal Best:", "§f", "§6" + config.SERVERIP, "§3FastBuilder"}
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"}
     };
     public static final String[][] CustomSideBar = {
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"},
-            {"§0", "§1§8» §e", "§aTime:", "§3", "§2§8» §e", "§aHeight:", "§5", "§3§8» §e", "§aLength:", "§8", "§6" + config.SERVERIP, "§3FastBuilder"}
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"}
     };
 
     public static final String[] hover = {

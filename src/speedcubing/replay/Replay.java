@@ -1,17 +1,15 @@
 package speedcubing.replay;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import speedcubing.Main;
-import speedcubing.lib.bukkit.EntityPlayerUtils;
+import speedcubing.lib.bukkit.entity.NPC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,21 +29,21 @@ public class Replay {
     public int nextBlock = 0;
 
     public int tick = 0;
-    public EntityPlayer entityPlayer;
-    public PacketPlayOutAnimation swing;
-    public final Player player;
-    public final String world;
+    public NPC npc;
+    public final Player bridger;
+    public final World world;
     public final String value;
     public final String signature;
 
-    public Replay(String world, Player player, String value, String signature) {
-        this.player = player;
+    public Replay(World world, Player bridger) {
+        this.bridger = bridger;
         this.world = world;
-        this.value = value;
-        this.signature = signature;
+        Property profile = ((CraftPlayer) bridger).getProfile().getProperties().get("textures").iterator().next();
+        this.value = profile.getValue();
+        this.signature = profile.getSignature();
     }
 
-    public void fell() {
+    public void reset() {
         StartLocation = null;
         LocationTicks.clear();
         LocationActions.clear();
@@ -55,44 +53,35 @@ public class Replay {
         nextLocation = 0;
     }
 
-    public void spawnReplay() {
+    public void spawnReplay(Player viewer) {
         nextLocation = LocationTicks.get(0);
-        WorldServer worldServer = ((CraftWorld) Bukkit.getWorld(world)).getHandle();
-        entityPlayer = new EntityPlayer(((CraftServer) Bukkit.getServer()).getServer(), worldServer, new GameProfile(UUID.randomUUID(), player.getName()), new PlayerInteractManager(worldServer));
-        entityPlayer.getProfile().getProperties().put("textures", new Property("textures", value, signature));
-        entityPlayer.setLocation(StartLocation.getX(), StartLocation.getY(), StartLocation.getZ(), StartLocation.getYaw(), StartLocation.getPitch());
-        EntityPlayerUtils.enableOuterLayer(entityPlayer.getDataWatcher());
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(entityPlayer));
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (StartLocation.getPitch() / 360 * 256)));
-        swing = new PacketPlayOutAnimation(entityPlayer, (byte) 0);
+        npc = new NPC(bridger.getName(), UUID.randomUUID(), true)
+                .setSkin(value, signature, false)
+                .setLocation(StartLocation.getX(), StartLocation.getY(), StartLocation.getZ(), StartLocation.getYaw(), StartLocation.getPitch());
+        npc.listener.add(((CraftPlayer) viewer).getHandle().playerConnection);
+        npc.spawn();
     }
 
 
-    public void start(Player player) {
+    public void start() {
         int locationlength = LocationTicks.size();
         int blocklength = BlockTicks.size();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
             while (tick == nextLocation) {
                 Location loc = LocationActions.get(Locationindex);
-                teleport(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), entityPlayer, ((CraftPlayer) player).getHandle().playerConnection);
+                npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+                npc.updateNpcLocation();
                 Locationindex++;
                 nextLocation = Locationindex == locationlength ? 0 : LocationTicks.get(Locationindex);
             }
             while (tick == nextBlock) {
                 BlockPosition p = BlockActions.get(Blockindex);
-                Bukkit.getWorld(   world).getBlockAt(p.getX(), p.getY(), p.getZ()).setType(Material.SANDSTONE);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(swing);
+                world.getBlockAt(p.getX(), p.getY(), p.getZ()).setType(Material.SANDSTONE);
+                npc.animation(0);
                 Blockindex++;
                 nextBlock = Blockindex == blocklength ? 0 : BlockTicks.get(Blockindex);
             }
             tick++;
         }, 0, 1);
-    }
-
-    public void teleport(double x, double y, double z, float yaw, float pitch, EntityPlayer entityPlayer, PlayerConnection connection) {
-        connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer.getId(), MathHelper.floor(x * 32), MathHelper.floor(y * 32), MathHelper.floor(z * 32), (byte) ((int) (yaw * 256 / 360)), (byte) ((int) (pitch * 256 / 360)), true));
-        connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(entityPlayer.getId(), (byte) ((int) (yaw * 256F / 360F)), (byte) ((int) (pitch * 256F / 360F)), true));
-        connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) ((int) (yaw * 256F / 360F))));
     }
 }

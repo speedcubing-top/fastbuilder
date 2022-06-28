@@ -19,6 +19,7 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.Member;
+import speedcubing.lib.bukkit.SideBar;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
@@ -135,7 +136,7 @@ public class InventoryClick implements Listener {
                         TimedMode mode = Core.getInstance(player.getWorld().getName());
                         new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=0", "uuid='" + uuid + "'")).start();
                         member.updateSidebar(player.getName(), mode, false);
-                        player.getScoreboard().getTeam(StringList.SideBar[member.user.lang][9]).setSuffix("§7-,---");
+                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.user.lang][4] + "§7-,---", 4);
                         player.closeInventory();
                         break;
                     case 15:
