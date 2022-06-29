@@ -56,7 +56,7 @@ public class Replay {
     public void spawnReplay(Player viewer) {
         nextLocation = LocationTicks.get(0);
         npc = new NPC(bridger.getName(), UUID.randomUUID(), true)
-                .setSkin(value, signature, false)
+                .setSkin(value, signature)
                 .setLocation(StartLocation.getX(), StartLocation.getY(), StartLocation.getZ(), StartLocation.getYaw(), StartLocation.getPitch());
         npc.listener.add(((CraftPlayer) viewer).getHandle().playerConnection);
         npc.spawn();
