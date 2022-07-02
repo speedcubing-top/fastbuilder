@@ -1,6 +1,5 @@
 package speedcubing.Core;
 
-import org.bukkit.Bukkit;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.Main;
 import speedcubing.Member;
@@ -9,7 +8,6 @@ import speedcubing.server.speedcubingServer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Core {
     public static String msToTime(int ms) {
@@ -31,19 +29,19 @@ public class Core {
         return -1;
     }
 
-    public static List<String> getSideBar(int i, List<UUID> session, Map<UUID, Integer> score) {
+    public static List<String> getSideBar(int i, List<Member> session, Map<Member, Integer> score) {
         List<String> result = new ArrayList<>();
         int size = session.size();
         for (int j = i; j < 3; j++) {
             if (size <= j)
                 result.add("§7-,---");
             else {
-                UUID ses = session.get(j);
+                Member ses = session.get(j);
                 int sc = score.get(ses);
                 if (sc == 0)
                     result.add("§7-,---");
                 else
-                    result.add(speedcubingServer.getFormat(Member.getMember(ses).user.rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + tickToTime(sc));
+                    result.add(speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + tickToTime(sc));
             }
         }
         return result;

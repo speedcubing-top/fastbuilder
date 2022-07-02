@@ -25,7 +25,7 @@ public class PlayerMove implements Listener {
         Player player = e.getPlayer();
         Location to = e.getTo();
         if (player.getGameMode() == GameMode.SURVIVAL) {
-            Member member = Member.getMember(player.getUniqueId());
+            Member member = Member.getMember(player);
             switch (player.getWorld().getName()) {
                 case "world": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
@@ -75,7 +75,7 @@ public class PlayerMove implements Listener {
                 break;
                 case "Custom": {
                     UUID uuid = player.getUniqueId();
-                    if (to.getY() <= Custom.Center.get(uuid)[1] + 99 - Custom.LengthSettings.get(uuid)[1] - member.integerCache[1] || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 149.5)
+                    if (to.getY() <= member.Center[1] + 99 - member.LengthSettings[1] - member.integerCache[1] || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 149.5)
                         Custom.Fell(player);
                     else {
                         if (e.getTo().getX() >= 4 && member.MainTimer == -1) {
@@ -83,8 +83,8 @@ public class PlayerMove implements Listener {
                             player.getInventory().setItem(6, new ItemStack(Material.AIR));
                         }
                         World world = ((CraftWorld) player.getWorld()).getHandle();
-                        if (!Custom.hits.get(uuid).isEmpty())
-                            for (AxisAlignedBB b : Custom.hits.get(uuid)) {
+                        if (!member.hits.isEmpty())
+                            for (AxisAlignedBB b : member.hits) {
                                 if (!world.a(Entity.class, b).isEmpty()) {
                                     Custom.Finish(player, false);
                                     break;

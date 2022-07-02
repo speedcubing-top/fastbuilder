@@ -1,10 +1,10 @@
 package speedcubing;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,7 +14,6 @@ import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.BungeePluginMessage;
-import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.replay.Replay;
 import speedcubing.server.libs.User;
@@ -22,14 +21,20 @@ import speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
-public class Member {
-    public static final Map<UUID, Member> users = new HashMap<>();
+public class Member extends User {
+    public static Map<Integer, Member> users = new HashMap<>();
 
-    public static Member getMember(UUID uuid) {
-        return users.get(uuid);
+    public static Member getMember(CommandSender sender) {
+        return getMember((Player) sender);
     }
 
-    public User user;
+    public static Member getMember(Player player) {
+        return getMember(User.getUser(player).id);
+    }
+
+    public static Member getMember(int id) {
+        return users.get(id);
+    }
 
     public boolean waiting;
     public int[] integerCache;
@@ -39,14 +44,18 @@ public class Member {
     public int finishedtask;
     public Set<BlockPosition> Blocks = new HashSet<>();
     public int PlayerCoord;
-    public UUID uuid;
     public Replay replay;
 
-    public Member(UUID uuid) {
-        this.user = User.getUser(uuid);
-        this.uuid = uuid;
-        users.put(uuid, this);
-        integerCache = speedcubingServer.connection.selectInts("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "uuid='" + uuid + "'");
+    public int[] LengthSettings;
+    public int[] Center;
+    public int Blockplaced;
+    public boolean finishedOnce;
+    public Set<AxisAlignedBB> hits;
+
+    public Member(Player player) {
+        super(player.getUniqueId());
+        users.put(id, this);
+        integerCache = speedcubingServer.connection.selectInts("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "id=" + id);
     }
 
     public void clear(World world) {
@@ -65,15 +74,14 @@ public class Member {
         }
         waiting = true;
         Bukkit.getScheduler().cancelTask(MainTimer);
-        int lang = User.getUser(uuid).lang;
         int msrecord = time * 5;
         String display = Core.tickToTime(time);
         long timeMillis = System.currentTimeMillis() / 1000L;
         new Thread(() -> {
-            int last = speedcubingServer.connection.selectInt("playersdata", "fb_" + mode.sqlId + "_pb", "uuid='" + uuid + "'");
+            int last = speedcubingServer.connection.selectInt("playersdata", "fb_" + mode.sqlId + "_pb", "id=" + id);
             if (last == 0 || last > msrecord) {
-                speedcubingServer.connection.insert("fastbuilder", "uuid,at,score,mode", "'" + uuid + "'," + timeMillis + "," + msrecord + "," + mode.sqlId);
-                speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "uuid='" + uuid + "'");
+                speedcubingServer.connection.insert("fastbuilder", "id,at,score,mode", id + "," + timeMillis + "," + msrecord + "," + mode.sqlId);
+                speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "id=" + id);
                 SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
             }
         }).start();
@@ -82,16 +90,16 @@ public class Member {
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
-        if (mode.score.get(uuid) > time || mode.score.get(uuid) == 0) {
+        if (mode.score.get(this) > time || mode.score.get(this) == 0) {
             int i;
             for (i = 0; i < mode.session.size(); i++) {
                 if (mode.score.get(mode.session.get(i)) > time || mode.score.get(mode.session.get(i)) == 0) {
-                    mode.session.remove(uuid);
-                    mode.session.add(i, uuid);
+                    mode.session.remove(this);
+                    mode.session.add(i, this);
                     break;
                 }
             }
-            mode.score.put(uuid, time);
+            mode.score.put(this, time);
             if (i < 4) {
                 List<String> s = Core.getSideBar(i, mode.session, mode.score);
                 for (int j = i; j < 3; j++) {
@@ -118,7 +126,6 @@ public class Member {
     }
 
     public boolean validPlaceBlock(Player player, BlockPosition b) {
-        int lang = User.getUser(uuid).lang;
         if (times == -1) {
             if (b.getY() > 100)
                 return true;
@@ -148,7 +155,7 @@ public class Member {
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {
-        int i = mode.session.indexOf(uuid);
+        int i = mode.session.indexOf(this);
         if (quit) {
             if (MainTimer != -1)
                 Bukkit.getScheduler().cancelTask(MainTimer);
@@ -156,12 +163,12 @@ public class Member {
             Blocks.clear();
             times = -1;
             waiting = false;
-            mode.session.remove(uuid);
-            mode.score.remove(uuid);
+            mode.session.remove(this);
+            mode.score.remove(this);
         } else {
-            mode.session.remove(uuid);
-            mode.session.add(uuid);
-            mode.score.put(uuid, 0);
+            mode.session.remove(this);
+            mode.session.add(this);
+            mode.score.put(this, 0);
         }
         if (i != -1 && i < 3) {
             List<String> s = Core.getSideBar(i, mode.session, mode.score);

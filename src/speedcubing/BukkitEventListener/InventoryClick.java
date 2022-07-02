@@ -72,34 +72,34 @@ public class InventoryClick implements Listener {
                         switch (e.getAction()) {
                             case PICKUP_ALL: {
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
-                                Member member = Member.getMember(player.getUniqueId());
+                                Member member = Member.getMember(player);
                                 int x = member.integerCache[1];
                                 if (x != 1) {
                                     member.integerCache[1] = x - 1;
                                     ItemStack stack = inventory.getItem(RawSlot);
                                     ItemMeta meta = stack.getItemMeta();
-                                    String[] str = StringList.FallDelayLore[member.user.lang];
+                                    String[] str = StringList.FallDelayLore[member.lang];
                                     meta.setLore(Arrays.asList(str[1], str[2].replace("%int%", Integer.toString(x - 1)), str[3], str[4], str[5]));
                                     stack.setItemMeta(meta);
                                 } else {
-                                    player.sendMessage(StringList.min[member.user.lang]);
+                                    player.sendMessage(StringList.min[member.lang]);
                                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                                 }
                             }
                             break;
                             case PICKUP_HALF: {
                                 player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
-                                Member member = Member.getMember(player.getUniqueId());
+                                Member member = Member.getMember(player);
                                 int x = member.integerCache[1];
                                 if (x != 20) {
                                     member.integerCache[1] = x + 1;
                                     ItemStack stack = inventory.getItem(RawSlot);
                                     ItemMeta meta = stack.getItemMeta();
-                                    String[] str = StringList.FallDelayLore[member.user.lang];
+                                    String[] str = StringList.FallDelayLore[member.lang];
                                     meta.setLore(Arrays.asList(str[1], str[2].replace("%int%", Integer.toString(x + 1)), str[3], str[4], str[5]));
                                     stack.setItemMeta(meta);
                                 } else {
-                                    player.sendMessage(StringList.max[member.user.lang]);
+                                    player.sendMessage(StringList.max[member.lang]);
                                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                                 }
                             }
@@ -111,17 +111,18 @@ public class InventoryClick implements Listener {
                         break;
                     case 15:
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[User.getUser(player.getUniqueId()).lang]);
+                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).lang]);
                         else if (player.getInventory().getItem(5) != null) {
                             UUID uuid = player.getUniqueId();
-                            Integer[] center = Custom.Center.get(uuid);
-                            boolean Loop = Custom.hits.get(uuid).isEmpty();
+                            Member member = Member.getMember(player);
+                            int[] center = member.Center;
+                            boolean Loop = member.hits.isEmpty();
                             if (Loop)
-                                Custom.AddBB(center[0], center[1], Member.getMember(uuid).PlayerCoord, uuid);
+                                Custom.AddBB(center[0], center[1], member.PlayerCoord, member);
                             else
-                                Custom.hits.get(uuid).clear();
+                                member.hits.clear();
                             for (int z = -1; z <= 1; z++) {
-                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, Member.getMember(uuid).PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
+                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
                             }
                             player.closeInventory();
                         }
@@ -131,12 +132,11 @@ public class InventoryClick implements Listener {
                 e.setCancelled(true);
                 switch (RawSlot) {
                     case 11:
-                        UUID uuid = player.getUniqueId();
-                        Member member = Member.getMember(uuid);
+                        Member member = Member.getMember(player);
                         TimedMode mode = Core.getInstance(player.getWorld().getName());
-                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=0", "uuid='" + uuid + "'")).start();
+                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=0", "id=" + member.id)).start();
                         member.updateSidebar(player.getName(), mode, false);
-                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.user.lang][4] + "§7-,---", 4);
+                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.lang][4] + "§7-,---", 4);
                         player.closeInventory();
                         break;
                     case 15:

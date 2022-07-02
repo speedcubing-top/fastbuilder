@@ -16,9 +16,9 @@ public class stats implements CommandExecutor, TabCompleter {
         commandSender.sendMessage("currently unavailable to use.");
         if (commandSender.getName().equals("speedcubing")) {
             if (strings.length == 0)
-                Member.getMember(((Player)commandSender).getUniqueId()).replay.spawnReplay((Player) commandSender);
+                Member.getMember(commandSender).replay.spawnReplay((Player) commandSender);
             else
-                Member.getMember(((Player)commandSender).getUniqueId()).replay.start();
+                Member.getMember(commandSender).replay.start();
         }
 //        if (User.getRank(((Player) commandSender).getUniqueId()).equals("owner")) {
 //            String player;

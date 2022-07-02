@@ -3,7 +3,6 @@ package speedcubing.Core.timed;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +12,6 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
-import speedcubing.lib.bukkit.PlayerUtils;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
@@ -24,8 +22,8 @@ public class TimedMode {
     public final int size = 31;
     public int used = 0;
     public boolean[] rooms = new boolean[size];
-    public List<UUID> session = new ArrayList<>();
-    public Map<UUID, Integer> score = new HashMap<>();
+    public List<Member> session = new ArrayList<>();
+    public Map<Member, Integer> score = new HashMap<>();
     public World world;
     public int sqlId;
     public int limit;
@@ -64,15 +62,13 @@ public class TimedMode {
         }
         rooms[room] = false;
         used += 1;
-        UUID uuid = player.getUniqueId();
-        Member member = Member.getMember(uuid);
+        Member member = Member.getMember(player);
         member.replay = new Replay(world, player);
         int coord = roomToCoord(room);
         player.teleport(new Location(world, (inclined ? coord : 0) + 0.5, 100, coord + 0.5, inclined ? 225 : 270, 0));
         member.PlayerCoord = coord;
-        int lang = member.user.lang;
-        String[] sidebar = StringList.SideBar[lang];
-        int a = speedcubingServer.connection.selectInt("playersdata", "fb_" + sqlId + "_pb", "uuid='" + uuid + "'");
+        String[] sidebar = StringList.SideBar[member.lang];
+        int a = speedcubingServer.connection.selectInt("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id);
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)
@@ -86,12 +82,12 @@ public class TimedMode {
             if (size <= j)
                 result = "§7-,---";
             else {
-                UUID ses = session.get(j);
+                Member ses = session.get(j);
                 int sc = score.get(ses);
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = speedcubingServer.getFormat(Member.getMember(ses).user.rank)[1] + Bukkit.getPlayer(ses).getName() + "§8: §e" + Core.tickToTime(sc);
+                    result = speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + Core.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }
@@ -100,27 +96,27 @@ public class TimedMode {
                 .changeableLine(sidebar[9] + "§7-,---", 1)
                 .staticLine(sidebar[10], 0).create();
         PlayerInventory inventory = player.getInventory();
-        ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][lang];
+        ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
         inventory.clear();
         inventory.setItem(0, stack);
         inventory.setItem(1, stack);
-        inventory.setItem(2, ItemStackList.pickaxe[lang]);
-        inventory.setItem(7, ItemStackList.Settings[lang]);
-        inventory.setItem(8, ItemStackList.navigator[lang]);
+        inventory.setItem(2, ItemStackList.pickaxe[member.lang]);
+        inventory.setItem(7, ItemStackList.Settings[member.lang]);
+        inventory.setItem(8, ItemStackList.navigator[member.lang]);
         inventory.setHeldItemSlot(0);
-        session.add(uuid);
+        session.add(member);
         member.times = -1;
-        score.put(uuid, 0);
+        score.put(member, 0);
     }
 
     public void Fell(Player player, boolean fell) {
-        Member member = Member.getMember(player.getUniqueId());
+        Member member = Member.getMember(player);
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
             member.clear(player.getWorld());
             member.waiting = false;
             Inventory inventory = player.getInventory();
-            ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.user.lang];
+            ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
@@ -128,7 +124,7 @@ public class TimedMode {
                 Bukkit.getScheduler().cancelTask(member.MainTimer);
                 member.clear(player.getWorld());
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.user.lang];
+                ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
                 member.times = -1;
@@ -137,7 +133,7 @@ public class TimedMode {
                 int coord = member.PlayerCoord;
                 int oldroom = coordToRoom(coord);
                 int newroom = Core.cal(oldroom, location.getX() + location.getZ() > coord * 2, rooms);
-                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.user.lang]);
+                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.lang]);
                 else {
                     member.PlayerCoord = roomToCoord(newroom);
                     rooms[oldroom] = true;
@@ -151,7 +147,7 @@ public class TimedMode {
 
 
     public void Quit(Player player) {
-        Member member = Member.getMember(player.getUniqueId());
+        Member member = Member.getMember(player);
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;

@@ -11,13 +11,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import speedcubing.Core.Core;
 import speedcubing.Core.Custom;
-import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
-import speedcubing.server.libs.User;
 
 import java.util.UUID;
 
@@ -25,8 +23,7 @@ public class PlayerInteract implements Listener {
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        UUID uuid = player.getUniqueId();
-        Member member = Member.getMember(uuid);
+        Member member = Member.getMember(player);
         if (member.waiting)
             return;
         if (player.getGameMode() == GameMode.SURVIVAL) {
@@ -51,22 +48,21 @@ public class PlayerInteract implements Listener {
                         }
                         break;
                     case REDSTONE_COMPARATOR: {
-                        int lang = User.getUser(player.getUniqueId()).lang;
-                        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
-                        String[] hit = StringList.FallDelayLore[lang];
+                        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[member.lang]);
+                        String[] hit = StringList.FallDelayLore[member.lang];
                         inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(member.integerCache[1])), hit[3], hit[4], hit[5]).build());
-                        inventory.setItem(13, ItemStackList.openkit[lang]);
+                        inventory.setItem(13, ItemStackList.openkit[member.lang]);
                         if (!player.getWorld().getName().equals("Custom"))
-                            inventory.setItem(15, ItemStackList.Reset[lang]);
+                            inventory.setItem(15, ItemStackList.Reset[member.lang]);
                         else if (player.getInventory().getItem(5) != null) {
-                            String[] lore = StringList.LoopLore[lang];
-                            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], Custom.hits.get(uuid).isEmpty() ? lore[3] : lore[2]).build());
+                            String[] lore = StringList.LoopLore[member.lang];
+                            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], member.hits.isEmpty() ? lore[3] : lore[2]).build());
                         }
                         player.openInventory(inventory);
                     }
                     break;
                     case COMPASS: {
-                        int lang = User.getUser(player.getUniqueId()).lang;
+                        int lang = Member.getMember(player).lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);
                         ItemBuilder[] builders = {
                                 new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0][lang]),
@@ -89,24 +85,25 @@ public class PlayerInteract implements Listener {
                     break;
                     case IRON_INGOT:
                         e.setCancelled(true);
-                        EditLength(true, (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) ? -1 : 1, player, uuid);
+                        EditLength(true, (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) ? -1 : 1, player);
                         break;
                     case GOLD_INGOT:
                         e.setCancelled(true);
-                        EditLength(false, (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) ? -1 : 1, player, uuid);
+                        EditLength(false, (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) ? -1 : 1, player);
                         break;
                 }
             }
         }
     }
 
-    public void EditLength(boolean horizontal, int i, Player player, UUID uuid) {
-        Integer[] center = Custom.Center.get(uuid);
-        Integer[] settings = Custom.LengthSettings.get(uuid);
-        int coord = Member.getMember(uuid).PlayerCoord;
+    public void EditLength(boolean horizontal, int i, Player player) {
+        Member member = Member.getMember(player);
+        int[] center = member.Center;
+        int[] settings = member.LengthSettings;
+        int coord = Member.getMember(player).PlayerCoord;
         World world = Bukkit.getWorld("Custom");
         boolean c = true;
-        boolean UnLoop = Custom.hits.get(uuid).isEmpty();
+        boolean UnLoop = member.hits.isEmpty();
         if (horizontal) {
             if ((settings[0] == 5 && i == -1) || (settings[0] == 64 && i == 1)) {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
@@ -143,13 +140,12 @@ public class PlayerInteract implements Listener {
             }
         }
         if (c) {
-            int lang = User.getUser(uuid).lang;
             player.updateInventory();
-            player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[lang] : ItemStackList.Height[lang]);
-            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
-            Custom.LengthSettings.get(uuid)[horizontal ? 0 : 1] += i;
+            player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[member.lang] : ItemStackList.Height[member.lang]);
+            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[member.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
+            member.LengthSettings[horizontal ? 0 : 1] += i;
             center[horizontal ? 0 : 1] += i;
-            if (!UnLoop) Custom.AddBB(center[0], center[1], coord, uuid);
+            if (!UnLoop) Custom.AddBB(center[0], center[1], coord, member);
         }
     }
 }

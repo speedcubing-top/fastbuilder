@@ -20,7 +20,7 @@ public class BlockPlace implements Listener {
         Block block = e.getBlock();
         Player player = e.getPlayer();
         if (player.getGameMode() == GameMode.SURVIVAL) {
-            Member member = Member.getMember(player.getUniqueId());
+            Member member = Member.getMember(player);
             if (member.waiting || block.getType().equals(Material.REDSTONE_COMPARATOR_OFF)) {
                 e.setCancelled(true);
                 return;
