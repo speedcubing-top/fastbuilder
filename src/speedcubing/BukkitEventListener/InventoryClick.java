@@ -20,11 +20,9 @@ import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.SideBar;
-import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 public class InventoryClick implements Listener {
     @EventHandler
@@ -113,7 +111,6 @@ public class InventoryClick implements Listener {
                         if (!player.getWorld().getName().equals("Custom"))
                             player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).lang]);
                         else if (player.getInventory().getItem(5) != null) {
-                            UUID uuid = player.getUniqueId();
                             Member member = Member.getMember(player);
                             int[] center = member.Center;
                             boolean Loop = member.hits.isEmpty();

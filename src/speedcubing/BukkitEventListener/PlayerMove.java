@@ -74,7 +74,6 @@ public class PlayerMove implements Listener {
                 }
                 break;
                 case "Custom": {
-                    UUID uuid = player.getUniqueId();
                     if (to.getY() <= member.Center[1] + 99 - member.LengthSettings[1] - member.integerCache[1] || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 149.5)
                         Custom.Fell(player);
                     else {

@@ -11,8 +11,6 @@ import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.server.speedcubingServer;
 
-import java.util.UUID;
-
 public class PlayerQuit implements Listener {
     @EventHandler
     public void PlayerQuitEvent(PlayerQuitEvent e) {

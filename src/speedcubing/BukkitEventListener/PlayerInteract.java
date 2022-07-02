@@ -17,8 +17,6 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 
-import java.util.UUID;
-
 public class PlayerInteract implements Listener {
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e) {

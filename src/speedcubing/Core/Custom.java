@@ -161,7 +161,6 @@ public class Custom {
 
 
     public static void Quit(Player player) {
-        UUID uuid = player.getUniqueId();
         Member member = Member.getMember(player);
         if (member.MainTimer != -1)
             Bukkit.getScheduler().cancelTask(member.MainTimer);
@@ -191,14 +190,13 @@ public class Custom {
         member.waiting = false;
         new Thread(() -> {
             int[] i = member.LengthSettings;
-            speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "uuid='" + uuid + "'");
+            speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "id='" + member.id + "'");
         }).start();
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
     }
 
     public static void validPlaceBlock(Player player, BlockPosition b) {
-        UUID uuid = player.getUniqueId();
         Member member = Member.getMember(player);
         int lang = member.lang;
         Inventory inventory = player.getInventory();
