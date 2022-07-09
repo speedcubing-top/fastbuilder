@@ -1,9 +1,10 @@
 package speedcubing;
 
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
@@ -55,7 +57,7 @@ public class Member extends User {
     public Member(Player player) {
         super(player.getUniqueId());
         users.put(id, this);
-        integerCache = speedcubingServer.connection.selectInts("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "id=" + id);
+        integerCache = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "id=" + id)));
     }
 
     public void clear(World world) {
@@ -78,7 +80,7 @@ public class Member extends User {
         String display = Core.tickToTime(time);
         long timeMillis = System.currentTimeMillis() / 1000L;
         new Thread(() -> {
-            int last = speedcubingServer.connection.selectInt("playersdata", "fb_" + mode.sqlId + "_pb", "id=" + id);
+            int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + mode.sqlId + "_pb", "id=" + id));
             if (last == 0 || last > msrecord) {
                 speedcubingServer.connection.insert("fastbuilder", "id,at,score,mode", id + "," + timeMillis + "," + msrecord + "," + mode.sqlId);
                 speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "id=" + id);

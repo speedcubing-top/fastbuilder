@@ -13,6 +13,7 @@ import speedcubing.List.StringList;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
 
@@ -68,7 +69,7 @@ public class TimedMode {
         player.teleport(new Location(world, (inclined ? coord : 0) + 0.5, 100, coord + 0.5, inclined ? 225 : 270, 0));
         member.PlayerCoord = coord;
         String[] sidebar = StringList.SideBar[member.lang];
-        int a = speedcubingServer.connection.selectInt("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id);
+        int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id));
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)

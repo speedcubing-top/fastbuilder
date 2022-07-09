@@ -2,6 +2,7 @@ package speedcubing.Core;
 
 
 import net.minecraft.server.v1_8_R3.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.*;
@@ -16,11 +17,11 @@ import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.server.speedcubingServer;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public class Custom {
     public static final int size = 31;
@@ -129,7 +130,7 @@ public class Custom {
         member.hits = new HashSet<>();
         String[] sidebar = StringList.CustomSideBar[lang];
         new Thread(() -> {
-            int[] Settings = speedcubingServer.connection.selectInts("playersdata", "customfb_x,customfb_y", "id=" + member.id);
+            int[] Settings = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "customfb_x,customfb_y", "id=" + member.id)));
             member.LengthSettings = Settings;
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 new SideBar(player, sidebar[0])
