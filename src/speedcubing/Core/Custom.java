@@ -6,6 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -197,7 +198,7 @@ public class Custom {
         rooms[coordToRoom(member.PlayerCoord)] = true;
     }
 
-    public static void validPlaceBlock(Player player, BlockPosition b) {
+    public static void validPlaceBlock(Player player, Block b) {
         Member member = Member.getMember(player);
         int lang = member.lang;
         Inventory inventory = player.getInventory();
@@ -220,6 +221,7 @@ public class Custom {
 
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
+        member.replay = null;
         World world = player.getWorld();
         member.clear(world);
         Inventory inventory = player.getInventory();

@@ -22,6 +22,11 @@ public class PlayerInteract implements Listener {
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         Member member = Member.getMember(player);
+        switch (player.getItemInHand().getType()){
+            case BLAZE_ROD:
+                member.replayPlayer.addoneTick();
+                return;
+        }
         if (member.waiting)
             return;
         if (player.getGameMode() == GameMode.SURVIVAL) {
@@ -38,10 +43,9 @@ public class PlayerInteract implements Listener {
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
-                            BlockPosition position = new BlockPosition(b.getX(), b.getY(), b.getZ());
-                            if (member.Blocks.contains(position)) {
+                            if (member.Blocks.contains(b)) {
                                 b.setType(Material.AIR);
-                                member.Blocks.remove(position);
+                                member.Blocks.remove(b);
                             }
                         }
                         break;

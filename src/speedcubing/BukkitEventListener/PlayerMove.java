@@ -37,40 +37,24 @@ public class PlayerMove implements Listener {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 5.5)
                         Main.Short.Fell(player, fell);
-                    else if (member.times != -1) {
-                        member.replay.LocationActions.add(e.getTo());
-                        member.replay.LocationTicks.add(member.times);
-                    }
                 }
                 break;
                 case "Inclined": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getX() + to.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
                         Main.Inclined.Fell(player, fell);
-                    else if (member.times != -1) {
-                        member.replay.LocationActions.add(e.getTo());
-                        member.replay.LocationTicks.add(member.times);
-                    }
                 }
                 break;
                 case "Onestack": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 5.5)
                         Main.OneStack.Fell(player, fell);
-                    else if (member.times != -1) {
-                        member.replay.LocationActions.add(e.getTo());
-                        member.replay.LocationTicks.add(member.times);
-                    }
                 }
                 break;
                 case "Inclinedshort": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getX() + to.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
                         Main.InclinedShort.Fell(player, fell);
-                    else if (member.times != -1) {
-                        member.replay.LocationActions.add(e.getTo());
-                        member.replay.LocationTicks.add(member.times);
-                    }
                 }
                 break;
                 case "Custom": {

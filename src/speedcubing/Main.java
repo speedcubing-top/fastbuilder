@@ -16,6 +16,7 @@ import speedcubing.Core.timed.Long;
 import speedcubing.Core.timed.Short;
 import speedcubing.List.ItemStackList;
 import speedcubing.lib.eventbus.LibEventManager;
+import speedcubing.replay.ReplayListener;
 import speedcubing.server.speedcubingServer;
 
 import java.util.Timer;
@@ -40,6 +41,7 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDropItem(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
+        Bukkit.getPluginManager().registerEvents(new ReplayListener(), this);
         Bukkit.getWorld("world").setDifficulty(Difficulty.PEACEFUL);
         Bukkit.getWorld("world").setTime(6000);
         getServer().createWorld(new WorldCreator("Inclined"));

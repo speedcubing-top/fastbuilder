@@ -1,10 +1,12 @@
 package speedcubing;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -18,6 +20,7 @@ import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
+import speedcubing.replay.ReplayViewer;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
@@ -44,9 +47,10 @@ public class Member extends User {
     public int times;
     public int MainTimer;
     public int finishedtask;
-    public Set<BlockPosition> Blocks = new HashSet<>();
+    public Set<Block> Blocks = new HashSet<>();
     public int PlayerCoord;
     public Replay replay;
+    public ReplayViewer replayPlayer;
 
     public int[] LengthSettings;
     public int[] Center;
@@ -61,7 +65,7 @@ public class Member extends User {
     }
 
     public void clear(World world) {
-        for (BlockPosition b : Blocks) {
+        for (Block b : Blocks) {
             world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
         }
         Blocks.clear();
@@ -69,6 +73,7 @@ public class Member extends User {
 
     public void finish(Player player) {
         TimedMode mode = Core.getInstance(player.getWorld().getName());
+        replay.pause();
         int time = times;
         if (time < mode.limit) {
             BungeePluginMessage.switchServer(player, "Lobby");
@@ -127,14 +132,12 @@ public class Member extends User {
         }, 40);
     }
 
-    public boolean validPlaceBlock(Player player, BlockPosition b) {
+    public boolean validPlaceBlock(Player player, Block b) {
         if (times == -1) {
             if (b.getY() > 100)
                 return true;
-            replay.reset();
-            replay.StartLocation = player.getLocation();
-            replay.BlockTicks.add(0);
-            replay.BlockActions.add(b);
+            replay = new Replay(this);
+            replay.start();
             times = 0;
             MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 times += 1;
@@ -144,9 +147,6 @@ public class Member extends User {
                     player.sendMessage(StringList.cancelled[lang]);
                 }
             }, 0, 1);
-        } else {
-            replay.BlockTicks.add(times);
-            replay.BlockActions.add(b);
         }
         Blocks.add(b);
         Inventory inventory = player.getInventory();

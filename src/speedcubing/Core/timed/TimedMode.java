@@ -64,7 +64,6 @@ public class TimedMode {
         rooms[room] = false;
         used += 1;
         Member member = Member.getMember(player);
-        member.replay = new Replay(world, player);
         int coord = roomToCoord(room);
         player.teleport(new Location(world, (inclined ? coord : 0) + 0.5, 100, coord + 0.5, inclined ? 225 : 270, 0));
         member.PlayerCoord = coord;
@@ -133,7 +132,7 @@ public class TimedMode {
                 Location location = player.getLocation();
                 int coord = member.PlayerCoord;
                 int oldroom = coordToRoom(coord);
-                int newroom = Core.cal(oldroom, location.getX() + location.getZ() > coord * 2, rooms);
+                int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getZ() > coord, rooms);
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.lang]);
                 else {
                     member.PlayerCoord = roomToCoord(newroom);
