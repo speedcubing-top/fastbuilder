@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import speedcubing.Main;
 import speedcubing.Member;
-import speedcubing.replay.ReplayPlayer;
 import speedcubing.server.speedcubingServer;
 
 public class PlayerQuit implements Listener {

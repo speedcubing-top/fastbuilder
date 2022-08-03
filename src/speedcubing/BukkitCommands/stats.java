@@ -16,7 +16,7 @@ public class stats implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         commandSender.sendMessage("currently unavailable to use.");
         if (strings.length == 0) {
-            ReplayViewer replayPlayer = new ReplayViewer(Member.getMember(commandSender).replay, (Player) commandSender);
+            ReplayViewer replayPlayer = new ReplayViewer(Member.getMember(commandSender).replays.get(Member.getMember(commandSender).replays.size()-1), (Player) commandSender);
             Member.getMember(commandSender).replayPlayer = replayPlayer;
             replayPlayer.spawnReplay();
         }

@@ -198,7 +198,7 @@ public class Custom {
         rooms[coordToRoom(member.PlayerCoord)] = true;
     }
 
-    public static void validPlaceBlock(Player player, Block b) {
+    public static void validPlaceBlock(Player player, BlockPosition b) {
         Member member = Member.getMember(player);
         int lang = member.lang;
         Inventory inventory = player.getInventory();

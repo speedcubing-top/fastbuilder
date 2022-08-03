@@ -10,10 +10,11 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import speedcubing.BukkitCommands.stats;
 import speedcubing.BukkitEventListener.*;
-import speedcubing.Core.timed.*;
-import speedcubing.Core.*;
+import speedcubing.Core.BlockEditor;
+import speedcubing.Core.Custom;
 import speedcubing.Core.timed.Long;
 import speedcubing.Core.timed.Short;
+import speedcubing.Core.timed.*;
 import speedcubing.List.ItemStackList;
 import speedcubing.lib.eventbus.LibEventManager;
 import speedcubing.replay.ReplayListener;
@@ -23,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends JavaPlugin implements Listener {
+
     public static TimedMode Long;
     public static TimedMode Short;
     public static TimedMode Inclined;
@@ -72,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
         new BlockEditor().Load();
         new Custom().Load();
         LibEventManager.registerListeners(new ServerEvent());
-        Bukkit.getPluginManager().registerEvents(this,this);
+        Bukkit.getPluginManager().registerEvents(this, this);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

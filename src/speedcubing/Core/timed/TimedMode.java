@@ -14,7 +14,6 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
-import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
 
 import java.util.*;
@@ -105,12 +104,13 @@ public class TimedMode {
         inventory.setItem(8, ItemStackList.navigator[member.lang]);
         inventory.setHeldItemSlot(0);
         session.add(member);
-        member.times = -1;
         score.put(member, 0);
     }
 
     public void Fell(Player player, boolean fell) {
         Member member = Member.getMember(player);
+        if (member.replay != null)
+            member.replay.pause();
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
             member.clear(player.getWorld());
@@ -120,14 +120,14 @@ public class TimedMode {
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
-            if (member.times != -1) {
+            if (member.replay != null) {
                 Bukkit.getScheduler().cancelTask(member.MainTimer);
                 member.clear(player.getWorld());
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
-                member.times = -1;
+                member.replay = null;
             } else if (!fell) {
                 Location location = player.getLocation();
                 int coord = member.PlayerCoord;
@@ -142,12 +142,17 @@ public class TimedMode {
             }
             player.closeInventory();
         }
+        member.replay = null;
         player.teleport(new Location(player.getWorld(), (inclined ? member.PlayerCoord : 0) + 0.5, 100, member.PlayerCoord + 0.5, inclined ? 225 : 270, 0));
     }
 
 
     public void Quit(Player player) {
         Member member = Member.getMember(player);
+        if (member.replay != null) {
+            member.replay.pause();
+            member.replay = null;
+        }
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;

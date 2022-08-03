@@ -34,8 +34,6 @@ public class PlayerInteract implements Listener {
                 if (e.getClickedBlock().getType() == Material.GOLD_PLATE) {
                     if (player.getWorld().getName().equals("Custom"))
                         Custom.Finish(player, true);
-                    else
-                        member.finish(player);
                 }
             } else {
                 Action action = e.getAction();
@@ -43,9 +41,9 @@ public class PlayerInteract implements Listener {
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
-                            if (member.Blocks.contains(b)) {
+                            if (member.Blocks.contains(new BlockPosition(b.getX(),b.getY(),b.getZ()))) {
                                 b.setType(Material.AIR);
-                                member.Blocks.remove(b);
+                                member.Blocks.remove(new BlockPosition(b.getX(),b.getY(),b.getZ()));
                             }
                         }
                         break;

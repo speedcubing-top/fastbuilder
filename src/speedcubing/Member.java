@@ -1,12 +1,10 @@
 package speedcubing;
 
-import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
+import net.minecraft.server.v1_8_R3.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -40,14 +38,13 @@ public class Member extends User {
     public static Member getMember(int id) {
         return users.get(id);
     }
+    public int times;
 
     public boolean waiting;
     public int[] integerCache;
-
-    public int times;
     public int MainTimer;
     public int finishedtask;
-    public Set<Block> Blocks = new HashSet<>();
+    public Set<BlockPosition> Blocks = new HashSet<>();
     public int PlayerCoord;
     public Replay replay;
     public ReplayViewer replayPlayer;
@@ -58,6 +55,12 @@ public class Member extends User {
     public boolean finishedOnce;
     public Set<AxisAlignedBB> hits;
 
+    public Location didntevenfuckingstart = new Location(player.getWorld(), 0, 0, 0);
+    public final Location asyncLoc = new Location(player.getWorld(), 0, 0, 0);
+    public final List<Replay> replays = new ArrayList<>();
+
+    public boolean finishNext;
+
     public Member(Player player) {
         super(player.getUniqueId());
         users.put(id, this);
@@ -65,16 +68,17 @@ public class Member extends User {
     }
 
     public void clear(World world) {
-        for (Block b : Blocks) {
+        for (BlockPosition b : Blocks) {
             world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
         }
         Blocks.clear();
     }
 
-    public void finish(Player player) {
+    public void finish() {
         TimedMode mode = Core.getInstance(player.getWorld().getName());
         replay.pause();
-        int time = times;
+        replays.add(replay);
+        int time = replay.NewTick - 1;
         if (time < mode.limit) {
             BungeePluginMessage.switchServer(player, "Lobby");
             return;
@@ -92,7 +96,6 @@ public class Member extends User {
                 SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
             }
         }).start();
-        times = -1;
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
@@ -132,21 +135,14 @@ public class Member extends User {
         }, 40);
     }
 
-    public boolean validPlaceBlock(Player player, Block b) {
-        if (times == -1) {
+    public boolean validPlaceBlock(Player player, BlockPosition b) {
+        if (replay == null) {
             if (b.getY() > 100)
                 return true;
-            replay = new Replay(this);
+            replay = new Replay(this, didntevenfuckingstart.clone());
+            System.out.println(didntevenfuckingstart);
             replay.start();
-            times = 0;
-            MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                times += 1;
-                SideBar.getSidebar(player).setLine(StringList.SideBar[lang][9] + Core.tickToTime(times), 12);
-                if (times >= 2400) {
-                    Core.getInstance(player.getWorld().getName()).Fell(player, false);
-                    player.sendMessage(StringList.cancelled[lang]);
-                }
-            }, 0, 1);
+            replay.PlayerMoveEvent(asyncLoc);
         }
         Blocks.add(b);
         Inventory inventory = player.getInventory();
@@ -163,7 +159,6 @@ public class Member extends User {
                 Bukkit.getScheduler().cancelTask(MainTimer);
             clear(mode.world);
             Blocks.clear();
-            times = -1;
             waiting = false;
             mode.session.remove(this);
             mode.score.remove(this);
