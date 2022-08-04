@@ -33,7 +33,6 @@ public class Main extends JavaPlugin implements Listener {
 
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new FoodLevelChange(), this);
-        Bukkit.getPluginManager().registerEvents(new BlockPlace(), this);
         Bukkit.getPluginManager().registerEvents(new BlockBreak(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChangedWorld(), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamage(), this);

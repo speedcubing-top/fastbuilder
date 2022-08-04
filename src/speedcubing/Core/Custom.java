@@ -128,7 +128,7 @@ public class Custom {
         inventory.setHeldItemSlot(0);
         member.times = -1;
         member.Blockplaced = 0;
-        member.hits = new HashSet<>();
+        member.hits.clear();
         String[] sidebar = StringList.CustomSideBar[lang];
         new Thread(() -> {
             int[] Settings = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "customfb_x,customfb_y", "id=" + member.id)));

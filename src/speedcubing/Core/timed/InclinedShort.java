@@ -2,7 +2,7 @@ package speedcubing.Core.timed;
 
 public class InclinedShort extends TimedMode {
     public InclinedShort() {
-        super("InclinedShort", 4, 40, true);
+        super("InclinedShort", 4, 40, true,0);
     }
 
     public int roomToCoord(int room) {

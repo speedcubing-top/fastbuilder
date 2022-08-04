@@ -2,7 +2,7 @@ package speedcubing.Core.timed;
 
 public class OneStack extends TimedMode{
     public OneStack(){
-        super("Onestack",2,220,false);
+        super("Onestack",2,220,false,29);
     }
 
     public int roomToCoord(int room) {

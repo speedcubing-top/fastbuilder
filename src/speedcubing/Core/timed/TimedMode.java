@@ -1,5 +1,6 @@
 package speedcubing.Core.timed;
 
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,15 +22,16 @@ import java.util.*;
 public class TimedMode {
     public final int size = 31;
     public int used = 0;
-    public boolean[] rooms = new boolean[size];
-    public List<Member> session = new ArrayList<>();
-    public Map<Member, Integer> score = new HashMap<>();
+    public final boolean[] rooms = new boolean[size];
+    public final List<Member> session = new ArrayList<>();
+    public final Map<Member, Integer> score = new HashMap<>();
     public World world;
-    public int sqlId;
-    public int limit;
-    public boolean inclined;
+    public final int sqlId;
+    public final int limit;
+    public final boolean inclined;
+    public final int distance;
 
-    public TimedMode(String world, int sqlId, int limit, boolean inclined) {
+    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance) {
         for (int i = 0; i < size; i++) {
             rooms[i] = true;
         }
@@ -37,6 +39,7 @@ public class TimedMode {
         this.limit = limit;
         this.sqlId = sqlId;
         this.world = Bukkit.getWorld(world);
+        this.distance = distance;
     }
 
     public void Join(Player player, boolean kick) {
@@ -64,8 +67,9 @@ public class TimedMode {
         used += 1;
         Member member = Member.getMember(player);
         int coord = roomToCoord(room);
-        player.teleport(new Location(world, (inclined ? coord : 0) + 0.5, 100, coord + 0.5, inclined ? 225 : 270, 0));
+        player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
+        setPressurePlate(member, distance, inclined);
         String[] sidebar = StringList.SideBar[member.lang];
         int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id));
         SideBar sideBar = new SideBar(player, sidebar[0])
@@ -132,10 +136,11 @@ public class TimedMode {
                 Location location = player.getLocation();
                 int coord = member.PlayerCoord;
                 int oldroom = coordToRoom(coord);
-                int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getZ() > coord, rooms);
+                int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, rooms);
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.lang]);
                 else {
                     member.PlayerCoord = roomToCoord(newroom);
+                    setPressurePlate(member, distance, inclined);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }
@@ -143,7 +148,7 @@ public class TimedMode {
             player.closeInventory();
         }
         member.replay = null;
-        player.teleport(new Location(player.getWorld(), (inclined ? member.PlayerCoord : 0) + 0.5, 100, member.PlayerCoord + 0.5, inclined ? 225 : 270, 0));
+        player.teleport(new Location(player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));
     }
 
 
@@ -164,5 +169,23 @@ public class TimedMode {
 
     public int roomToCoord(int i) {
         return -1;
+    }
+
+    public void setPressurePlate(Member member, int x, boolean isInclined) {
+        member.hits.clear();
+        int[][] i;
+        System.out.println(member.PlayerCoord);
+        if (!isInclined)
+            i = new int[][]{
+                    {member.PlayerCoord + 1, 103, x},
+                    {member.PlayerCoord + 2, 103, x},
+                    {member.PlayerCoord, 103, x},
+                    {member.PlayerCoord - 1, 103, x},
+                    {member.PlayerCoord - 2, 103, x},
+            };
+        else i = new int[][]{};
+        for (int[] b : i) {
+            member.hits.add(new AxisAlignedBB((float) b[0] + 0.125F, b[1], (float) b[2] + 0.125F, (float) (b[0] + 1) - 0.125F, (double) b[1] + 0.25D, (float) (b[2] + 1) - 0.125F));
+        }
     }
 }

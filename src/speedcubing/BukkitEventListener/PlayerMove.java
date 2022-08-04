@@ -25,26 +25,26 @@ public class PlayerMove implements Listener {
             switch (player.getWorld().getName()) {
                 case "world": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
-                    if (fell || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 5.5)
+                    if (fell || Math.abs(to.getX() - member.PlayerCoord - 0.5) > 5.5)
                         Main.Long.Fell(player, fell);
                 }
                 break;
                 case "Short": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
-                    if (fell || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 5.5)
+                    if (fell || Math.abs(to.getX() - member.PlayerCoord - 0.5) > 5.5)
                         Main.Short.Fell(player, fell);
+                }
+                break;
+                case "Onestack": {
+                    boolean fell = to.getY() <= 100 - member.integerCache[1];
+                    if (fell || Math.abs(to.getX() - member.PlayerCoord - 0.5) > 5.5)
+                        Main.OneStack.Fell(player, fell);
                 }
                 break;
                 case "Inclined": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getX() + to.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
                         Main.Inclined.Fell(player, fell);
-                }
-                break;
-                case "Onestack": {
-                    boolean fell = to.getY() <= 100 - member.integerCache[1];
-                    if (fell || Math.abs(to.getZ() - member.PlayerCoord - 0.5) > 5.5)
-                        Main.OneStack.Fell(player, fell);
                 }
                 break;
                 case "Inclinedshort": {

@@ -58,19 +58,8 @@ public class ServerEvent {
                         member.finish();
                         member.finishNext = false;
                     } else {
-                        int[][] i = {
-                                {33, 103, member.PlayerCoord + 1},
-                                {33, 103, member.PlayerCoord + 2},
-                                {33, 103, member.PlayerCoord},
-                                {33, 103, member.PlayerCoord - 1},
-                                {33, 103, member.PlayerCoord - 2},
-                        };
-                        Set<AxisAlignedBB> a = new HashSet<>();
-                        for (int[] b : i) {
-                            a.add(new AxisAlignedBB((float) b[0] + 0.125F, b[1], (float) b[2] + 0.125F, (float) (b[0] + 1) - 0.125F, (double) b[1] + 0.25D, (float) (b[2] + 1) - 0.125F));
-                        }
                         AxisAlignedBB bb = new AxisAlignedBB(loc.getX() + 0.3, loc.getY(), loc.getZ() + 0.3, loc.getX() - 0.3, loc.getY() + 1.8, loc.getZ() - 0.3);
-                        for (AxisAlignedBB bbs : a) {
+                        for (AxisAlignedBB bbs : member.hits) {
                             if (bb.b(bbs)) {
                                 member.finishNext = true;
                                 break;
@@ -92,25 +81,25 @@ public class ServerEvent {
                 int z = pos.getZ();
                 switch (e.player.getWorld().getName()) {
                     case "world":
-                        if (x < 3 || x > 57 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
+                        if (z < -1 || z > 53 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
                             e.isCancelled = true;
                             Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
                         } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
                         break;
                     case "Short":
-                        if (x < 3 || x > 34 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
+                        if (z < -1|| z > 30 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
+                            e.isCancelled = true;
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
+                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
+                        break;
+                    case "Onestack":
+                        if (z < -1 || z > 29 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
                             e.isCancelled = true;
                             Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
                         } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
                         break;
                     case "Inclined":
                         if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Onestack":
-                        if (x < 3 || x > 33 || Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                             e.isCancelled = true;
                             Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
                         } else e.isCancelled = (member.validPlaceBlock(e.player, pos));

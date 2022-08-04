@@ -38,6 +38,7 @@ public class Member extends User {
     public static Member getMember(int id) {
         return users.get(id);
     }
+
     public int times;
 
     public boolean waiting;
@@ -53,7 +54,7 @@ public class Member extends User {
     public int[] Center;
     public int Blockplaced;
     public boolean finishedOnce;
-    public Set<AxisAlignedBB> hits;
+    public Set<AxisAlignedBB> hits = new HashSet<>();
 
     public Location didntevenfuckingstart = new Location(player.getWorld(), 0, 0, 0);
     public final Location asyncLoc = new Location(player.getWorld(), 0, 0, 0);
@@ -122,10 +123,7 @@ public class Member extends User {
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(mode.world);
-                if (mode.inclined)
-                    player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, PlayerCoord + 0.5, 225, 0));
-                else
-                    player.teleport(new Location(player.getWorld(), 0.5, 100, PlayerCoord + 0.5, 270, 0));
+                player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (mode.inclined ? PlayerCoord : -4) + 0.5, mode.inclined ? 225 : 0, 0));
                 waiting = false;
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[integerCache[0]][lang];

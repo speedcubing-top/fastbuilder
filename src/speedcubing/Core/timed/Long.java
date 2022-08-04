@@ -3,7 +3,7 @@ package speedcubing.Core.timed;
 
 public class Long extends TimedMode {
     public Long() {
-        super("world", 0, 146, false);
+        super("world", 0, 146, false,52);
     }
 
     public int roomToCoord(int room) {
