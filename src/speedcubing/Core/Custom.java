@@ -19,6 +19,7 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
+import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
 
 import java.util.HashSet;
@@ -198,7 +199,7 @@ public class Custom {
         rooms[coordToRoom(member.PlayerCoord)] = true;
     }
 
-    public static void validPlaceBlock(Player player, BlockPosition b) {
+    public static void validPlaceBlock(Player player, Block b) {
         Member member = Member.getMember(player);
         int lang = member.lang;
         Inventory inventory = player.getInventory();
@@ -221,7 +222,6 @@ public class Custom {
 
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
-        member.replay = null;
         World world = player.getWorld();
         member.clear(world);
         Inventory inventory = player.getInventory();

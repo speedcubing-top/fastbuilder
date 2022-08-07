@@ -11,10 +11,12 @@ import org.bukkit.inventory.PlayerInventory;
 import speedcubing.Core.Core;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
+import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
+import speedcubing.replay.Replay;
 import speedcubing.server.speedcubingServer;
 
 import java.util.*;
@@ -29,9 +31,10 @@ public class TimedMode {
     public final int sqlId;
     public final int limit;
     public final boolean inclined;
-    public final int distance;
+    private final int distance;
+    private final int height;
 
-    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance) {
+    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height) {
         for (int i = 0; i < size; i++) {
             rooms[i] = true;
         }
@@ -40,6 +43,7 @@ public class TimedMode {
         this.sqlId = sqlId;
         this.world = Bukkit.getWorld(world);
         this.distance = distance;
+        this.height = height;
     }
 
     public void Join(Player player, boolean kick) {
@@ -69,7 +73,8 @@ public class TimedMode {
         int coord = roomToCoord(room);
         player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
-        setPressurePlate(member, distance, inclined);
+        System.out.println(member.player.getName() + " " + member.PlayerCoord + " " + world.getName());
+        setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.lang];
         int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id));
         SideBar sideBar = new SideBar(player, sidebar[0])
@@ -113,8 +118,6 @@ public class TimedMode {
 
     public void Fell(Player player, boolean fell) {
         Member member = Member.getMember(player);
-        if (member.replay != null)
-            member.replay.pause();
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
             member.clear(player.getWorld());
@@ -125,8 +128,7 @@ public class TimedMode {
             inventory.setItem(1, stack);
         } else {
             if (member.replay != null) {
-                Bukkit.getScheduler().cancelTask(member.MainTimer);
-                member.clear(player.getWorld());
+                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(player.getWorld()));
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
                 inventory.setItem(0, stack);
@@ -140,7 +142,8 @@ public class TimedMode {
                 if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.lang]);
                 else {
                     member.PlayerCoord = roomToCoord(newroom);
-                    setPressurePlate(member, distance, inclined);
+                    System.out.println(member.player.getName() + " " + member.PlayerCoord + " " + world.getName());
+                    setPressurePlate(member);
                     rooms[oldroom] = true;
                     rooms[newroom] = false;
                 }
@@ -154,10 +157,7 @@ public class TimedMode {
 
     public void Quit(Player player) {
         Member member = Member.getMember(player);
-        if (member.replay != null) {
-            member.replay.pause();
-            member.replay = null;
-        }
+        member.replay = null;
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
@@ -171,19 +171,22 @@ public class TimedMode {
         return -1;
     }
 
-    public void setPressurePlate(Member member, int x, boolean isInclined) {
+    public void setPressurePlate(Member member) {
         member.hits.clear();
         int[][] i;
-        System.out.println(member.PlayerCoord);
-        if (!isInclined)
+        if (!inclined)
             i = new int[][]{
-                    {member.PlayerCoord + 1, 103, x},
-                    {member.PlayerCoord + 2, 103, x},
-                    {member.PlayerCoord, 103, x},
-                    {member.PlayerCoord - 1, 103, x},
-                    {member.PlayerCoord - 2, 103, x},
+                    {member.PlayerCoord + 1, height, distance},
+                    {member.PlayerCoord + 2, height, distance},
+                    {member.PlayerCoord, height, distance},
+                    {member.PlayerCoord - 1, height, distance},
+                    {member.PlayerCoord - 2, height, distance},
             };
-        else i = new int[][]{};
+        else i = new int[][]{
+                {member.PlayerCoord + distance + 1, height, member.PlayerCoord - distance + 1},
+                {member.PlayerCoord + distance, height, member.PlayerCoord - distance},
+                {member.PlayerCoord + distance - 1, height, member.PlayerCoord - distance - 1},
+        };
         for (int[] b : i) {
             member.hits.add(new AxisAlignedBB((float) b[0] + 0.125F, b[1], (float) b[2] + 0.125F, (float) (b[0] + 1) - 0.125F, (double) b[1] + 0.25D, (float) (b[2] + 1) - 0.125F));
         }

@@ -13,13 +13,13 @@ public class ReplayListener implements Listener {
     public void a(PlayerToggleSneakEvent e) {
         Replay replay = Member.getMember(e.getPlayer()).replay;
         if (replay != null)
-            replay.PlayerToggleSneakEvent(e.isSneaking());
+            replay.replayRecorder.PlayerToggleSneakEvent(e.isSneaking());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void a(PlayerItemHeldEvent e) {
         Replay replay = Member.getMember(e.getPlayer()).replay;
         if (replay != null)
-            replay.PlayerItemHeldEvent(e.getPlayer().getInventory().getItem(e.getNewSlot()));
+            replay.replayRecorder.PlayerItemHeldEvent(e.getPlayer().getInventory().getItem(e.getNewSlot()));
     }
 }

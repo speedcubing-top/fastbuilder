@@ -6,25 +6,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import speedcubing.Member;
+import speedcubing.lib.utils.SQL.SQLUtils;
+import speedcubing.replay.ReplayCompressor;
 import speedcubing.replay.ReplayViewer;
+import speedcubing.system.speedcubingSystem;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class stats implements CommandExecutor, TabCompleter {
+
+
+    public ResultSet select(String table, String field, String where) {
+        return speedcubingSystem.connection.executeQuery("SELECT " + field + " FROM `" + table + "` WHERE " + where);
+    }
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         commandSender.sendMessage("currently unavailable to use.");
         if (strings.length == 0) {
-            ReplayViewer replayPlayer = new ReplayViewer(Member.getMember(commandSender).replays.get(Member.getMember(commandSender).replays.size()-1), (Player) commandSender);
-            Member.getMember(commandSender).replayPlayer = replayPlayer;
-            replayPlayer.spawnReplay();
+            Member.getMember(commandSender).replayPlayer = new ReplayViewer(Member.getMember(commandSender).replays.get(Member.getMember(commandSender).replays.size() - 1), (Player) commandSender);
         }
         if (strings.length == 1)
             Member.getMember(commandSender).replayPlayer.start();
-        if (strings.length == 2)
-            Member.getMember(commandSender).replayPlayer.togglePlaying();
-        if (strings.length == 3) {
+        if (strings.length == 2) {
+
+            String result = SQLUtils.getString(select("fbreplay", "datas", "id='" + strings[0] + "'"));
+            ReplayCompressor.read(result);
         }
 //        if (User.getRank(((Player) commandSender).getUniqueId()).equals("owner")) {
 //            String player;

@@ -1,10 +1,12 @@
 package speedcubing;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -16,6 +18,7 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
 import speedcubing.replay.ReplayViewer;
@@ -45,7 +48,7 @@ public class Member extends User {
     public int[] integerCache;
     public int MainTimer;
     public int finishedtask;
-    public Set<BlockPosition> Blocks = new HashSet<>();
+    public Set<Block> Blocks = new HashSet<>();
     public int PlayerCoord;
     public Replay replay;
     public ReplayViewer replayPlayer;
@@ -69,7 +72,7 @@ public class Member extends User {
     }
 
     public void clear(World world) {
-        for (BlockPosition b : Blocks) {
+        for (Block b : Blocks) {
             world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
         }
         Blocks.clear();
@@ -77,15 +80,14 @@ public class Member extends User {
 
     public void finish() {
         TimedMode mode = Core.getInstance(player.getWorld().getName());
-        replay.pause();
+        replay.replayRecorder.pause();
         replays.add(replay);
-        int time = replay.NewTick - 1;
+        int time = replay.replayRecorder.NewTick - 1;
         if (time < mode.limit) {
             BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
         waiting = true;
-        Bukkit.getScheduler().cancelTask(MainTimer);
         int msrecord = time * 5;
         String display = Core.tickToTime(time);
         long timeMillis = System.currentTimeMillis() / 1000L;
@@ -133,15 +135,13 @@ public class Member extends User {
         }, 40);
     }
 
-    public boolean validPlaceBlock(Player player, BlockPosition b) {
+    public boolean validPlaceBlock(int x, int y, int z) {
         if (replay == null) {
-            if (b.getY() > 100)
-                return true;
             replay = new Replay(this, didntevenfuckingstart.clone());
-            System.out.println(didntevenfuckingstart);
-            replay.start();
-            replay.PlayerMoveEvent(asyncLoc);
+            replay.replayRecorder.PlayerMoveEvent(asyncLoc);
         }
+        Block b = player.getWorld().getBlockAt(x, y, z);
+        replay.replayRecorder.BlockPlaceEvent(b);
         Blocks.add(b);
         Inventory inventory = player.getInventory();
         int empty = 1 - player.getInventory().getHeldItemSlot();
@@ -153,8 +153,6 @@ public class Member extends User {
     public void updateSidebar(String name, TimedMode mode, boolean quit) {
         int i = mode.session.indexOf(this);
         if (quit) {
-            if (MainTimer != -1)
-                Bukkit.getScheduler().cancelTask(MainTimer);
             clear(mode.world);
             Blocks.clear();
             waiting = false;
@@ -176,4 +174,19 @@ public class Member extends User {
             }
         }
     }
+
+    public void openSettings() {
+        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
+        String[] hit = StringList.FallDelayLore[lang];
+        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(integerCache[1])), hit[3], hit[4], hit[5]).build());
+        inventory.setItem(13, ItemStackList.openkit[lang]);
+        if (!player.getWorld().getName().equals("Custom"))
+            inventory.setItem(15, ItemStackList.Reset[lang]);
+        else if (player.getInventory().getItem(5) != null) {
+            String[] lore = StringList.LoopLore[lang];
+            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], hits.isEmpty() ? lore[3] : lore[2]).build());
+        }
+        player.openInventory(inventory);
+    }
+
 }

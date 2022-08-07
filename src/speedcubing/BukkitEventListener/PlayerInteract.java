@@ -1,6 +1,5 @@
 package speedcubing.BukkitEventListener;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,9 +21,18 @@ public class PlayerInteract implements Listener {
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         Member member = Member.getMember(player);
-        switch (player.getItemInHand().getType()){
+        switch (player.getItemInHand().getType()) {
             case BLAZE_ROD:
-                member.replayPlayer.addoneTick();
+                switch (e.getAction()) {
+                    case LEFT_CLICK_BLOCK:
+                    case LEFT_CLICK_AIR:
+                        member.replayPlayer.minusTick();
+                        break;
+                    case RIGHT_CLICK_AIR:
+                    case RIGHT_CLICK_BLOCK:
+                        member.replayPlayer.addoneTick();
+                        break;
+                }
                 return;
         }
         if (member.waiting)
@@ -41,26 +49,16 @@ public class PlayerInteract implements Listener {
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
-                            if (member.Blocks.contains(new BlockPosition(b.getX(),b.getY(),b.getZ()))) {
+                            if (member.Blocks.contains(b)) {
+                                member.replay.replayRecorder.BlockBreakEvent(b);
+                                member.Blocks.remove(b);
                                 b.setType(Material.AIR);
-                                member.Blocks.remove(new BlockPosition(b.getX(),b.getY(),b.getZ()));
                             }
                         }
                         break;
-                    case REDSTONE_COMPARATOR: {
-                        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[member.lang]);
-                        String[] hit = StringList.FallDelayLore[member.lang];
-                        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(member.integerCache[1])), hit[3], hit[4], hit[5]).build());
-                        inventory.setItem(13, ItemStackList.openkit[member.lang]);
-                        if (!player.getWorld().getName().equals("Custom"))
-                            inventory.setItem(15, ItemStackList.Reset[member.lang]);
-                        else if (player.getInventory().getItem(5) != null) {
-                            String[] lore = StringList.LoopLore[member.lang];
-                            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], member.hits.isEmpty() ? lore[3] : lore[2]).build());
-                        }
-                        player.openInventory(inventory);
-                    }
-                    break;
+                    case REDSTONE_COMPARATOR:
+                        member.openSettings();
+                        break;
                     case COMPASS: {
                         int lang = Member.getMember(player).lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);

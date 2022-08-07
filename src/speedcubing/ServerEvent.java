@@ -18,7 +18,6 @@ import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.event.PlayInEvent;
 import speedcubing.lib.eventbus.LibEventHandler;
 import speedcubing.lib.utils.Console;
-import speedcubing.replay.Replay;
 import speedcubing.server.events.player.NickEvent;
 import speedcubing.server.events.player.SkinEvent;
 import speedcubing.server.events.player.ToggleFlyEvent;
@@ -26,10 +25,16 @@ import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
 public class ServerEvent {
+
+    public static List<Integer> allowedBlock = Arrays.asList(
+            Material.SANDSTONE.getId(),
+            Material.MELON_BLOCK.getId(),
+            Material.WOOL.getId()
+    );
 
     @LibEventHandler
     public void ddwdw(PlayInEvent e) {
@@ -46,11 +51,11 @@ public class ServerEvent {
                 loc.setYaw(packetplayinflying.d());
                 loc.setPitch(packetplayinflying.e());
             }
-            if (member.replay != null && member.replay.isRecording) {
-                member.replay.PlayerMoveEvent(loc);
+            if (member.replay != null && member.replay.replayRecorder.isRecording) {
+                member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + Core.tickToTime(member.replay.NewTick), 12);
-                if (member.replay.NewTick >= 2400) {
+                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 12);
+                if (member.replay.replayRecorder.NewTick >= 2400) {
                     Core.getInstance(e.player.getWorld().getName()).Fell(e.player, false);
                     e.player.sendMessage(StringList.cancelled[member.lang]);
                 } else {
@@ -70,60 +75,66 @@ public class ServerEvent {
             }
         } else if (e.packet instanceof PacketPlayInBlockPlace p && p.getFace() != 255) {
             if (e.player.getGameMode() == GameMode.SURVIVAL) {
-                ItemStack stack = CraftItemStack.asBukkitCopy(p.getItemStack());
-                if (member.waiting || stack.getType().equals(Material.REDSTONE_COMPARATOR_OFF)) {
-                    e.isCancelled = true;
-                    return;
+                ItemStack stack = null;
+                boolean interact = false;
+                if (p.getItemStack() != null) { //block place
+                    stack = CraftItemStack.asBukkitCopy(p.getItemStack());
+                    if (stack.getType() == Material.AIR)
+                        e.isCancelled = true;
+                    if (stack.getType() == Material.REDSTONE_COMPARATOR) {
+                        e.isCancelled = true;
+                        interact = true;
+                        member.openSettings();
+                    }
+                    if (!allowedBlock.contains(stack.getType().getId()) && !interact)
+                        return;
                 }
                 BlockPosition pos = p.a().shift(EnumDirection.fromType1(p.getFace()));
-                int x = pos.getX();
-                int y = pos.getY();
-                int z = pos.getZ();
-                switch (e.player.getWorld().getName()) {
-                    case "world":
-                        if (z < -1 || z > 53 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Short":
-                        if (z < -1|| z > 30 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Onestack":
-                        if (z < -1 || z > 29 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Inclined":
-                        if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Inclinedshort":
-                        if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else e.isCancelled = (member.validPlaceBlock(e.player, pos));
-                        break;
-                    case "Custom":
-                        if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
-                            e.isCancelled = true;
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
-                        } else Custom.validPlaceBlock(e.player, pos);
-                        break;
+                if (stack != null && !interact) {
+                    if (member.waiting)
+                        e.isCancelled = true;
+                    else {
+                        int x = pos.getX();
+                        int y = pos.getY();
+                        int z = pos.getZ();
+                        switch (e.player.getWorld().getName()) {
+                            case "world":
+                                if (z < -1 || z > 53 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
+                                    e.isCancelled = true;
+                                } else e.isCancelled = (member.validPlaceBlock(x, y, z));
+                                break;
+                            case "Short":
+                                if (z < -1 || z > 30 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
+                                    e.isCancelled = true;
+                                } else e.isCancelled = (member.validPlaceBlock(x, y, z));
+                                break;
+                            case "Onestack":
+                                if (z < -1 || z > 29 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
+                                    e.isCancelled = true;
+                                } else e.isCancelled = (member.validPlaceBlock(x, y, z));
+                                break;
+                            case "Inclined":
+                                if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
+                                    e.isCancelled = true;
+                                } else e.isCancelled = (member.validPlaceBlock(x, y, z));
+                                break;
+                            case "Inclinedshort":
+                                if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
+                                    e.isCancelled = true;
+                                } else e.isCancelled = (member.validPlaceBlock(x, y, z));
+                                break;
+                            case "Custom":
+                                if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
+                                    e.isCancelled = true;
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
+                                } else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
+                                break;
+                        }
+                    }
                 }
                 if (e.isCancelled) {
                     ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), p.a()));
                     ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), pos));
-                } else {
-                    Replay replay = member.replay;
-                    if (replay != null)
-                        replay.BlockPlaceEvent(pos, stack.getType());
                 }
             }
         }
