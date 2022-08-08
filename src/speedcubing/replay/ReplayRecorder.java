@@ -3,7 +3,6 @@ package speedcubing.replay;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.inventory.Glow;
@@ -42,16 +41,16 @@ public class ReplayRecorder {
     public void BlockBreakEvent(Block block) {
         if (isRecording) {
             replay.BreakTicks.add((!replay.BreakTicks.isEmpty() && replay.BreakTicks.get(replay.BreakTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BreakActions.add(block);
+            replay.BreakActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ()));
             replay.BreakTypes.add(block.getType().getId());
-            replay.BreakDatas.add(block.getData());
+            replay.BreakDatas.add( block.getData());
         }
     }
 
     public void BlockPlaceEvent(Block block) {
         if (isRecording) {
             replay.BlockTicks.add((!replay.BlockTicks.isEmpty() && replay.BlockTicks.get(replay.BlockTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BlockActions.add(block);
+            replay.BlockActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ()));
         }
     }
 
@@ -59,7 +58,7 @@ public class ReplayRecorder {
         if (isRecording) {
             NewTick += 1;
             replay.LocationTicks.add(NewTick);
-            replay.LocationActions.add(loc.clone());
+            replay.LocationActions.add(loc.clone().subtract(member.PlayerCoord, 0, 0));
         }
     }
 

@@ -9,9 +9,12 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import speedcubing.Core.Core;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
@@ -78,6 +81,57 @@ public class Member extends User {
         Blocks.clear();
     }
 
+    static void fw(Player player) {
+        final Random random = new Random();
+        Location location = random.nextBoolean() ? player.getLocation().subtract(random.nextDouble(), random.nextDouble(), random.nextDouble()) : player.getLocation().add(random.nextDouble(), random.nextDouble(), random.nextDouble());
+        final Firework firework = (Firework) player.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        final FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        final FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(getColor(random.nextInt(17) + 1)).with(FireworkEffect.Type.BALL_LARGE).build();
+        fireworkMeta.addEffect(effect);
+        fireworkMeta.setPower(1);
+        firework.setFireworkMeta(fireworkMeta);
+    }
+
+    static Color getColor(final int i) {
+        switch (i) {
+            case 1:
+                return Color.AQUA;
+            case 2:
+                return Color.BLACK;
+            case 3:
+                return Color.BLUE;
+            case 4:
+                return Color.FUCHSIA;
+            case 5:
+                return Color.GRAY;
+            case 6:
+                return Color.GREEN;
+            case 7:
+                return Color.LIME;
+            case 8:
+                return Color.MAROON;
+            case 9:
+                return Color.NAVY;
+            case 10:
+                return Color.OLIVE;
+            case 11:
+                return Color.ORANGE;
+            case 12:
+                return Color.PURPLE;
+            case 13:
+                return Color.RED;
+            case 14:
+                return Color.SILVER;
+            case 15:
+                return Color.TEAL;
+            case 16:
+                return Color.WHITE;
+            case 17:
+                return Color.YELLOW;
+        }
+        return null;
+    }
+
     public void finish() {
         TimedMode mode = Core.getInstance(player.getWorld().getName());
         replay.replayRecorder.pause();
@@ -97,11 +151,28 @@ public class Member extends User {
                 speedcubingServer.connection.insert("fastbuilder", "id,at,score,mode", id + "," + timeMillis + "," + msrecord + "," + mode.sqlId);
                 speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "id=" + id);
                 SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
+                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                    fw(player);
+                    fw(player);
+                    fw(player);
+                });
+                if (last == 0) {
+                    player.sendMessage("§8---------------------------------------------\n" +
+                            "                        §bCongratulations!\n" +
+                            "             §aYou got your first score of §e" + Core.tickToTime(time) + "§a!\n" +
+                            "§8---------------------------------------------");
+                } else {
+                    player.sendMessage("§8---------------------------------------------\n" +
+                            "                        §bCongratulations!\n" +
+                            "                        §e" + Core.tickToTime(last / 5) + " §8-> §e" + Core.tickToTime(time) + " \n" +
+                            "                        §8(§bbeated by §a" + Core.tickToTime(last / 5 - time) + "§8)\n" +
+                            "§8---------------------------------------------");
+                }
             }
         }).start();
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutTitle(0, 60, 5));
+        connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
         if (mode.score.get(this) > time || mode.score.get(this) == 0) {
             int i;
@@ -124,6 +195,7 @@ public class Member extends User {
         }
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
+                replay = null;
                 clear(mode.world);
                 player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (mode.inclined ? PlayerCoord : -4) + 0.5, mode.inclined ? 225 : 0, 0));
                 waiting = false;
@@ -135,7 +207,7 @@ public class Member extends User {
         }, 40);
     }
 
-    public boolean validPlaceBlock(int x, int y, int z) {
+    public void validPlaceBlock(int x, int y, int z) {
         if (replay == null) {
             replay = new Replay(this, didntevenfuckingstart.clone());
             replay.replayRecorder.PlayerMoveEvent(asyncLoc);
@@ -147,7 +219,6 @@ public class Member extends User {
         int empty = 1 - player.getInventory().getHeldItemSlot();
         if (inventory.getItem(empty) == null)
             inventory.setItem(empty, ItemStackList.Blocks[integerCache[0]][lang]);
-        return false;
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {

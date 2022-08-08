@@ -67,7 +67,7 @@ public class ReplayViewer {
         for (Player p : Bukkit.getOnlinePlayers()) {
             all.add(((CraftPlayer) p).getHandle().playerConnection);
         }
-        npc = new NPC(replay.replayRecorder.member.player.getName(), UUID.randomUUID(), true)
+        npc = new NPC(replay.name, UUID.randomUUID(), true)
                 .setSkin(replay.value, replay.signature)
                 .setSneaking(replay.StartSneaking)
                 .setItemInHand(replay.StartItem)
@@ -89,7 +89,7 @@ public class ReplayViewer {
         if (!playing)
             task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 addoneTick();
-                if (tick == replay.replayRecorder.NewTick) {
+                if (tick == replay.LocationActions.size() -1) {
                     Bukkit.getScheduler().cancelTask(task);
                     playing = false;
                 }
@@ -139,7 +139,6 @@ public class ReplayViewer {
                 }
             }
             if (handlength != 0 && Handindex != 0) {
-                System.out.println(Handindex);
                 if (tick == replay.HandItemTicks.get(Handindex - 1)) {
                     Handindex--;
                     if (Handindex != 0) {
@@ -155,7 +154,7 @@ public class ReplayViewer {
     }
 
     public void addoneTick() {
-        if (tick != replay.replayRecorder.NewTick) {
+        if (tick != replay.LocationActions.size() -1) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(player.getName() + " " + (tick + 1) + " ticks");
             }

@@ -4,15 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 import speedcubing.system.speedcubingSystem;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.Blob;
+import java.sql.ResultSet;
 import java.util.UUID;
 
 public class ReplayCompressor {
@@ -21,124 +17,154 @@ public class ReplayCompressor {
 
     public static void write(Replay replay, UUID owner) {
         StringBuilder s = new StringBuilder();
+        s.append(intToString(replay.StartSneaking ? 0 : 1, 2))
+                .append(doubleToString(replay.StartLocation.getX()))
+                .append(doubleToString(replay.StartLocation.getY()))
+                .append(doubleToString(replay.StartLocation.getZ()))
+                .append(doubleToString(replay.StartLocation.getYaw()))
+                .append(doubleToString(replay.StartLocation.getPitch()))
+                .append(intToString(replay.StartItem.getTypeId(), 4))
+                .append(intToString(replay.StartItem.getData().getData(), 2));
         for (int i = 0; i < replay.LocationTicks.size(); i++) {
-            s.append(",");
             int a = replay.LocationTicks.indexOf(i);
             if (a != -1) {
                 Location location = replay.LocationActions.get(a);
-                s.append("0").
+                s.append(intToString(0, 2)).
                         append(doubleToString(location.getX())).
                         append(doubleToString(location.getY())).
                         append(doubleToString(location.getZ())).
                         append(doubleToString(location.getYaw())).
                         append(doubleToString(location.getPitch()));
-                System.out.println(doubleToString(location.getX()));
             }
+
             a = replay.BlockTicks.indexOf(i);
             if (a != -1) {
                 Block block = replay.BlockActions.get(a);
-                s.append("1").append(intToString(block.getX(), 2)).
-                        append(intToString(block.getY(), 2)).
-                        append(intToString(block.getZ(), 2));
+                s.append(intToString(1, 2))
+                        .append(intToString(block.getX(), 4)).
+                        append(intToString(block.getY(), 4)).
+                        append(intToString(block.getZ(), 4));
             }
+
             a = replay.BreakTicks.indexOf(i);
             if (a != -1) {
                 Block block = replay.BreakActions.get(a);
-                s.append("2").append(intToString(block.getX(), 2)).
-                        append(intToString(block.getY(), 2)).
-                        append(intToString(block.getZ(), 2)).
-                        append(intToString(replay.BreakTypes.get(a), 2)).
-                        append(replay.BreakDatas.get(a));
+                s.append(intToString(2, 2)).
+                        append(intToString(block.getX(), 4)).
+                        append(intToString(block.getY(), 4)).
+                        append(intToString(block.getZ(), 4)).
+                        append(intToString(replay.BreakTypes.get(a), 4)).
+                        append(intToString(replay.BreakDatas.get(a), 2));
             }
+
             a = replay.SneakTicks.indexOf(i);
             if (a != -1) {
-                boolean b = replay.SneakActions.get(a);
-                s.append("3").append(b ? 0 : 1);
+                s.append(intToString(3, 2)).append(intToString(replay.SneakActions.get(a) ? 0 : 1, 2));
             }
+
             a = replay.HandItemTicks.indexOf(i);
             if (a != -1) {
-                s.append("4").append(intToString(replay.HandItemActions.get(a), 2)).
-                        append(replay.HandItemEnchants.get(a) ? 1 : 0).
-                        append(replay.HandItemDatas.get(a));
+                s.append(intToString(4, 2)).append(intToString(replay.HandItemActions.get(a), 4)).
+                        append(intToString(replay.HandItemEnchants.get(a) ? 0 : 1, 2)).
+                        append(intToString(replay.HandItemDatas.get(a), 2));
             }
         }
-        s = new StringBuilder(s.substring(2));
-        s.append(replay.StartSneaking ? 1 : 0)
-                .append(doubleToString(replay.StartLocation.getX()))
-                .append(doubleToString(replay.StartLocation.getY()))
-                .append(doubleToString(replay.StartLocation.getZ()))
-                .append(intToString(replay.StartItem.getTypeId(), 2))
-                .append(replay.StartItem.getData().getData());
         a = s.toString();
-        File f = new File("/home/andy/test2.ext");
+        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'");
+    }
+
+    public static Replay read(String uuid) {
+        StringBuilder s = new StringBuilder();
+        String temp;
+        String name;
+        String value;
+        String signature;
         try {
-            f.createNewFile();
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(s.toString().getBytes(StandardCharsets.US_ASCII));
+            ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature", "id='" + uuid + "'");
+            resultSet.next();
+            Blob result = resultSet.getBlob(1);
+            name = resultSet.getString(2);
+            value = resultSet.getString(3);
+            signature = resultSet.getString(4);
+            for (int i = 1; i <= result.length(); i++) {
+                temp = String.format("%x", result.getBytes(i, 1)[0]);
+                if (temp.length() == 1)
+                    temp = "0" + temp;
+                s.append(temp);
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        speedcubingSystem.connection.insert("fbreplay", "id,owner,datas,value,signature,time", "'" + UUID.randomUUID() + "','" + owner + "','" + s + "','" + replay.value + "','" + replay.signature + "'," + (System.currentTimeMillis() / 1000L));
-    }
-
-    public static void read(String s) {
-        String[] splitted = s.split(",");
         World world = Bukkit.getWorld("world");
         Replay replay = new Replay();
-        for (int i = 0; i < splitted.length - 1; i++) {
-            String a = splitted[i];
-            if (a.charAt(0) == '0') {
+        replay.name = name;
+        replay.value = value;
+        replay.signature = signature;
+        replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
+        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
+        replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
+        s = new StringBuilder(s.substring(48));
+        int i = -1;
+        while (s.length() != 0) {
+            if (s.toString().startsWith("00")) {
+                i += 1;
                 replay.LocationTicks.add(i);
-                String x = a.substring(1, 9);
-                String y = a.substring(10, 18);
-                String z = a.substring(11, 19);
-                String yaw = a.substring(20, 28);
-                String pitch = a.substring(21, 25);
-                System.out.println(x + " " + y + " " + z);
-                replay.LocationActions.add(new Location(world, StringToDouble(x), StringToDouble(y), StringToDouble(z), (float) StringToDouble(yaw), (float) StringToDouble(pitch)));
+                replay.LocationActions.add(new Location(world,
+                        StringToDouble(s.substring(2, 10)),
+                        StringToDouble(s.substring(10, 18)),
+                        StringToDouble(s.substring(18, 26)),
+                        (float) StringToDouble(s.substring(26, 34)),
+                        (float) StringToDouble(s.substring(34, 42))));
+                s = new StringBuilder(s.substring(42));
+            } else if (s.toString().startsWith("01")) {
+                replay.BlockTicks.add(i);
+                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
+                s = new StringBuilder(s.substring(14));
+            } else if (s.toString().startsWith("02")) {
+                replay.BreakTicks.add(i);
+                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
+                replay.BreakTypes.add(stringToInt(s.substring(14, 18)));
+                replay.BreakDatas.add((byte) stringToInt(s.substring(18, 20)));
+                s = new StringBuilder(s.substring(20));
+            } else if (s.toString().startsWith("03")) {
+                replay.SneakTicks.add(i);
+                replay.SneakActions.add(stringToInt(s.substring(2, 4)) == 0);
+                s = new StringBuilder(s.substring(4));
+            } else if (s.toString().startsWith("04")) {
+                replay.HandItemTicks.add(i);
+                replay.HandItemActions.add(stringToInt(s.substring(2, 6)));
+                replay.HandItemEnchants.add(stringToInt(s.substring(6, 8)) == 0);
+                replay.HandItemDatas.add((byte) stringToInt(s.substring(8, 10)));
+                s = new StringBuilder(s.substring(10));
             }
         }
-        System.out.println(replay.LocationActions);
+        return replay;
     }
 
-    static int StringToInt(String s) {
-        return Integer.parseInt(s, 16);
+    static int stringToInt(String s) {
+        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 8) {
+            sBuilder.insert(0, c);
+        }
+        s = sBuilder.toString();
+        return (int) Long.parseLong(s, 16);
     }
 
     static String intToString(int i, int size) {
         StringBuilder s = new StringBuilder(Integer.toHexString(i));
-        size *= 2;
         while (s.length() < size) {
-            s.insert(0, "0");
+            s.insert(0, i < 0 ? "f" : "0");
         }
-        return s.toString();
-    }
-
-    static String intToString2(int i, int size) {
-        byte[] bytes;
-        if (size == 4)
-            bytes = new byte[]{(byte) (i >> 24), (byte) (i >> 16), (byte) (i >> 8), (byte) i};
-        else bytes = new byte[]{(byte) (i >> 8), (byte) i};
-        StringBuilder s = new StringBuilder();
-        for (byte bb : bytes) {
-            s.append((char) bb);
-        }
-        return s.toString();
-    }
-
-    static int StringToInt2(String s) {
-        byte[] bb = new byte[s.length()];
-        for (int i = 0; i < s.length(); i++) {
-            bb[i] = (byte) s.charAt(i);
-        }
-        return new BigInteger(bb).intValue();
+        return s.substring(s.length() - size);
     }
 
     static String doubleToString(double d) {
-        return intToString((int) (d * 1024), 4);
+        return intToString((int) (d * 1024), 8);
     }
 
     static double StringToDouble(String s) {
-        return StringToInt(s) / 1024D;
+        return stringToInt(s) / 1024D;
     }
 }

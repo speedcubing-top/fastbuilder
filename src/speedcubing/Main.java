@@ -4,6 +4,7 @@ package speedcubing;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -62,6 +63,15 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getWorld("Custom").setTime(6000);
         Bukkit.getWorld("world").setDifficulty(Difficulty.PEACEFUL);
         Bukkit.getWorld("world").setTime(6000);
+        getServer().createWorld(new WorldCreator("replay_short"));
+        Bukkit.getWorld("replay_short").setDifficulty(Difficulty.PEACEFUL);
+        Bukkit.getWorld("replay_short").setTime(6000);
+        getServer().createWorld(new WorldCreator("replay_normal"));
+        Bukkit.getWorld("replay_normal").setDifficulty(Difficulty.PEACEFUL);
+        Bukkit.getWorld("replay_normal").setTime(6000);
+        getServer().createWorld(new WorldCreator("replay_onestack"));
+        Bukkit.getWorld("replay_onestack").setDifficulty(Difficulty.PEACEFUL);
+        Bukkit.getWorld("replay_onestack").setTime(6000);
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
         Long = new Long();
@@ -77,6 +87,10 @@ public class Main extends JavaPlugin implements Listener {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
+//                Player player = Bukkit.getPlayer("speedcubing");
+//                if (player != null) {
+//                    System.out.println(Member.getMember(player).finishNext);
+//                }
                 speedcubingServer.tcp.sendClean(25576 - Bukkit.getPort() % 2, "online|2|" + Bukkit.getOnlinePlayers().size());
             }
         }, 0, 1000);

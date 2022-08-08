@@ -1,5 +1,6 @@
 package speedcubing.List;
 
+import speedcubing.ServerEvent;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.server.libs.GlobalString;
 import org.bukkit.Bukkit;
@@ -67,8 +68,8 @@ public class ItemStackList {
             Reset[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode"}[i]).build();
             openkit[i] = new ItemBuilder(Material.SANDSTONE).durability(2).name(blockedit[i]).build();
             ResetConfirm[i] = Bukkit.createInventory(confirm, 27, new String[]{"§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?"}[i]);
-            ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability( 13).name(yes[i]).build());
-            ResetConfirm[i].setItem(15, new ItemBuilder(Material.STAINED_CLAY).durability( 14).name(no[i]).build());
+            ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability(13).name(yes[i]).build());
+            ResetConfirm[i].setItem(15, new ItemBuilder(Material.STAINED_CLAY).durability(14).name(no[i]).build());
             ItemStack[] categoryblockeditor = {
                     new ItemBuilder(Material.SANDSTONE).name(block[0][i]).lore(GlobalString.category[i]).build(),
                     new ItemBuilder(Material.WOOL).name(block[1][i]).lore(GlobalString.category[i]).build(),
@@ -276,6 +277,9 @@ public class ItemStackList {
             for (int j = 0; j < clayeditor.length; j++) {
                 ItemStackList.clayeditor[j][i] = clayeditor[j];
             }
+        }
+        for (ItemStack[] s : Blocks) {
+            ServerEvent.allowedBlock.add(s[0].getTypeId());
         }
     }
 }

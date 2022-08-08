@@ -35,8 +35,11 @@ public class PlayerInteract implements Listener {
                 }
                 return;
         }
-        if (member.waiting)
+        if (member.waiting) {
+            e.setCancelled(true);
+            player.updateInventory();
             return;
+        }
         if (player.getGameMode() == GameMode.SURVIVAL) {
             if (e.getAction() == Action.PHYSICAL) {
                 if (e.getClickedBlock().getType() == Material.GOLD_PLATE) {
@@ -57,6 +60,7 @@ public class PlayerInteract implements Listener {
                         }
                         break;
                     case REDSTONE_COMPARATOR:
+                        e.setCancelled(true);
                         member.openSettings();
                         break;
                     case COMPASS: {

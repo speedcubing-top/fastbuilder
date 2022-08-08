@@ -41,12 +41,14 @@ public class Replay implements Listener {
     public ItemStack StartItem;
     public String value;
     public String signature;
+    public String name;
 
     public Replay(Member member, Location startLocation) {
         replayRecorder = new ReplayRecorder(this, member);
         this.StartSneaking = member.player.isSneaking();
-        this.StartLocation = startLocation;
+        this.StartLocation = startLocation.subtract(member.PlayerCoord, 0, 0);
         this.StartItem = member.player.getItemInHand();
+        this.name = member.player.getName();
         Property profile = ((CraftPlayer) member.player).getProfile().getProperties().get("textures").iterator().next();
         this.value = profile.getValue();
         this.signature = profile.getSignature();
