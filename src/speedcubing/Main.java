@@ -19,6 +19,7 @@ import speedcubing.Core.timed.*;
 import speedcubing.List.ItemStackList;
 import speedcubing.lib.eventbus.LibEventManager;
 import speedcubing.replay.ReplayListener;
+import speedcubing.replay.gui.ReplayGUI;
 import speedcubing.server.speedcubingServer;
 
 import java.util.Timer;
@@ -74,6 +75,8 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getWorld("replay_onestack").setTime(6000);
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
+        Bukkit.getPluginManager().registerEvents(new speedcubing.replay.gui.InventoryClick(), this);
+        new ReplayGUI().init();
         Long = new Long();
         Short = new Short();
         Inclined = new Inclined();

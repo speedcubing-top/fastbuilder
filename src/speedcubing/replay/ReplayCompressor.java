@@ -70,17 +70,16 @@ public class ReplayCompressor {
             }
         }
         a = s.toString();
-        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'");
+        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId);
     }
 
-    public static Replay read(String uuid) {
+    public static Replay read(ResultSet resultSet, int XDiff) {
         StringBuilder s = new StringBuilder();
         String temp;
         String name;
         String value;
         String signature;
         try {
-            ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature", "id='" + uuid + "'");
             resultSet.next();
             Blob result = resultSet.getBlob(1);
             name = resultSet.getString(2);
@@ -102,7 +101,7 @@ public class ReplayCompressor {
         replay.value = value;
         replay.signature = signature;
         replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
-        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
+        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)) + XDiff, StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
         int i = -1;
@@ -111,7 +110,7 @@ public class ReplayCompressor {
                 i += 1;
                 replay.LocationTicks.add(i);
                 replay.LocationActions.add(new Location(world,
-                        StringToDouble(s.substring(2, 10)),
+                        StringToDouble(s.substring(2, 10)) + XDiff,
                         StringToDouble(s.substring(10, 18)),
                         StringToDouble(s.substring(18, 26)),
                         (float) StringToDouble(s.substring(26, 34)),
@@ -119,11 +118,11 @@ public class ReplayCompressor {
                 s = new StringBuilder(s.substring(42));
             } else if (s.toString().startsWith("01")) {
                 replay.BlockTicks.add(i);
-                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
+                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)) + XDiff, stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
                 s = new StringBuilder(s.substring(14));
             } else if (s.toString().startsWith("02")) {
                 replay.BreakTicks.add(i);
-                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
+                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)) + XDiff, stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
                 replay.BreakTypes.add(stringToInt(s.substring(14, 18)));
                 replay.BreakDatas.add((byte) stringToInt(s.substring(18, 20)));
                 s = new StringBuilder(s.substring(20));

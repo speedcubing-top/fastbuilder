@@ -1,10 +1,11 @@
 package speedcubing.Core;
 
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -19,10 +20,9 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
-import speedcubing.replay.Replay;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Custom {
@@ -45,10 +45,10 @@ public class Custom {
         Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
         int lang = member.lang;
-        SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 10);
+        SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 10);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", Core.tickToTime(member.times)))));
+        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)))));
         member.times = -1;
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         if (pressure) {
@@ -108,6 +108,7 @@ public class Custom {
         rooms[room] = false;
         used += 1;
         Member member = Member.getMember(player);
+        member.currentMode = null;
         int coord = 250 * (room * (int) Math.pow(-1, room + 1) + room % 2);
         World world = Bukkit.getWorld("Custom");
         for (int x = -2; x <= 2; x++) {
@@ -207,7 +208,7 @@ public class Custom {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 member.times += 1;
-                SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 10);
+                SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 10);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));

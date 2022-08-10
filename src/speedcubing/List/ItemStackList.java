@@ -1,13 +1,13 @@
 package speedcubing.List;
 
-import speedcubing.ServerEvent;
-import speedcubing.lib.bukkit.inventory.ItemBuilder;
-import speedcubing.server.libs.GlobalString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import speedcubing.ServerEvent;
+import speedcubing.lib.bukkit.inventory.ItemBuilder;
+import speedcubing.server.libs.GlobalString;
 
 public class ItemStackList {
     public static final InventoryHolder menu = () -> null;
@@ -20,6 +20,9 @@ public class ItemStackList {
     public static ItemStack[] Reset = new ItemStack[4];
     public static ItemStack[] Length = new ItemStack[4];
     public static ItemStack[] Height = new ItemStack[4];
+    public static ItemStack[] Replay = new ItemStack[4];
+    public static ItemStack[] TICK = new ItemStack[4];
+    public static ItemStack[] QUITREPLAY = new ItemStack[4];
 
     public static ItemStack[][] Blocks = new ItemStack[72][4];
 
@@ -64,8 +67,11 @@ public class ItemStackList {
             Height[i] = new ItemBuilder(Material.GOLD_INGOT).name(new String[]{"§bHeight (§aLeft--§8/§cRight++§b)", "§bHeight (§aLeft--§8/§cRight++§b)", "§bHeight (§aLeft--§8/§cRight++§b)", "§bHeight (§aLeft--§8/§cRight++§b)"}[i]).build();
             navigator[i] = new ItemBuilder(Material.COMPASS).name(new String[]{"§aSwitch Mode", "§aSwitch Mode", "§aSwitch Mode", "§aSwitch Mode"}[i]).build();
             pickaxe[i] = new ItemBuilder(Material.DIAMOND_PICKAXE).glow().name(new String[]{"§6Tool for Breaking Block", "§6Tool for Breaking Block", "§6Tool for Breaking Block", "§6Tool for Breaking Block"}[i]).hideAttr().build();
+            Replay[i] = new ItemBuilder(Material.BOOK).name(new String[]{"§bReplay", "§bReplay", "§bReplay", "§bReplay"}[i]).build();
             Settings[i] = new ItemBuilder(Material.REDSTONE_COMPARATOR).name(new String[]{"§cSettings", "§cSettings", "§cSettings", "§cSettings"}[i]).build();
             Reset[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode"}[i]).build();
+            TICK[i] = new ItemBuilder(Material.BLAZE_ROD).name(new String[]{"§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++"}[i]).build();
+            QUITREPLAY[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cExit Replay", "§cExit Replay", "§cExit Replay", "§cExit Replay"}[i]).build();
             openkit[i] = new ItemBuilder(Material.SANDSTONE).durability(2).name(blockedit[i]).build();
             ResetConfirm[i] = Bukkit.createInventory(confirm, 27, new String[]{"§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?"}[i]);
             ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability(13).name(yes[i]).build());

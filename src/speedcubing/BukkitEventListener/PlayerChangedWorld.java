@@ -13,6 +13,7 @@ public class PlayerChangedWorld implements Listener {
         Player player = e.getPlayer();
         if (e.getFrom().getName().equals("Custom"))
             Custom.Quit(player);
-        else Core.getInstance(e.getFrom().getName()).Quit(player);
+        else if (!e.getFrom().getName().startsWith("replay_"))
+            Core.getInstance(e.getFrom().getName()).Quit(player);
     }
 }

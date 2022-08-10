@@ -15,6 +15,7 @@ import speedcubing.List.StringList;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
+import speedcubing.replay.gui.ReplayGUI;
 
 public class PlayerInteract implements Listener {
     @EventHandler
@@ -34,6 +35,9 @@ public class PlayerInteract implements Listener {
                         break;
                 }
                 return;
+            case BARRIER:
+                member.currentMode.Join(player, false);
+                break;
         }
         if (member.waiting) {
             e.setCancelled(true);
@@ -49,6 +53,10 @@ public class PlayerInteract implements Listener {
             } else {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
+                    case BOOK:
+                        player.sendMessage("Release in this weekend!");
+//                        ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
+                        break;
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
@@ -75,7 +83,7 @@ public class PlayerInteract implements Listener {
                                 new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5][lang])
                         };
                         if (!player.getWorld().getName().equals("Custom"))
-                            builders[Core.getInstance(player.getWorld().getName()).sqlId].glow();
+                            builders[member.currentMode.sqlId].glow();
                         inventory.setItem(10, builders[0].build());
                         inventory.setItem(11, builders[1].build());
                         inventory.setItem(12, builders[2].build());

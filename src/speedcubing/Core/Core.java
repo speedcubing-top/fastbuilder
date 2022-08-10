@@ -3,6 +3,7 @@ package speedcubing.Core;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.Main;
 import speedcubing.Member;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
 import java.util.ArrayList;
@@ -14,9 +15,6 @@ public class Core {
         return String.format("%.3f", ms * 0.01);
     }
 
-    public static String tickToTime(int tick) {
-        return String.format("%.3f", tick * 0.05);
-    }
 
     public static int cal(int oldroom, boolean left, boolean[] b) {
         int a = left ? 0 : 1;
@@ -41,7 +39,7 @@ public class Core {
                 if (sc == 0)
                     result.add("§7-,---");
                 else
-                    result.add(speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + tickToTime(sc));
+                    result.add(speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc));
             }
         }
         return result;

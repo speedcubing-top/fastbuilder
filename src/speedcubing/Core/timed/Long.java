@@ -1,9 +1,11 @@
 package speedcubing.Core.timed;
 
 
+import org.bukkit.Bukkit;
+
 public class Long extends TimedMode {
     public Long() {
-        super("world", 0, 146, false,52,106);
+        super("world", 0, 146, false,52,106, Bukkit.getWorld("replay_normal"));
     }
 
     public int roomToCoord(int room) {

@@ -1,7 +1,6 @@
 package speedcubing.replay;
 
 import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -14,8 +13,6 @@ import speedcubing.Main;
 import speedcubing.lib.bukkit.entity.NPC;
 import speedcubing.lib.bukkit.inventory.ItemUtils;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 public class ReplayViewer {
@@ -63,10 +60,6 @@ public class ReplayViewer {
         nextBlock = replay.BlockTicks.size() == 0 ? -1 : replay.BlockTicks.get(0);
         nextHand = replay.HandItemTicks.size() == 0 ? -1 : replay.HandItemTicks.get(0);
         currentItem = replay.StartItem;
-        Set<PlayerConnection> all = new HashSet<>();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            all.add(((CraftPlayer) p).getHandle().playerConnection);
-        }
         npc = new NPC(replay.name, UUID.randomUUID(), true)
                 .setSkin(replay.value, replay.signature)
                 .setSneaking(replay.StartSneaking)
@@ -79,8 +72,8 @@ public class ReplayViewer {
                         });
                     }
                 }))
+                .world(player.getWorld().getName())
                 .setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
-        npc.listener.addAll(all);
         npc.listener.add(((CraftPlayer) player).getHandle().playerConnection);
         npc.spawn().updateNpcLocation();
     }
@@ -89,7 +82,7 @@ public class ReplayViewer {
         if (!playing)
             task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 addoneTick();
-                if (tick == replay.LocationActions.size() -1) {
+                if (tick == replay.LocationActions.size() - 1) {
                     Bukkit.getScheduler().cancelTask(task);
                     playing = false;
                 }
@@ -154,7 +147,7 @@ public class ReplayViewer {
     }
 
     public void addoneTick() {
-        if (tick != replay.LocationActions.size() -1) {
+        if (tick != replay.LocationActions.size() - 1) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(player.getName() + " " + (tick + 1) + " ticks");
             }

@@ -131,9 +131,8 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 11:
                         Member member = Member.getMember(player);
-                        TimedMode mode = Core.getInstance(player.getWorld().getName());
-                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=0", "id=" + member.id)).start();
-                        member.updateSidebar(player.getName(), mode, false);
+                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + member.currentMode.sqlId + "_pb=0", "id=" + member.id)).start();
+                        member.updateSidebar(player.getName(), member.currentMode, false);
                         SideBar.getSidebar(player).setLine(StringList.SideBar[member.lang][4] + "§7-,---", 4);
                         player.closeInventory();
                         break;

@@ -1,8 +1,10 @@
 package speedcubing.Core.timed;
 
+import org.bukkit.Bukkit;
+
 public class InclinedShort extends TimedMode {
     public InclinedShort() {
-        super("InclinedShort", 4, 40, true,18,103);
+        super("InclinedShort", 4, 40, true, 18, 103, null);
     }
 
     public int roomToCoord(int room) {

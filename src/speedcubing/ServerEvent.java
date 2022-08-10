@@ -23,6 +23,7 @@ import speedcubing.server.events.player.SkinEvent;
 import speedcubing.server.events.player.ToggleFlyEvent;
 import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
 import java.util.ArrayList;
@@ -50,9 +51,9 @@ public class ServerEvent {
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 12);
+                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 12);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
-                    Core.getInstance(e.player.getWorld().getName()).Fell(e.player, false);
+                    member.currentMode.Fell(e.player, false);
                     e.player.sendMessage(StringList.cancelled[member.lang]);
                 } else {
                     if (member.finishNext) {

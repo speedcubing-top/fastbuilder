@@ -2,6 +2,7 @@ package speedcubing.Core.timed;
 
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -15,15 +16,18 @@ import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.bukkit.WorldUtils;
 import speedcubing.lib.utils.SQL.SQLUtils;
-import speedcubing.replay.Replay;
+import speedcubing.replay.ReplayCompressor;
+import speedcubing.replay.ReplayViewer;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
+import speedcubing.system.speedcubingSystem;
 
 import java.util.*;
 
 public class TimedMode {
     public final int size = 31;
-    public int used = 0;
     public final boolean[] rooms = new boolean[size];
     public final List<Member> session = new ArrayList<>();
     public final Map<Member, Integer> score = new HashMap<>();
@@ -33,8 +37,12 @@ public class TimedMode {
     public final boolean inclined;
     private final int distance;
     private final int height;
+    private final World replayWorld;
+    public int used = 0;
 
-    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height) {
+    public final Set<Integer> replayRoom = new HashSet<>();
+
+    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, World replayWorld) {
         for (int i = 0; i < size; i++) {
             rooms[i] = true;
         }
@@ -44,6 +52,25 @@ public class TimedMode {
         this.world = Bukkit.getWorld(world);
         this.distance = distance;
         this.height = height;
+        this.replayWorld = replayWorld;
+    }
+
+    public void JoinReplay(Member member, int index) {
+        int room = 1;
+        while (replayRoom.contains(room)) {
+            room++;
+        }
+        replayRoom.add(room);
+        member.ReplayCoord = roomToCoord(room) / 12 * 500;
+        member.player.setGameMode(GameMode.ADVENTURE);
+        member.player.setAllowFlight(true);
+        member.player.setFlying(true);
+        member.player.teleport(new Location(replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+        member.replayPlayer = new ReplayViewer(ReplayCompressor.read(speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' LIMIT " + index + ",1"), member.ReplayCoord), member.player);
+        WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + member.ReplayCoord, 83, -9, replayWorld);
+        member.player.getInventory().clear();
+        member.player.getInventory().setItem(4, ItemStackList.TICK[member.lang]);
+        member.player.getInventory().setItem(6, ItemStackList.QUITREPLAY[member.lang]);
     }
 
     public void Join(Player player, boolean kick) {
@@ -70,7 +97,10 @@ public class TimedMode {
         rooms[room] = false;
         used += 1;
         Member member = Member.getMember(player);
+        member.currentMode = this;
         int coord = roomToCoord(room);
+        player.setAllowFlight(false);
+        player.setGameMode(GameMode.SURVIVAL);
         player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
         System.out.println(member.player.getName() + " " + member.PlayerCoord + " " + world.getName());
@@ -95,7 +125,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + Core.tickToTime(sc);
+                    result = speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }
@@ -109,6 +139,7 @@ public class TimedMode {
         inventory.setItem(0, stack);
         inventory.setItem(1, stack);
         inventory.setItem(2, ItemStackList.pickaxe[member.lang]);
+        inventory.setItem(6, ItemStackList.Replay[member.lang]);
         inventory.setItem(7, ItemStackList.Settings[member.lang]);
         inventory.setItem(8, ItemStackList.navigator[member.lang]);
         inventory.setHeldItemSlot(0);

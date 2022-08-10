@@ -25,6 +25,7 @@ import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
 import speedcubing.replay.ReplayViewer;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.libs.User;
 import speedcubing.server.speedcubingServer;
 
@@ -53,8 +54,11 @@ public class Member extends User {
     public int finishedtask;
     public Set<Block> Blocks = new HashSet<>();
     public int PlayerCoord;
+    public int ReplayCoord;
     public Replay replay;
     public ReplayViewer replayPlayer;
+
+    public TimedMode currentMode;
 
     public int[] LengthSettings;
     public int[] Center;
@@ -64,8 +68,6 @@ public class Member extends User {
 
     public Location didntevenfuckingstart = new Location(player.getWorld(), 0, 0, 0);
     public final Location asyncLoc = new Location(player.getWorld(), 0, 0, 0);
-    public final List<Replay> replays = new ArrayList<>();
-
     public boolean finishNext;
 
     public Member(Player player) {
@@ -81,75 +83,20 @@ public class Member extends User {
         Blocks.clear();
     }
 
-    static void fw(Player player) {
-        final Random random = new Random();
-        Location location = random.nextBoolean() ? player.getLocation().subtract(random.nextDouble(), random.nextDouble(), random.nextDouble()) : player.getLocation().add(random.nextDouble(), random.nextDouble(), random.nextDouble());
-        final Firework firework = (Firework) player.getWorld().spawnEntity(location, EntityType.FIREWORK);
-        final FireworkMeta fireworkMeta = firework.getFireworkMeta();
-        final FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(getColor(random.nextInt(17) + 1)).with(FireworkEffect.Type.BALL_LARGE).build();
-        fireworkMeta.addEffect(effect);
-        fireworkMeta.setPower(1);
-        firework.setFireworkMeta(fireworkMeta);
-    }
-
-    static Color getColor(final int i) {
-        switch (i) {
-            case 1:
-                return Color.AQUA;
-            case 2:
-                return Color.BLACK;
-            case 3:
-                return Color.BLUE;
-            case 4:
-                return Color.FUCHSIA;
-            case 5:
-                return Color.GRAY;
-            case 6:
-                return Color.GREEN;
-            case 7:
-                return Color.LIME;
-            case 8:
-                return Color.MAROON;
-            case 9:
-                return Color.NAVY;
-            case 10:
-                return Color.OLIVE;
-            case 11:
-                return Color.ORANGE;
-            case 12:
-                return Color.PURPLE;
-            case 13:
-                return Color.RED;
-            case 14:
-                return Color.SILVER;
-            case 15:
-                return Color.TEAL;
-            case 16:
-                return Color.WHITE;
-            case 17:
-                return Color.YELLOW;
-        }
-        return null;
-    }
-
     public void finish() {
-        TimedMode mode = Core.getInstance(player.getWorld().getName());
         replay.replayRecorder.pause();
-        replays.add(replay);
         int time = replay.replayRecorder.NewTick - 1;
-        if (time < mode.limit) {
+        if (time < currentMode.limit) {
             BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
         waiting = true;
         int msrecord = time * 5;
-        String display = Core.tickToTime(time);
-        long timeMillis = System.currentTimeMillis() / 1000L;
+        String display = FastBuilderUtils.tickToTime(time);
         new Thread(() -> {
-            int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + mode.sqlId + "_pb", "id=" + id));
+            int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + id));
             if (last == 0 || last > msrecord) {
-                speedcubingServer.connection.insert("fastbuilder", "id,at,score,mode", id + "," + timeMillis + "," + msrecord + "," + mode.sqlId);
-                speedcubingServer.connection.update("playersdata", "fb_" + mode.sqlId + "_pb=" + msrecord, "id=" + id);
+                speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + id);
                 SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
                 Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                     fw(player);
@@ -159,13 +106,13 @@ public class Member extends User {
                 if (last == 0) {
                     player.sendMessage("§8---------------------------------------------\n" +
                             "                        §bCongratulations!\n" +
-                            "             §aYou got your first score of §e" + Core.tickToTime(time) + "§a!\n" +
+                            "             §aYou got your first score of §e" + FastBuilderUtils.tickToTime(time) + "§a!\n" +
                             "§8---------------------------------------------");
                 } else {
                     player.sendMessage("§8---------------------------------------------\n" +
                             "                        §bCongratulations!\n" +
-                            "                        §e" + Core.tickToTime(last / 5) + " §8-> §e" + Core.tickToTime(time) + " \n" +
-                            "                        §8(§bbeated by §a" + Core.tickToTime(last / 5 - time) + "§8)\n" +
+                            "                        §e" + FastBuilderUtils.tickToTime(last / 5) + " §8-> §e" + FastBuilderUtils.tickToTime(time) + " \n" +
+                            "                        §8(§bbeated by §a" + FastBuilderUtils.tickToTime(last / 5 - time) + "§8)\n" +
                             "§8---------------------------------------------");
                 }
             }
@@ -174,20 +121,20 @@ public class Member extends User {
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
-        if (mode.score.get(this) > time || mode.score.get(this) == 0) {
+        if (currentMode.score.get(this) > time || currentMode.score.get(this) == 0) {
             int i;
-            for (i = 0; i < mode.session.size(); i++) {
-                if (mode.score.get(mode.session.get(i)) > time || mode.score.get(mode.session.get(i)) == 0) {
-                    mode.session.remove(this);
-                    mode.session.add(i, this);
+            for (i = 0; i < currentMode.session.size(); i++) {
+                if (currentMode.score.get(currentMode.session.get(i)) > time || currentMode.score.get(currentMode.session.get(i)) == 0) {
+                    currentMode.session.remove(this);
+                    currentMode.session.add(i, this);
                     break;
                 }
             }
-            mode.score.put(this, time);
+            currentMode.score.put(this, time);
             if (i < 4) {
-                List<String> s = Core.getSideBar(i, mode.session, mode.score);
+                List<String> s = Core.getSideBar(i, currentMode.session, currentMode.score);
                 for (int j = i; j < 3; j++) {
-                    for (Player p : mode.world.getPlayers()) {
+                    for (Player p : currentMode.world.getPlayers()) {
                         SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
                     }
                 }
@@ -196,8 +143,8 @@ public class Member extends User {
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 replay = null;
-                clear(mode.world);
-                player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (mode.inclined ? PlayerCoord : -4) + 0.5, mode.inclined ? 225 : 0, 0));
+                clear(currentMode.world);
+                player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0));
                 waiting = false;
                 Inventory inventory = player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[integerCache[0]][lang];
@@ -260,4 +207,55 @@ public class Member extends User {
         player.openInventory(inventory);
     }
 
+
+    static void fw(Player player) {
+        final Random random = new Random();
+        Location location = random.nextBoolean() ? player.getLocation().subtract(random.nextDouble(), random.nextDouble(), random.nextDouble()) : player.getLocation().add(random.nextDouble(), random.nextDouble(), random.nextDouble());
+        final Firework firework = (Firework) player.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        final FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        final FireworkEffect effect = FireworkEffect.builder().flicker(true).withColor(getColor(random.nextInt(17) + 1)).with(FireworkEffect.Type.BALL_LARGE).build();
+        fireworkMeta.addEffect(effect);
+        fireworkMeta.setPower(1);
+        firework.setFireworkMeta(fireworkMeta);
+    }
+
+    static Color getColor(final int i) {
+        switch (i) {
+            case 1:
+                return Color.AQUA;
+            case 2:
+                return Color.BLACK;
+            case 3:
+                return Color.BLUE;
+            case 4:
+                return Color.FUCHSIA;
+            case 5:
+                return Color.GRAY;
+            case 6:
+                return Color.GREEN;
+            case 7:
+                return Color.LIME;
+            case 8:
+                return Color.MAROON;
+            case 9:
+                return Color.NAVY;
+            case 10:
+                return Color.OLIVE;
+            case 11:
+                return Color.ORANGE;
+            case 12:
+                return Color.PURPLE;
+            case 13:
+                return Color.RED;
+            case 14:
+                return Color.SILVER;
+            case 15:
+                return Color.TEAL;
+            case 16:
+                return Color.WHITE;
+            case 17:
+                return Color.YELLOW;
+        }
+        return null;
+    }
 }
