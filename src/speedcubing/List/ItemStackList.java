@@ -23,6 +23,9 @@ public class ItemStackList {
     public static ItemStack[] Replay = new ItemStack[4];
     public static ItemStack[] TICK = new ItemStack[4];
     public static ItemStack[] QUITREPLAY = new ItemStack[4];
+    public static ItemStack[] START = new ItemStack[4];
+    public static ItemStack[] PAUSE = new ItemStack[4];
+    public static ItemStack[] RESTART = new ItemStack[4];
 
     public static ItemStack[][] Blocks = new ItemStack[72][4];
 
@@ -72,6 +75,9 @@ public class ItemStackList {
             Reset[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode", "§cReset Personal Best in your current mode"}[i]).build();
             TICK[i] = new ItemBuilder(Material.BLAZE_ROD).name(new String[]{"§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++", "§aLeft--§8/§cRight++"}[i]).build();
             QUITREPLAY[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cExit Replay", "§cExit Replay", "§cExit Replay", "§cExit Replay"}[i]).build();
+            START[i] = new ItemBuilder(Material.INK_SACK).durability(10).name(new String[]{"§aStart", "§aStart", "§aStart", "§aStart"}[i]).build();
+            PAUSE[i] = new ItemBuilder(Material.INK_SACK).durability(1).name(new String[]{"§cPause", "§cPause", "§cPause", "§cPause"}[i]).build();
+            RESTART[i] = new ItemBuilder(Material.INK_SACK).durability(14).name(new String[]{"§6Reset", "§6Reset", "§6Reset", "§6Reset"}[i]).build();
             openkit[i] = new ItemBuilder(Material.SANDSTONE).durability(2).name(blockedit[i]).build();
             ResetConfirm[i] = Bukkit.createInventory(confirm, 27, new String[]{"§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?"}[i]);
             ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability(13).name(yes[i]).build());

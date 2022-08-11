@@ -20,8 +20,14 @@ public class PlayerMove implements Listener {
     public void PlayerMoveEvent(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         Location to = e.getTo();
+        Member member = Member.getMember(player);
+        if (player.getWorld().getName().startsWith("replay_") &&
+                (Math.abs(to.getX() - member.ReplayCoord - 0.5) > 50.5 || (Math.abs(to.getZ() - 0.5) > 50.5) || to.getY() < 0)
+        ) {
+            member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+            return;
+        }
         if (player.getGameMode() == GameMode.SURVIVAL) {
-            Member member = Member.getMember(player);
             switch (player.getWorld().getName()) {
                 case "world": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];

@@ -1,5 +1,6 @@
 package speedcubing.BukkitEventListener;
 
+import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -35,7 +36,11 @@ public class PlayerInteract implements Listener {
                         break;
                 }
                 return;
+            case INK_SACK:
+                member.replayPlayer.start();
+                break;
             case BARRIER:
+                member.replayPlayer.timer.cancel();
                 member.currentMode.Join(player, false);
                 break;
         }
@@ -54,8 +59,8 @@ public class PlayerInteract implements Listener {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
                     case BOOK:
-                        player.sendMessage("Release in this weekend!");
-//                        ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
+//                        player.sendMessage("Release in this weekend!");
+                        ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
                         break;
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {

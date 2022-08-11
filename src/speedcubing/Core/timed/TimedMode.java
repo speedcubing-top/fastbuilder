@@ -37,7 +37,7 @@ public class TimedMode {
     public final boolean inclined;
     private final int distance;
     private final int height;
-    private final World replayWorld;
+    public final World replayWorld;
     public int used = 0;
 
     public final Set<Integer> replayRoom = new HashSet<>();
@@ -66,9 +66,10 @@ public class TimedMode {
         member.player.setAllowFlight(true);
         member.player.setFlying(true);
         member.player.teleport(new Location(replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
-        member.replayPlayer = new ReplayViewer(ReplayCompressor.read(speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' LIMIT " + index + ",1"), member.ReplayCoord), member.player);
+        member.replayPlayer = new ReplayViewer(ReplayCompressor.read(speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' LIMIT " + index + ",1"), member.ReplayCoord), member);
         WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + member.ReplayCoord, 83, -9, replayWorld);
         member.player.getInventory().clear();
+        member.player.getInventory().setItem(2, ItemStackList.START[member.lang]);
         member.player.getInventory().setItem(4, ItemStackList.TICK[member.lang]);
         member.player.getInventory().setItem(6, ItemStackList.QUITREPLAY[member.lang]);
     }

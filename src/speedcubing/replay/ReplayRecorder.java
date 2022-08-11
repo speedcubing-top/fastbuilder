@@ -43,7 +43,7 @@ public class ReplayRecorder {
             replay.BreakTicks.add((!replay.BreakTicks.isEmpty() && replay.BreakTicks.get(replay.BreakTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
             replay.BreakActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ()));
             replay.BreakTypes.add(block.getType().getId());
-            replay.BreakDatas.add( block.getData());
+            replay.BreakDatas.add(block.getData());
         }
     }
 
@@ -64,6 +64,7 @@ public class ReplayRecorder {
 
     public void pause() {
         isRecording = false;
-        ReplayCompressor.write(replay, member.player.getUniqueId());
+        if (!member.currentMode.world.getName().toLowerCase().contains("inclined"))
+            ReplayCompressor.write(replay, member.player.getUniqueId());
     }
 }
