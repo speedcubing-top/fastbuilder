@@ -26,12 +26,7 @@ import speedcubing.server.libs.User;
 import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ServerEvent {
-
-    public static List<Integer> allowedBlock = new ArrayList<>();
 
     @LibEventHandler
     public void ddwdw(PlayInEvent e) {
@@ -128,7 +123,7 @@ public class ServerEvent {
                     ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), pos));
                 }
             }
-        }
+        } else System.out.print(e.packet.getClass().getName());
     }
 
     @LibEventHandler

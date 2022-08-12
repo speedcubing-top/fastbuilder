@@ -41,7 +41,7 @@ public class ReplayRecorder {
     public void BlockBreakEvent(Block block) {
         if (isRecording) {
             replay.BreakTicks.add((!replay.BreakTicks.isEmpty() && replay.BreakTicks.get(replay.BreakTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BreakActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ()));
+            replay.BreakActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0)));
             replay.BreakTypes.add(block.getType().getId());
             replay.BreakDatas.add(block.getData());
         }
@@ -50,7 +50,7 @@ public class ReplayRecorder {
     public void BlockPlaceEvent(Block block) {
         if (isRecording) {
             replay.BlockTicks.add((!replay.BlockTicks.isEmpty() && replay.BlockTicks.get(replay.BlockTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BlockActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ()));
+            replay.BlockActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0)));
         }
     }
 
@@ -58,13 +58,12 @@ public class ReplayRecorder {
         if (isRecording) {
             NewTick += 1;
             replay.LocationTicks.add(NewTick);
-            replay.LocationActions.add(loc.clone().subtract(member.PlayerCoord, 0, 0));
+            replay.LocationActions.add(loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0));
         }
     }
 
     public void pause() {
         isRecording = false;
-        if (!member.currentMode.world.getName().toLowerCase().contains("inclined"))
-            ReplayCompressor.write(replay, member.player.getUniqueId());
+        ReplayCompressor.write(replay, member.player.getUniqueId());
     }
 }

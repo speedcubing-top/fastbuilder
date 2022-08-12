@@ -290,8 +290,5 @@ public class ItemStackList {
                 ItemStackList.clayeditor[j][i] = clayeditor[j];
             }
         }
-        for (ItemStack[] s : Blocks) {
-            ServerEvent.allowedBlock.add(s[0].getTypeId());
-        }
     }
 }

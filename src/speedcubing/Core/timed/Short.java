@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 
 public class Short extends TimedMode {
     public Short() {
-        super("Short", 1, 76, false, 29, 103, Bukkit.getWorld("replay_short"));
+        super("Short", 1, 76, false, 29, 103, "replay_short");
     }
 
 

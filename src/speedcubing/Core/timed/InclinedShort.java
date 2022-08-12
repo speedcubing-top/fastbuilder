@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 
 public class InclinedShort extends TimedMode {
     public InclinedShort() {
-        super("InclinedShort", 4, 40, true, 18, 103, null);
+        super("InclinedShort", 4, 40, true, 18, 103, "replay_inclinedshort");
     }
 
     public int roomToCoord(int room) {

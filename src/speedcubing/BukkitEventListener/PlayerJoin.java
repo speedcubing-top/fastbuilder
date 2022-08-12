@@ -14,6 +14,6 @@ public class PlayerJoin implements Listener {
         Player player = e.getPlayer();
         new Member(player);
         player.setGameMode(GameMode.SURVIVAL);
-        Main.Long.Join(player, true);
+        Main.Long.Join(player, false,true);
     }
 }

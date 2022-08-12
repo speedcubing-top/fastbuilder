@@ -13,10 +13,8 @@ public class InventoryClick implements Listener {
         if (ReplayGUI.fb.contains(inventory.getHolder())) {
             e.setCancelled(true);
             int i = e.getRawSlot();
-            if (inventory.getItem(i) != null) {
-                Member member = Member.getMember(e.getWhoClicked());
-                member.currentMode.JoinReplay(member, i);
-            }
+            if (inventory.getItem(i) != null)
+                Member.getMember(e.getWhoClicked()).joinReplay(i);
         }
     }
 }

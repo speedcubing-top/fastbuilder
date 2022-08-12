@@ -21,6 +21,7 @@ import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
+import speedcubing.lib.bukkit.WorldUtils;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
@@ -57,6 +58,7 @@ public class Member extends User {
     public int ReplayCoord;
     public Replay replay;
     public ReplayViewer replayPlayer;
+    public int lasttime;
 
     public TimedMode currentMode;
 
@@ -81,6 +83,28 @@ public class Member extends User {
             world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
         }
         Blocks.clear();
+    }
+
+    public void joinReplay(int slot) {
+        int room = 1;
+        while (currentMode.replayRoom.contains(room)) {
+            room++;
+        }
+        currentMode.replayRoom.add(room);
+        ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
+//        player.setGameMode(GameMode.ADVENTURE);
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
+        replayPlayer = new ReplayViewer(this, slot);
+        if (currentMode.inclined)
+            WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
+        else
+            WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
+        player.getInventory().clear();
+        player.getInventory().setItem(2, ItemStackList.START[lang]);
+        player.getInventory().setItem(4, ItemStackList.TICK[lang]);
+        player.getInventory().setItem(6, ItemStackList.QUITREPLAY[lang]);
     }
 
     public void finish() {
@@ -121,25 +145,7 @@ public class Member extends User {
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
-        if (currentMode.score.get(this) > time || currentMode.score.get(this) == 0) {
-            int i;
-            for (i = 0; i < currentMode.session.size(); i++) {
-                if (currentMode.score.get(currentMode.session.get(i)) > time || currentMode.score.get(currentMode.session.get(i)) == 0) {
-                    currentMode.session.remove(this);
-                    currentMode.session.add(i, this);
-                    break;
-                }
-            }
-            currentMode.score.put(this, time);
-            if (i < 4) {
-                List<String> s = Core.getSideBar(i, currentMode.session, currentMode.score);
-                for (int j = i; j < 3; j++) {
-                    for (Player p : currentMode.world.getPlayers()) {
-                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
-                    }
-                }
-            }
-        }
+        currentMode.a(this,time);
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 replay = null;

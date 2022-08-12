@@ -1,7 +1,10 @@
 package speedcubing.replay;
 
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -52,9 +55,10 @@ public class ReplayViewer {
     public NPC npc;
     public final Timer timer;
 
-    public ReplayViewer(Replay replay, Member member) {
-        this.replay = replay;
-        this.player = member.player;
+    public ReplayViewer(Member member, int slot) {
+        replay = ReplayCompressor.read(member, slot);
+        player = member.player;
+        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         this.member = member;
         locationlength = replay.LocationTicks.size();
         breaklength = replay.BreakTicks.size();
@@ -63,15 +67,15 @@ public class ReplayViewer {
         handlength = replay.HandItemTicks.size();
         currentItem = replay.StartItem;
         npc = new NPC(replay.name, UUID.randomUUID(), true).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
-//                .setClickEvent(((player1, enumEntityUseAction) -> {
-//                    if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
-//                        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-//                            player1.setGameMode(GameMode.SPECTATOR);
-//                            player1.setSpectatorTarget(npc.entityPlayer.getBukkitEntity());
-//                        });
-//                    }
-//                }))
-        ;
+                .setClickEvent(((player1, enumEntityUseAction) -> {
+                    if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
+                        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                            ((CraftPlayer) player1).getHandle().playerConnection.sendPacket(new PacketPlayOutCamera(npc.entityPlayer));
+                            player1.setGameMode(GameMode.SPECTATOR);
+                            player1.setSpectatorTarget(npc.entityPlayer.getBukkitEntity());
+                        });
+                    }
+                }));
         resetNPC();
         npc.listener.add(((CraftPlayer) player).getHandle().playerConnection);
         timer = new Timer();
@@ -238,5 +242,11 @@ public class ReplayViewer {
             tick++;
             actionbar();
         }
+    }
+
+    public void unwatch() {
+        timer.cancel();
+        Bukkit.getScheduler().cancelTask(task);
+        member.replayPlayer = null;
     }
 }

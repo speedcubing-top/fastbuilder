@@ -73,6 +73,12 @@ public class Main extends JavaPlugin implements Listener {
         getServer().createWorld(new WorldCreator("replay_onestack"));
         Bukkit.getWorld("replay_onestack").setDifficulty(Difficulty.PEACEFUL);
         Bukkit.getWorld("replay_onestack").setTime(6000);
+        getServer().createWorld(new WorldCreator("replay_inclined"));
+        Bukkit.getWorld("replay_inclined").setDifficulty(Difficulty.PEACEFUL);
+        Bukkit.getWorld("replay_inclined").setTime(6000);
+        getServer().createWorld(new WorldCreator("replay_inclinedshort"));
+        Bukkit.getWorld("replay_inclinedshort").setDifficulty(Difficulty.PEACEFUL);
+        Bukkit.getWorld("replay_inclinedshort").setTime(6000);
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
         Bukkit.getPluginManager().registerEvents(new speedcubing.replay.gui.InventoryClick(), this);

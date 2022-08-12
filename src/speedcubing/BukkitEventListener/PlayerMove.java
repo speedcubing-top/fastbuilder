@@ -21,14 +21,19 @@ public class PlayerMove implements Listener {
         Player player = e.getPlayer();
         Location to = e.getTo();
         Member member = Member.getMember(player);
-        if (player.getWorld().getName().startsWith("replay_") &&
-                (Math.abs(to.getX() - member.ReplayCoord - 0.5) > 50.5 || (Math.abs(to.getZ() - 0.5) > 50.5) || to.getY() < 0)
-        ) {
-            member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
-            return;
-        }
-        if (player.getGameMode() == GameMode.SURVIVAL) {
+        if (player.getGameMode() != GameMode.CREATIVE) {
             switch (player.getWorld().getName()) {
+                case "replay_normal":
+                case "replay_onestack":
+                case "replay_short":
+                    if (Math.abs(to.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(to.getZ() - 0.5) > 75.5 || to.getY() < 0)
+                        member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                    break;
+                case "replay_inclined":
+                case "replay_incinedshort":
+                    if (Math.abs(to.getX() + to.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
+                        member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
+                    break;
                 case "world": {
                     boolean fell = to.getY() <= 100 - member.integerCache[1];
                     if (fell || Math.abs(to.getX() - member.PlayerCoord - 0.5) > 5.5)

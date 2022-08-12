@@ -41,23 +41,23 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 10:
                         if (!player.getWorld().getName().equals("world"))
-                            Main.Long.Join(player, false);
+                            Main.Long.Join(player, false,false);
                         break;
                     case 11:
                         if (!player.getWorld().getName().equals("Short"))
-                            Main.Short.Join(player, false);
+                            Main.Short.Join(player, false,false);
                         break;
                     case 12:
                         if (!player.getWorld().getName().equals("Onestack"))
-                            Main.OneStack.Join(player, false);
+                            Main.OneStack.Join(player, false,false);
                         break;
                     case 13:
                         if (!player.getWorld().getName().equals("Inclined"))
-                            Main.Inclined.Join(player, false);
+                            Main.Inclined.Join(player, false,false);
                         break;
                     case 14:
                         if (!player.getWorld().getName().equals("Inclinedshort"))
-                            Main.InclinedShort.Join(player, false);
+                            Main.InclinedShort.Join(player, false,false);
                         break;
                     case 16:
                         if (!player.getWorld().getName().equals("Custom"))

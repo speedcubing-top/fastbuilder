@@ -20,7 +20,7 @@ public class PlayerQuit implements Listener {
             Main.Long.Quit(player);
         else {
             if (player.getWorld().getName().startsWith("replay_")) {
-                member.replayPlayer.timer.cancel();
+                member.replayPlayer.unwatch();
             }
             player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 1000, 0.5, 0, 0));
         }

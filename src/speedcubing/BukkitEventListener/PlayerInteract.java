@@ -40,8 +40,8 @@ public class PlayerInteract implements Listener {
                 member.replayPlayer.start();
                 break;
             case BARRIER:
-                member.replayPlayer.timer.cancel();
-                member.currentMode.Join(player, false);
+                member.replayPlayer.unwatch();
+                member.currentMode.Join(player, true,false);
                 break;
         }
         if (member.waiting) {

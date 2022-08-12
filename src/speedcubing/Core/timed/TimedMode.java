@@ -16,13 +16,9 @@ import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
-import speedcubing.lib.bukkit.WorldUtils;
 import speedcubing.lib.utils.SQL.SQLUtils;
-import speedcubing.replay.ReplayCompressor;
-import speedcubing.replay.ReplayViewer;
 import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
-import speedcubing.system.speedcubingSystem;
 
 import java.util.*;
 
@@ -42,7 +38,7 @@ public class TimedMode {
 
     public final Set<Integer> replayRoom = new HashSet<>();
 
-    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, World replayWorld) {
+    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, String replayWorld) {
         for (int i = 0; i < size; i++) {
             rooms[i] = true;
         }
@@ -52,29 +48,10 @@ public class TimedMode {
         this.world = Bukkit.getWorld(world);
         this.distance = distance;
         this.height = height;
-        this.replayWorld = replayWorld;
+        this.replayWorld = Bukkit.getWorld(replayWorld);
     }
 
-    public void JoinReplay(Member member, int index) {
-        int room = 1;
-        while (replayRoom.contains(room)) {
-            room++;
-        }
-        replayRoom.add(room);
-        member.ReplayCoord = roomToCoord(room) / 12 * 500;
-        member.player.setGameMode(GameMode.ADVENTURE);
-        member.player.setAllowFlight(true);
-        member.player.setFlying(true);
-        member.player.teleport(new Location(replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
-        member.replayPlayer = new ReplayViewer(ReplayCompressor.read(speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' LIMIT " + index + ",1"), member.ReplayCoord), member);
-        WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + member.ReplayCoord, 83, -9, replayWorld);
-        member.player.getInventory().clear();
-        member.player.getInventory().setItem(2, ItemStackList.START[member.lang]);
-        member.player.getInventory().setItem(4, ItemStackList.TICK[member.lang]);
-        member.player.getInventory().setItem(6, ItemStackList.QUITREPLAY[member.lang]);
-    }
-
-    public void Join(Player player, boolean kick) {
+    public void Join(Player player, boolean fromReplay, boolean kick) {
         if (used == size) {
             player.sendMessage("There is no enough servers. please report this to speedcubing.");
             if (kick) {
@@ -146,6 +123,33 @@ public class TimedMode {
         inventory.setHeldItemSlot(0);
         session.add(member);
         score.put(member, 0);
+        if (fromReplay)
+            a(member, member.lasttime);
+        else
+            member.lasttime = 0;
+    }
+
+    public void a(Member member, int time) {
+        if (time != 0 && (score.get(member) > time || score.get(member) == 0)) {
+            member.lasttime = time;
+            int i;
+            for (i = 0; i < session.size(); i++) {
+                if (score.get(session.get(i)) > time || score.get(session.get(i)) == 0) {
+                    session.remove(member);
+                    session.add(i, member);
+                    break;
+                }
+            }
+            score.put(member, time);
+            if (i < 4) {
+                List<String> s = Core.getSideBar(i, session, score);
+                for (int j = i; j < 3; j++) {
+                    for (Player p : world.getPlayers()) {
+                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
+                    }
+                }
+            }
+        }
     }
 
     public void Fell(Player player, boolean fell) {
