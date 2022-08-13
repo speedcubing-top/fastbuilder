@@ -1,10 +1,7 @@
 package speedcubing.replay;
 
-import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,41 +16,43 @@ import speedcubing.lib.bukkit.entity.NPC;
 import speedcubing.lib.bukkit.inventory.ItemUtils;
 import speedcubing.replay.gui.FastBuilderUtils;
 
+import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
 public class ReplayViewer {
-    public int Locationindex;
-    public int nextLocation;
+    int Locationindex;
+    int nextLocation;
 
-    public int Breakindex;
-    public int nextBreak;
+    int Breakindex;
+    int nextBreak;
 
-    public int Blockindex;
-    public int nextBlock;
+    int Blockindex;
+    int nextBlock;
 
-    public int SneakIndex;
-    public int nextSneak;
+    int SneakIndex;
+    int nextSneak;
 
-    public int Handindex;
-    public int nextHand;
-    public int task;
+    int Handindex;
+    int nextHand;
+    int task;
 
-    public ItemStack currentItem;
+    ItemStack currentItem;
 
-    public int tick;
+    int tick;
     public final Replay replay;
     public final Player player;
     public final Member member;
-    public final int locationlength;
-    public final int breaklength;
-    public final int blocklength;
-    public final int sneaklength;
-    public final int handlength;
-    public boolean playing;
+    final int locationlength;
+    final int breaklength;
+    final int blocklength;
+    final int sneaklength;
+    final int handlength;
+    boolean playing;
+    public boolean isSpec;
     public NPC npc;
-    public final Timer timer;
+    final Timer timer;
 
     public ReplayViewer(Member member, int slot) {
         replay = ReplayCompressor.read(member, slot);
@@ -69,11 +68,15 @@ public class ReplayViewer {
         npc = new NPC(replay.name, UUID.randomUUID(), true).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((player1, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
-                        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                            ((CraftPlayer) player1).getHandle().playerConnection.sendPacket(new PacketPlayOutCamera(npc.entityPlayer));
-                            player1.setGameMode(GameMode.SPECTATOR);
-                            player1.setSpectatorTarget(npc.entityPlayer.getBukkitEntity());
-                        });
+                        PlayerConnection connection = ((CraftPlayer) player1).getHandle().playerConnection;
+                        connection.sendPacket(new PacketPlayOutGameStateChange(3, 3));
+                        connection.sendPacket(new PacketPlayOutCamera(npc.entityPlayer));
+                        PacketPlayOutAbilities abilities = new PacketPlayOutAbilities();
+                        abilities.b(true);
+                        abilities.c(true);
+                        ((CraftPlayer) member.player).getHandle().playerConnection.sendPacket(abilities);
+                        ((CraftPlayer) member.player).getHandle().playerConnection.a(member.ReplayCoord, 90, 0, 0, 0);
+                        isSpec = true;
                     }
                 }));
         resetNPC();

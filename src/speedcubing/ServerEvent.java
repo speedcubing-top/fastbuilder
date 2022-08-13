@@ -123,7 +123,7 @@ public class ServerEvent {
                     ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), pos));
                 }
             }
-        } else System.out.print(e.packet.getClass().getName());
+        }
     }
 
     @LibEventHandler

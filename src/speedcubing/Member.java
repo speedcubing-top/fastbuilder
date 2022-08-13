@@ -92,7 +92,7 @@ public class Member extends User {
         }
         currentMode.replayRoom.add(room);
         ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
-//        player.setGameMode(GameMode.ADVENTURE);
+        player.setGameMode(GameMode.ADVENTURE);
         player.setAllowFlight(true);
         player.setFlying(true);
         player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
