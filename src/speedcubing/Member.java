@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import speedcubing.BukkitCommands.stats;
 import speedcubing.Core.Core;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
@@ -110,7 +111,7 @@ public class Member extends User {
     public void finish() {
         replay.replayRecorder.pause();
         int time = replay.replayRecorder.NewTick - 1;
-        if (time < currentMode.limit) {
+        if (time < currentMode.limit && !stats.SHIT) {
             BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
@@ -120,7 +121,8 @@ public class Member extends User {
         new Thread(() -> {
             int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + id));
             if (last == 0 || last > msrecord) {
-                speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + id);
+                if (!stats.SHIT)
+                    speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + id);
                 SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
                 Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                     fw(player);
@@ -145,7 +147,7 @@ public class Member extends User {
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", display))));
-        currentMode.a(this,time);
+        currentMode.a(this, time);
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 replay = null;

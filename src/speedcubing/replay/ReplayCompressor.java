@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import speedcubing.BukkitCommands.stats;
 import speedcubing.Member;
 import speedcubing.system.speedcubingSystem;
 
@@ -71,7 +72,7 @@ public class ReplayCompressor {
             }
         }
         a = s.toString();
-        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId);
+        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (stats.SHIT ? 0 : 1));
     }
 
     public static Replay read(Member member, int slot) {
