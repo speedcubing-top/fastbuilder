@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import speedcubing.ServerEvent;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.server.libs.GlobalString;
 
@@ -26,6 +25,7 @@ public class ItemStackList {
     public static ItemStack[] START = new ItemStack[4];
     public static ItemStack[] PAUSE = new ItemStack[4];
     public static ItemStack[] RESTART = new ItemStack[4];
+    public static ItemStack[] LASTATTEMPT = new ItemStack[4];
 
     public static ItemStack[][] Blocks = new ItemStack[72][4];
 
@@ -77,6 +77,7 @@ public class ItemStackList {
             QUITREPLAY[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cExit Replay", "§cExit Replay", "§cExit Replay", "§cExit Replay"}[i]).build();
             START[i] = new ItemBuilder(Material.INK_SACK).durability(10).name(new String[]{"§aStart", "§aStart", "§aStart", "§aStart"}[i]).build();
             PAUSE[i] = new ItemBuilder(Material.INK_SACK).durability(1).name(new String[]{"§cPause", "§cPause", "§cPause", "§cPause"}[i]).build();
+            LASTATTEMPT[i] = new ItemBuilder(Material.LEATHER).name(new String[]{"§bLast Attempt", "§bLast Attempt", "§bLast Attempt", "§bLast Attempt"}[i]).build();
             RESTART[i] = new ItemBuilder(Material.INK_SACK).durability(14).name(new String[]{"§6Reset", "§6Reset", "§6Reset", "§6Reset"}[i]).build();
             openkit[i] = new ItemBuilder(Material.SANDSTONE).durability(2).name(blockedit[i]).build();
             ResetConfirm[i] = Bukkit.createInventory(confirm, 27, new String[]{"§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?"}[i]);

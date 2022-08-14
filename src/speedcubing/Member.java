@@ -26,6 +26,7 @@ import speedcubing.lib.bukkit.WorldUtils;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
 import speedcubing.lib.utils.SQL.SQLUtils;
 import speedcubing.replay.Replay;
+import speedcubing.replay.ReplayCompressor;
 import speedcubing.replay.ReplayViewer;
 import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.libs.User;
@@ -68,6 +69,7 @@ public class Member extends User {
     public int Blockplaced;
     public boolean finishedOnce;
     public Set<AxisAlignedBB> hits = new HashSet<>();
+    public List<String> replays = new ArrayList<>();
 
     public Location didntevenfuckingstart = new Location(player.getWorld(), 0, 0, 0);
     public final Location asyncLoc = new Location(player.getWorld(), 0, 0, 0);
@@ -87,29 +89,40 @@ public class Member extends User {
     }
 
     public void joinReplay(int slot) {
-        int room = 1;
-        while (currentMode.replayRoom.contains(room)) {
-            room++;
+        Replay replay;
+        int oldSerial = ReplayCoord;
+        if (slot == 0) {
+            replay = currentMode.lastAttempt.get(this);
+        } else {
+            oldSerial = 0;
+            replay = ReplayCompressor.read(this, slot - 1);
         }
-        currentMode.replayRoom.add(room);
-        ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setAllowFlight(true);
-        player.setFlying(true);
-        player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
-        replayPlayer = new ReplayViewer(this, slot);
-        if (currentMode.inclined)
-            WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
-        else
-            WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
-        player.getInventory().clear();
-        player.getInventory().setItem(2, ItemStackList.START[lang]);
-        player.getInventory().setItem(4, ItemStackList.TICK[lang]);
-        player.getInventory().setItem(6, ItemStackList.QUITREPLAY[lang]);
+        if (replay != null) {
+            int room = 1;
+            while (currentMode.replayRoom.contains(room)) {
+                room++;
+            }
+            currentMode.replayRoom.add(room);
+            ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
+            player.setGameMode(GameMode.ADVENTURE);
+            player.setAllowFlight(true);
+            player.setFlying(true);
+            player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
+            replayPlayer = new ReplayViewer(this, replay, oldSerial);
+            if (currentMode.inclined)
+                WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
+            else
+                WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
+            player.getInventory().clear();
+            player.getInventory().setItem(2, ItemStackList.START[lang]);
+            player.getInventory().setItem(4, ItemStackList.TICK[lang]);
+            player.getInventory().setItem(6, ItemStackList.QUITREPLAY[lang]);
+        } else
+            player.sendMessage("not found");
     }
 
     public void finish() {
-        replay.replayRecorder.pause();
+        replay.replayRecorder.pause(true);
         int time = replay.replayRecorder.NewTick - 1;
         if (time < currentMode.limit && !stats.SHIT) {
             BungeePluginMessage.switchServer(player, "Lobby");

@@ -4,8 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import speedcubing.List.ItemStackList;
+import speedcubing.Member;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
-import speedcubing.server.libs.User;
 import speedcubing.system.speedcubingSystem;
 
 import java.sql.ResultSet;
@@ -25,7 +26,7 @@ public class ReplayGUI {
         }
     }
 
-    public static void openFastBuilderReplay(User user, int mode) {
+    public static void openFastBuilderReplay(Member user, int mode) {
         String[][] modeName = {
                 {"Normal", "Normal", "Normal", "Normal"},
                 {"Short", "Short", "Short", "Short"},
@@ -34,15 +35,21 @@ public class ReplayGUI {
                 {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
         };
         try {
-            ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "score,time", "owner='" + user.player.getUniqueId() + "' AND mode=" + mode, "time", "DESC");
-            Inventory inventory = Bukkit.createInventory(fb.get(mode), 54, "§bReplay-FastBuilder-" + modeName[mode][user.lang]);
-            int i = 0;
+            ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "score,time,fav,id", "owner='" + user.player.getUniqueId() + "' AND mode=" + mode + " ORDER BY fav DESC,time DESC");
+            Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.lang]);
+            inventory.setItem(0, ItemStackList.LASTATTEMPT[user.lang]);
+            int i = 1;
+            user.replays.clear();
             while (resultSet.next()) {
                 if (i < 63) {
-                    inventory.setItem(i, new ItemBuilder(Material.PAPER).name("§aFastBuilder").lore(
+                    user.replays.add(resultSet.getString(4));
+                    inventory.setItem(i, new ItemBuilder(resultSet.getBoolean(3) ? Material.EMPTY_MAP : Material.PAPER).name("§aFastBuilder").lore(
                             "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(resultSet.getInt(2)), ZoneId.systemDefault())),
                             "",
-                            "§bTime: §e" + FastBuilderUtils.tickToTime(resultSet.getInt(1))
+                            "§bTime: §e" + FastBuilderUtils.tickToTime(resultSet.getInt(1)),
+                            "",
+                            "§aLeft click to watch",
+                            "§dRight click to add/remove from favorite"
                     ).build());
                 }
                 i++;

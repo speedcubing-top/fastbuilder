@@ -17,6 +17,7 @@ import speedcubing.Member;
 import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.utils.SQL.SQLUtils;
+import speedcubing.replay.Replay;
 import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
@@ -35,8 +36,8 @@ public class TimedMode {
     private final int height;
     public final World replayWorld;
     public int used = 0;
-
     public final Set<Integer> replayRoom = new HashSet<>();
+    public final Map<Member, Replay> lastAttempt = new HashMap<>();
 
     public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, String replayWorld) {
         for (int i = 0; i < size; i++) {
@@ -169,7 +170,6 @@ public class TimedMode {
                 ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
-                member.replay = null;
             } else if (!fell) {
                 Location location = player.getLocation();
                 int coord = member.PlayerCoord;
@@ -185,6 +185,10 @@ public class TimedMode {
                 }
             }
             player.closeInventory();
+        }
+        if (member.replay != null) {
+            member.replay.replayRecorder.pause(false);
+            lastAttempt.put(member, member.replay);
         }
         member.replay = null;
         player.teleport(new Location(player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));

@@ -62,8 +62,9 @@ public class ReplayRecorder {
         }
     }
 
-    public void pause() {
+    public void pause(boolean write) {
         isRecording = false;
-        ReplayCompressor.write(replay, member.player.getUniqueId());
+        if (write)
+            ReplayCompressor.write(replay, member.player.getUniqueId());
     }
 }

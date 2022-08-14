@@ -76,9 +76,7 @@ public class ReplayCompressor {
     }
 
     public static Replay read(Member member, int slot) {
-        ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY time DESC LIMIT " + slot + ",1");
-        int XDiff = member.ReplayCoord;
-        boolean inclined = member.currentMode.inclined;
+        ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY fav DESC, time DESC LIMIT " + slot + ",1");
         StringBuilder s = new StringBuilder();
         String temp;
         String name;
@@ -106,7 +104,7 @@ public class ReplayCompressor {
         replay.value = value;
         replay.signature = signature;
         replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
-        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)) + XDiff, StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)) + (inclined ? XDiff : 0), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
+        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
         int i = -1;
@@ -115,19 +113,19 @@ public class ReplayCompressor {
                 i += 1;
                 replay.LocationTicks.add(i);
                 replay.LocationActions.add(new Location(world,
-                        StringToDouble(s.substring(2, 10)) + XDiff,
+                        StringToDouble(s.substring(2, 10)),
                         StringToDouble(s.substring(10, 18)),
-                        StringToDouble(s.substring(18, 26)) + (inclined ? XDiff : 0),
+                        StringToDouble(s.substring(18, 26)),
                         (float) StringToDouble(s.substring(26, 34)),
                         (float) StringToDouble(s.substring(34, 42))));
                 s = new StringBuilder(s.substring(42));
             } else if (s.toString().startsWith("01")) {
                 replay.BlockTicks.add(i);
-                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)) + XDiff, stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)) + (inclined ? XDiff : 0)));
+                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
                 s = new StringBuilder(s.substring(14));
             } else if (s.toString().startsWith("02")) {
                 replay.BreakTicks.add(i);
-                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)) + XDiff, stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)) + (inclined ? XDiff : 0)));
+                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
                 replay.BreakTypes.add(stringToInt(s.substring(14, 18)));
                 replay.BreakDatas.add((byte) stringToInt(s.substring(18, 20)));
                 s = new StringBuilder(s.substring(20));
