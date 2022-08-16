@@ -1,5 +1,6 @@
 package speedcubing.BukkitCommands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class stats implements CommandExecutor, TabCompleter {
 
-    public static boolean SHIT = false;
+    public static boolean SHIT = Bukkit.getPort() % 2 == 0;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {

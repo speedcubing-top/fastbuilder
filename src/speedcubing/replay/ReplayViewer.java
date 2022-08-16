@@ -53,11 +53,11 @@ public class ReplayViewer {
     public boolean isSpec;
     public NPC npc;
     final Timer timer;
-    final int oldSerial;
+    public boolean lastAttempt;
 
-    public ReplayViewer(Member member, Replay replay, int oldSerial) {
+    public ReplayViewer(Member member, Replay replay, boolean lastAttempt) {
         World world = replay.StartLocation.getWorld();
-        this.oldSerial = oldSerial;
+        this.lastAttempt = lastAttempt;
         boolean inclined = member.currentMode.inclined;
         player = member.player;
         this.replay = replay;
@@ -75,7 +75,7 @@ public class ReplayViewer {
         for (Location location : replay.LocationActions) {
             location.setX(location.getX() + member.ReplayCoord);
             if (inclined)
-                location.setZ(location.getX() + member.ReplayCoord);
+                location.setZ(location.getZ() + member.ReplayCoord);
         }
         for (int i = 0; i < replay.BlockActions.size(); i++) {
             Block b = replay.BlockActions.get(i);
@@ -268,7 +268,7 @@ public class ReplayViewer {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
         member.replayPlayer = null;
-        if (oldSerial != 0) {
+        if (lastAttempt) {
             World world = replay.StartLocation.getWorld();
             replay.StartLocation.setX(replay.StartLocation.getX() - member.ReplayCoord);
             if (member.currentMode.inclined)
@@ -276,7 +276,7 @@ public class ReplayViewer {
             for (Location location : replay.LocationActions) {
                 location.setX(location.getX() - member.ReplayCoord);
                 if (member.currentMode.inclined)
-                    location.setZ(location.getX() - member.ReplayCoord);
+                    location.setZ(location.getZ() - member.ReplayCoord);
             }
             for (int i = 0; i < replay.BlockActions.size(); i++) {
                 Block b = replay.BlockActions.get(i);

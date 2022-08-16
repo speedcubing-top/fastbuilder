@@ -1,6 +1,5 @@
 package speedcubing.BukkitEventListener;
 
-import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -9,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import speedcubing.Core.Core;
 import speedcubing.Core.Custom;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
@@ -59,7 +57,6 @@ public class PlayerInteract implements Listener {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
                     case BOOK:
-//                        player.sendMessage("Release in this weekend!");
                         ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
                         break;
                     case DIAMOND_PICKAXE:

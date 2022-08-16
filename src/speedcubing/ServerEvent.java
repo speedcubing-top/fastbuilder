@@ -6,24 +6,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import speedcubing.Core.Core;
 import speedcubing.Core.Custom;
 import speedcubing.List.StringList;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.event.PlayInEvent;
 import speedcubing.lib.eventbus.LibEventHandler;
 import speedcubing.lib.utils.Console;
+import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.events.player.NickEvent;
 import speedcubing.server.events.player.SkinEvent;
 import speedcubing.server.events.player.ToggleFlyEvent;
 import speedcubing.server.libs.GlobalString;
 import speedcubing.server.libs.User;
-import speedcubing.replay.gui.FastBuilderUtils;
 import speedcubing.server.speedcubingServer;
 
 public class ServerEvent {
@@ -67,20 +66,20 @@ public class ServerEvent {
             }
         } else if (e.packet instanceof PacketPlayInBlockPlace p && p.getFace() != 255) {
             if (e.player.getGameMode() == GameMode.SURVIVAL) {
-                ItemStack stack = null;
-                if (p.getItemStack() != null) { //block place
-                    stack = CraftItemStack.asBukkitCopy(p.getItemStack());
-                    if (stack.getType() == Material.AIR) {
-                        e.isCancelled = true;
-                    }
-                }
-                if (stack == null || stack.getType() == Material.REDSTONE_COMPARATOR) {
+                ItemStack stack = p.getItemStack() == null ? null : CraftItemStack.asBukkitCopy(p.getItemStack());
+                if (stack == null)
                     return;
-                }
-                BlockPosition pos = p.a().shift(EnumDirection.fromType1(p.getFace()));
+                if (stack.getType() == Material.REDSTONE_COMPARATOR)
+                    return;
+                BlockPosition pos = p.a();
+                BlockPosition shifted = p.a().shift(EnumDirection.fromType1(p.getFace()));
+                Block block = e.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+                if (!(block.getType() == Material.SNOW && block.getData() == 0))
+                    pos = shifted;
+
                 if (member.waiting)
                     e.isCancelled = true;
-                else {
+                else if (e.player.getInventory().getHeldItemSlot() < 2) {
                     int x = pos.getX();
                     int y = pos.getY();
                     int z = pos.getZ();
@@ -113,14 +112,16 @@ public class ServerEvent {
                         case "Custom":
                             if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
                                 e.isCancelled = true;
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> e.player.sendBlockChange(new Location(e.player.getWorld(), x, y, z), Material.AIR, (byte) 0), 10);
                             } else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
                             break;
                     }
                 }
+
                 if (e.isCancelled) {
-                    ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), p.a()));
-                    ((CraftPlayer) e.player).getHandle().playerConnection.sendPacket(new PacketPlayOutBlockChange(((CraftWorld) e.player.getWorld()).getHandle(), pos));
+                    EntityPlayer nmsPlayer = ((CraftPlayer) e.player).getHandle();
+                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, p.a()));
+                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, shifted));
+                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, nmsPlayer.activeContainer.getSlot(nmsPlayer.inventory, nmsPlayer.inventory.itemInHandIndex).rawSlotIndex, nmsPlayer.inventory.getItemInHand()));
                 }
             }
         }

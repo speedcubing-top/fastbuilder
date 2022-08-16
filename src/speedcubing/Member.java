@@ -89,14 +89,7 @@ public class Member extends User {
     }
 
     public void joinReplay(int slot) {
-        Replay replay;
-        int oldSerial = ReplayCoord;
-        if (slot == 0) {
-            replay = currentMode.lastAttempt.get(this);
-        } else {
-            oldSerial = 0;
-            replay = ReplayCompressor.read(this, slot - 1);
-        }
+        Replay replay = slot == 0 ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
         if (replay != null) {
             int room = 1;
             while (currentMode.replayRoom.contains(room)) {
@@ -108,7 +101,7 @@ public class Member extends User {
             player.setAllowFlight(true);
             player.setFlying(true);
             player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
-            replayPlayer = new ReplayViewer(this, replay, oldSerial);
+            replayPlayer = new ReplayViewer(this, replay, slot == 0);
             if (currentMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
             else
