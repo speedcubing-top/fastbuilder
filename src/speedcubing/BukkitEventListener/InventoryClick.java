@@ -1,29 +1,21 @@
 package speedcubing.BukkitEventListener;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import speedcubing.Core.BlockEditor;
-import speedcubing.Core.Core;
 import speedcubing.Core.Custom;
-import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
 import speedcubing.Main;
 import speedcubing.Member;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.server.speedcubingServer;
-
-import java.util.Arrays;
 
 public class InventoryClick implements Listener {
     @EventHandler
@@ -67,48 +59,10 @@ public class InventoryClick implements Listener {
             } else if (holder == ItemStackList.settings) {
                 e.setCancelled(true);
                 switch (RawSlot) {
-                    case 11:
-                        switch (e.getAction()) {
-                            case PICKUP_ALL: {
-                                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
-                                Member member = Member.getMember(player);
-                                int x = member.integerCache[1];
-                                if (x != 1) {
-                                    member.integerCache[1] = x - 1;
-                                    ItemStack stack = inventory.getItem(RawSlot);
-                                    ItemMeta meta = stack.getItemMeta();
-                                    String[] str = StringList.FallDelayLore[member.lang];
-                                    meta.setLore(Arrays.asList(str[1], str[2].replace("%int%", Integer.toString(x - 1)), str[3], str[4], str[5]));
-                                    stack.setItemMeta(meta);
-                                } else {
-                                    player.sendMessage(StringList.min[member.lang]);
-                                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
-                                }
-                            }
-                            break;
-                            case PICKUP_HALF: {
-                                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
-                                Member member = Member.getMember(player);
-                                int x = member.integerCache[1];
-                                if (x != 20) {
-                                    member.integerCache[1] = x + 1;
-                                    ItemStack stack = inventory.getItem(RawSlot);
-                                    ItemMeta meta = stack.getItemMeta();
-                                    String[] str = StringList.FallDelayLore[member.lang];
-                                    meta.setLore(Arrays.asList(str[1], str[2].replace("%int%", Integer.toString(x + 1)), str[3], str[4], str[5]));
-                                    stack.setItemMeta(meta);
-                                } else {
-                                    player.sendMessage(StringList.max[member.lang]);
-                                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
-                                }
-                            }
-                            break;
-                        }
-                        break;
-                    case 13:
+                    case 12:
                         BlockEditor.createMainPage(player);
                         break;
-                    case 15:
+                    case 14:
                         if (!player.getWorld().getName().equals("Custom"))
                             player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).lang]);
                         else if (player.getInventory().getItem(5) != null) {

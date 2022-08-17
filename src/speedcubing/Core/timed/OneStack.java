@@ -1,10 +1,8 @@
 package speedcubing.Core.timed;
 
-import org.bukkit.Bukkit;
-
-public class OneStack extends TimedMode{
-    public OneStack(){
-        super("Onestack",2,220,false,29,128,"replay_onestack");
+public class OneStack extends TimedMode {
+    public OneStack() {
+        super("Onestack", 2, 220, false, 29, 128, "replay_onestack");
     }
 
     public int roomToCoord(int room) {

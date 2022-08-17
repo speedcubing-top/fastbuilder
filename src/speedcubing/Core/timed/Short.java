@@ -1,8 +1,6 @@
 package speedcubing.Core.timed;
 
 
-import org.bukkit.Bukkit;
-
 public class Short extends TimedMode {
     public Short() {
         super("Short", 1, 76, false, 29, 103, "replay_short");

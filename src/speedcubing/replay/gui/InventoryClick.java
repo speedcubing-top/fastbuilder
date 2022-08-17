@@ -7,8 +7,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import speedcubing.Member;
-import speedcubing.lib.bukkit.inventory.Glow;
-import speedcubing.lib.bukkit.inventory.ItemUtils;
 import speedcubing.system.speedcubingSystem;
 
 public class InventoryClick implements Listener {

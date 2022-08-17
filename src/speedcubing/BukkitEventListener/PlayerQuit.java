@@ -25,11 +25,8 @@ public class PlayerQuit implements Listener {
             player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 1000, 0.5, 0, 0));
         }
         new Thread(() -> {
-            int[] x = member.integerCache;
-            speedcubingServer.connection.update("playersdata",
-                    "fastbuild_blockskin=" + x[0] +
-                            ",fastbuild_falldelay=" + x[1]
-                    , "id=" + member.id);
+            int x = member.blockskin;
+            speedcubingServer.connection.update("playersdata", "fastbuild_blockskin=" + x, "id=" + member.id);
         }).start();
         Member.users.remove(member.id);
     }

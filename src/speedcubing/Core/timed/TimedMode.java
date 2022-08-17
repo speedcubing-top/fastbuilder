@@ -24,6 +24,7 @@ import speedcubing.server.speedcubingServer;
 import java.util.*;
 
 public class TimedMode {
+    public static final int FALL = 4;
     public final int size = 31;
     public final boolean[] rooms = new boolean[size];
     public final List<Member> session = new ArrayList<>();
@@ -113,7 +114,7 @@ public class TimedMode {
                 .changeableLine(sidebar[9] + "§7-,---", 1)
                 .staticLine(sidebar[10], 0).create();
         PlayerInventory inventory = player.getInventory();
-        ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
+        ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
         inventory.clear();
         inventory.setItem(0, stack);
         inventory.setItem(1, stack);
@@ -157,19 +158,20 @@ public class TimedMode {
         Member member = Member.getMember(player);
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
-            member.clear(player.getWorld());
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(player.getWorld()));
             member.waiting = false;
             Inventory inventory = player.getInventory();
-            ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
+            ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
             if (member.replay != null) {
                 Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(player.getWorld()));
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[member.integerCache[0]][member.lang];
+                ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
+                SideBar.getSidebar(player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
             } else if (!fell) {
                 Location location = player.getLocation();
                 int coord = member.PlayerCoord;
@@ -187,7 +189,7 @@ public class TimedMode {
             player.closeInventory();
         }
         if (member.replay != null) {
-            member.replay.replayRecorder.pause(false);
+            member.replay.replayRecorder.pause(false, false);
             lastAttempt.put(member, member.replay);
         }
         member.replay = null;
@@ -213,21 +215,17 @@ public class TimedMode {
 
     public void setPressurePlate(Member member) {
         member.hits.clear();
-        int[][] i;
-        if (!inclined)
-            i = new int[][]{
-                    {member.PlayerCoord + 1, height, distance},
-                    {member.PlayerCoord + 2, height, distance},
-                    {member.PlayerCoord, height, distance},
-                    {member.PlayerCoord - 1, height, distance},
-                    {member.PlayerCoord - 2, height, distance},
-            };
-        else i = new int[][]{
+        for (int[] b : (inclined) ? new int[][]{
                 {member.PlayerCoord + distance + 1, height, member.PlayerCoord - distance + 1},
                 {member.PlayerCoord + distance, height, member.PlayerCoord - distance},
                 {member.PlayerCoord + distance - 1, height, member.PlayerCoord - distance - 1},
-        };
-        for (int[] b : i) {
+        } : new int[][]{
+                {member.PlayerCoord + 1, height, distance},
+                {member.PlayerCoord + 2, height, distance},
+                {member.PlayerCoord, height, distance},
+                {member.PlayerCoord - 1, height, distance},
+                {member.PlayerCoord - 2, height, distance},
+        }) {
             member.hits.add(new AxisAlignedBB((float) b[0] + 0.125F, b[1], (float) b[2] + 0.125F, (float) (b[0] + 1) - 0.125F, (double) b[1] + 0.25D, (float) (b[2] + 1) - 0.125F));
         }
     }

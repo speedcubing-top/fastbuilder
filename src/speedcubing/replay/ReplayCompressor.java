@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
-import speedcubing.BukkitCommands.stats;
 import speedcubing.Member;
 import speedcubing.system.speedcubingSystem;
 
@@ -17,7 +16,7 @@ public class ReplayCompressor {
 
     public static String a;
 
-    public static void write(Replay replay, UUID owner) {
+    public static void write(Replay replay, UUID owner, boolean TAS) {
         StringBuilder s = new StringBuilder();
         s.append(intToString(replay.StartSneaking ? 0 : 1, 2))
                 .append(doubleToString(replay.StartLocation.getX()))
@@ -58,7 +57,6 @@ public class ReplayCompressor {
                         append(intToString(replay.BreakTypes.get(a), 4)).
                         append(intToString(replay.BreakDatas.get(a), 2));
             }
-
             a = replay.SneakTicks.indexOf(i);
             if (a != -1) {
                 s.append(intToString(3, 2)).append(intToString(replay.SneakActions.get(a) ? 0 : 1, 2));
@@ -72,7 +70,7 @@ public class ReplayCompressor {
             }
         }
         a = s.toString();
-        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (stats.SHIT ? 0 : 1));
+        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
     }
 
     public static Replay read(Member member, int slot) {

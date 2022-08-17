@@ -16,9 +16,6 @@ public class stats implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         commandSender.sendMessage("currently unavailable to use.");
-        if (commandSender.getName().equals("speedcubing")) {
-            SHIT = !SHIT;
-        }
 //        if (strings.length == 0) {
 //            Replay replay = Member.getMember(commandSender).replays.get(Member.getMember(commandSender).replays.size() - 1);
 //            Member.getMember(commandSender).replayPlayer = new ReplayViewer(replay, (Player) commandSender);

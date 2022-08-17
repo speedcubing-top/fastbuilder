@@ -1,10 +1,8 @@
 package speedcubing;
 
-import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
-import org.apache.commons.lang.ArrayUtils;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -20,7 +18,6 @@ import speedcubing.Core.Core;
 import speedcubing.Core.timed.TimedMode;
 import speedcubing.List.ItemStackList;
 import speedcubing.List.StringList;
-import speedcubing.lib.bukkit.BungeePluginMessage;
 import speedcubing.lib.bukkit.SideBar;
 import speedcubing.lib.bukkit.WorldUtils;
 import speedcubing.lib.bukkit.inventory.ItemBuilder;
@@ -52,7 +49,7 @@ public class Member extends User {
     public int times;
 
     public boolean waiting;
-    public int[] integerCache;
+    public int blockskin;
     public int MainTimer;
     public int finishedtask;
     public Set<Block> Blocks = new HashSet<>();
@@ -78,7 +75,7 @@ public class Member extends User {
     public Member(Player player) {
         super(player.getUniqueId());
         users.put(id, this);
-        integerCache = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "fastbuild_blockskin,fastbuild_falldelay", "id=" + id)));
+        blockskin = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fastbuild_blockskin", "id=" + id));
     }
 
     public void clear(World world) {
@@ -115,40 +112,39 @@ public class Member extends User {
     }
 
     public void finish() {
-        replay.replayRecorder.pause(true);
         int time = replay.replayRecorder.NewTick - 1;
-        if (time < currentMode.limit && !stats.SHIT) {
-            BungeePluginMessage.switchServer(player, "Lobby");
-            return;
-        }
+        boolean TAS = (double) (MinecraftServer.currentTick - times) / time > 1.1;
+        boolean OVERLIMIT = time < currentMode.limit;
+        if (TAS)
+            player.sendMessage("§cYou are using timer, right?");
+        if (OVERLIMIT)
+            player.sendMessage("§cThis score is out of range.");
+        replay.replayRecorder.pause(true, TAS);
         waiting = true;
         int msrecord = time * 5;
         String display = FastBuilderUtils.tickToTime(time);
-        new Thread(() -> {
-            int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + id));
-            if (last == 0 || last > msrecord) {
-                if (!stats.SHIT)
-                    speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + id);
-                SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
-                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                    fw(player);
-                    fw(player);
-                    fw(player);
-                });
-                if (last == 0) {
-                    player.sendMessage("§8---------------------------------------------\n" +
-                            "                        §bCongratulations!\n" +
-                            "             §aYou got your first score of §e" + FastBuilderUtils.tickToTime(time) + "§a!\n" +
-                            "§8---------------------------------------------");
-                } else {
-                    player.sendMessage("§8---------------------------------------------\n" +
-                            "                        §bCongratulations!\n" +
-                            "                        §e" + FastBuilderUtils.tickToTime(last / 5) + " §8-> §e" + FastBuilderUtils.tickToTime(time) + " \n" +
-                            "                        §8(§bbeated by §a" + FastBuilderUtils.tickToTime(last / 5 - time) + "§8)\n" +
-                            "§8---------------------------------------------");
-                }
+        int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + id));
+        if ((last == 0 || last > msrecord) && (!TAS && !stats.SHIT && !OVERLIMIT)) {
+            speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + id);
+            SideBar.getSidebar(player).setLine(StringList.SideBar[lang][4] + display, 4);
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                fw(player);
+                fw(player);
+                fw(player);
+            });
+            if (last == 0) {
+                player.sendMessage("§8---------------------------------------------\n" +
+                        "                        §bCongratulations!\n" +
+                        "             §aYou got your first score of §e" + FastBuilderUtils.tickToTime(time) + "§a!\n" +
+                        "§8---------------------------------------------");
+            } else {
+                player.sendMessage("§8---------------------------------------------\n" +
+                        "                        §bCongratulations!\n" +
+                        "                        §e" + FastBuilderUtils.tickToTime(last / 5) + " §8-> §e" + FastBuilderUtils.tickToTime(time) + " \n" +
+                        "                        §8(§bbeated by §a" + FastBuilderUtils.tickToTime(last / 5 - time) + "§8)\n" +
+                        "§8---------------------------------------------");
             }
-        }).start();
+        }
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
@@ -161,7 +157,7 @@ public class Member extends User {
                 player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0));
                 waiting = false;
                 Inventory inventory = player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[integerCache[0]][lang];
+                ItemStack stack = ItemStackList.Blocks[blockskin][lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
             }
@@ -170,6 +166,7 @@ public class Member extends User {
 
     public void validPlaceBlock(int x, int y, int z) {
         if (replay == null) {
+            times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());
             replay.replayRecorder.PlayerMoveEvent(asyncLoc);
         }
@@ -179,7 +176,7 @@ public class Member extends User {
         Inventory inventory = player.getInventory();
         int empty = 1 - player.getInventory().getHeldItemSlot();
         if (inventory.getItem(empty) == null)
-            inventory.setItem(empty, ItemStackList.Blocks[integerCache[0]][lang]);
+            inventory.setItem(empty, ItemStackList.Blocks[blockskin][lang]);
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {
@@ -209,14 +206,12 @@ public class Member extends User {
 
     public void openSettings() {
         Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[lang]);
-        String[] hit = StringList.FallDelayLore[lang];
-        inventory.setItem(11, new ItemBuilder(Material.RAW_FISH).durability(3).name(hit[0]).lore(hit[1], hit[2].replace("%int%", Integer.toString(integerCache[1])), hit[3], hit[4], hit[5]).build());
-        inventory.setItem(13, ItemStackList.openkit[lang]);
+        inventory.setItem(12, ItemStackList.openkit[lang]);
         if (!player.getWorld().getName().equals("Custom"))
-            inventory.setItem(15, ItemStackList.Reset[lang]);
+            inventory.setItem(14, ItemStackList.Reset[lang]);
         else if (player.getInventory().getItem(5) != null) {
             String[] lore = StringList.LoopLore[lang];
-            inventory.setItem(15, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], hits.isEmpty() ? lore[3] : lore[2]).build());
+            inventory.setItem(14, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], hits.isEmpty() ? lore[3] : lore[2]).build());
         }
         player.openInventory(inventory);
     }

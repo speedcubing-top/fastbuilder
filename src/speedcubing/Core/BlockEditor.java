@@ -40,7 +40,7 @@ public class BlockEditor {
         for (int i = 0; i < ItemStackList.blockeditor.length; i++) {
             inv.setItem(i + 12, ItemStackList.blockeditor[i][member.lang]);
         }
-        int index = member.integerCache[0] - length;
+        int index = member.blockskin - length;
         if (index >= 0)
             inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.blockeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
         player.openInventory(inv);
@@ -53,7 +53,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + length - 12;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -72,7 +72,7 @@ public class BlockEditor {
                         for (int i = 3; i < 6; i++) {
                             inv.setItem(i + 11, ItemStackList.sandstoneeditor[i][member.lang]);
                         }
-                        int set = member.integerCache[0];
+                        int set = member.blockskin;
                         if (set < 6)
                             inv.setItem((set < 3) ? set + 10 : set + 11, ItemUtils.glow(ItemUtils.setLore(ItemStackList.sandstoneeditor[set][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -85,7 +85,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.wooleditor.length; i++) {
                             inv.setItem(i, ItemStackList.wooleditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - ItemStackList.sandstoneeditor.length;
+                        int index = member.blockskin - ItemStackList.sandstoneeditor.length;
                         if (index < ItemStackList.wooleditor.length && index >= 0)
                             inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.wooleditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -98,7 +98,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.oreblockeditor.length; i++) {
                             inv.setItem(i + 10, ItemStackList.oreblockeditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length);
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length);
                         if (index < ItemStackList.oreblockeditor.length && index >= 0)
                             inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreblockeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -111,7 +111,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.oreeditor.length; i++) {
                             inv.setItem(i + 10, ItemStackList.oreeditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length);
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length);
                         if (index < ItemStackList.oreeditor.length && index >= 0)
                             inv.setItem(index + 10, ItemUtils.glow(ItemUtils.setLore(ItemStackList.oreeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -124,7 +124,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.quartzeditor.length; i++) {
                             inv.setItem(i + 12, ItemStackList.quartzeditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length);
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length);
                         if (index < ItemStackList.quartzeditor.length && index >= 0)
                             inv.setItem(index + 12, ItemUtils.glow(ItemUtils.setLore(ItemStackList.quartzeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -146,7 +146,7 @@ public class BlockEditor {
                         for (int i = 9; i < 12; i++) {
                             inv.setItem(i + 5, ItemStackList.woodeditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length);
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length);
                         if (index < ItemStackList.woodeditor.length && index >= 0)
                             inv.setItem((index < 3 ? index + 1 : (index < 6 ? index + 2 : (index < 9 ? index + 4 : index + 5))), ItemUtils.glow(ItemUtils.setLore(ItemStackList.woodeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -159,7 +159,7 @@ public class BlockEditor {
                         for (int i = 0; i < ItemStackList.clayeditor.length; i++) {
                             inv.setItem(i, ItemStackList.clayeditor[i][member.lang]);
                         }
-                        int index = member.integerCache[0] - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length);
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length);
                         if (index < ItemStackList.clayeditor.length && index >= 0)
                             inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.clayeditor[index][member.lang].clone(), GlobalString.selected[member.lang])));
                         player.openInventory(inv);
@@ -173,7 +173,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot > 12 ? RawSlot - 11 : RawSlot - 10;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -186,7 +186,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + ItemStackList.sandstoneeditor.length;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -199,7 +199,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length - 10;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -212,7 +212,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length - 10;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -225,7 +225,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length - 12;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -238,7 +238,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = (RawSlot < 4 ? RawSlot - 1 : (RawSlot < 8 ? RawSlot - 2 : (RawSlot < 13 ? RawSlot - 4 : RawSlot - 5))) + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);
@@ -251,7 +251,7 @@ public class BlockEditor {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length;
                 Member member = Member.getMember(player);
-                member.integerCache[0] = x;
+                member.blockskin = x;
                 player.closeInventory();
                 ItemStack stack = ItemStackList.Blocks[x][member.lang];
                 player.getInventory().setItem(0, stack);

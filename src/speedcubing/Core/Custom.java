@@ -121,7 +121,7 @@ public class Custom {
         int lang = member.lang;
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
-        inventory.setItem(0, ItemStackList.Blocks[member.integerCache[0]][lang]);
+        inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);
         inventory.setItem(1, ItemStackList.pickaxe[lang]);
         inventory.setItem(7, ItemStackList.Settings[lang]);
         inventory.setItem(8, ItemStackList.navigator[lang]);
@@ -217,7 +217,7 @@ public class Custom {
         member.Blockplaced += 1;
         if (member.Blockplaced > 32) {
             member.Blockplaced = 0;
-            inventory.setItem(0, ItemStackList.Blocks[member.integerCache[0]][lang]);
+            inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);
         }
     }
 

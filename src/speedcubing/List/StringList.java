@@ -33,12 +33,6 @@ public class StringList {
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"}
     };
-    public static String[][] FallDelayLore = {
-            {"§bRespawn Delay", "", "§dCurrent: §e%int%§d block(s)", "§aLeft--§8/§cRight++", "", "§cdefault: 5"},
-            {"§bRespawn Delay", "", "§dCurrent: §e%int%§d block(s)", "§aLeft--§8/§cRight++", "", "§cdefault: 5"},
-            {"§bRespawn Delay", "", "§dCurrent: §e%int%§d block(s)", "§aLeft--§8/§cRight++", "", "§cdefault: 5"},
-            {"§bRespawn Delay", "", "§dCurrent: §e%int%§d block(s)", "§aLeft--§8/§cRight++", "", "§cdefault: 5"}
-    };
     public static final String[] timedisplay = {
             "§aTime: §e%time%",
             "§aTime: §e%time%",

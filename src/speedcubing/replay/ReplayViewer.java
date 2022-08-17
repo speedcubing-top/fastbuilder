@@ -56,9 +56,7 @@ public class ReplayViewer {
     public boolean lastAttempt;
 
     public ReplayViewer(Member member, Replay replay, boolean lastAttempt) {
-        World world = replay.StartLocation.getWorld();
         this.lastAttempt = lastAttempt;
-        boolean inclined = member.currentMode.inclined;
         player = member.player;
         this.replay = replay;
         this.member = member;
@@ -69,23 +67,7 @@ public class ReplayViewer {
         blocklength = replay.BlockTicks.size();
         sneaklength = replay.SneakTicks.size();
         handlength = replay.HandItemTicks.size();
-        replay.StartLocation.setX(replay.StartLocation.getX() + member.ReplayCoord);
-        if (member.currentMode.inclined)
-            replay.StartLocation.setZ(replay.StartLocation.getZ() + member.ReplayCoord);
-        for (Location location : replay.LocationActions) {
-            location.setX(location.getX() + member.ReplayCoord);
-            if (inclined)
-                location.setZ(location.getZ() + member.ReplayCoord);
-        }
-        for (int i = 0; i < replay.BlockActions.size(); i++) {
-            Block b = replay.BlockActions.get(i);
-            replay.BlockActions.set(i, world.getBlockAt(b.getX() + member.ReplayCoord, b.getY(), b.getZ() + (inclined ? member.ReplayCoord : 0)));
-        }
-        for (int i = 0; i < replay.BreakActions.size(); i++) {
-            Block b = replay.BreakActions.get(i);
-            replay.BreakActions.set(i, world.getBlockAt(b.getX() + member.ReplayCoord, b.getY(), b.getZ() + (inclined ? member.ReplayCoord : 0)));
-        }
-
+        serial(member.ReplayCoord);
         npc = new NPC(replay.name, UUID.randomUUID(), true).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((player1, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
@@ -95,8 +77,8 @@ public class ReplayViewer {
                         PacketPlayOutAbilities abilities = new PacketPlayOutAbilities();
                         abilities.b(true);
                         abilities.c(true);
-                        ((CraftPlayer) member.player).getHandle().playerConnection.sendPacket(abilities);
-                        ((CraftPlayer) member.player).getHandle().playerConnection.a(member.ReplayCoord, 90, 0, 0, 0);
+                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(abilities);
+                        ((CraftPlayer) player).getHandle().playerConnection.a(member.ReplayCoord, 90, 0, 0, 0);
                         isSpec = true;
                     }
                 }));
@@ -268,24 +250,28 @@ public class ReplayViewer {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
         member.replayPlayer = null;
-        if (lastAttempt) {
-            World world = replay.StartLocation.getWorld();
-            replay.StartLocation.setX(replay.StartLocation.getX() - member.ReplayCoord);
-            if (member.currentMode.inclined)
-                replay.StartLocation.setZ(replay.StartLocation.getZ() - member.ReplayCoord);
-            for (Location location : replay.LocationActions) {
-                location.setX(location.getX() - member.ReplayCoord);
-                if (member.currentMode.inclined)
-                    location.setZ(location.getZ() - member.ReplayCoord);
-            }
-            for (int i = 0; i < replay.BlockActions.size(); i++) {
-                Block b = replay.BlockActions.get(i);
-                replay.BlockActions.set(i, world.getBlockAt(b.getX() - member.ReplayCoord, b.getY(), b.getZ() - (member.currentMode.inclined ? member.ReplayCoord : 0)));
-            }
-            for (int i = 0; i < replay.BreakActions.size(); i++) {
-                Block b = replay.BreakActions.get(i);
-                replay.BreakActions.set(i, world.getBlockAt(b.getX() - member.ReplayCoord, b.getY(), b.getZ() - (member.currentMode.inclined ? member.ReplayCoord : 0)));
-            }
+        if (lastAttempt)
+            serial(-member.PlayerCoord);
+    }
+
+    void serial(int coord) {
+        boolean inclined = member.currentMode.inclined;
+        World world = replay.StartLocation.getWorld();
+        replay.StartLocation.setX(replay.StartLocation.getX() + coord);
+        if (inclined)
+            replay.StartLocation.setZ(replay.StartLocation.getZ() + coord);
+        for (Location location : replay.LocationActions) {
+            location.setX(location.getX() + coord);
+            if (inclined)
+                location.setZ(location.getZ() + coord);
+        }
+        for (int i = 0; i < replay.BlockActions.size(); i++) {
+            Block b = replay.BlockActions.get(i);
+            replay.BlockActions.set(i, world.getBlockAt(b.getX() + coord, b.getY(), b.getZ() + (inclined ? coord : 0)));
+        }
+        for (int i = 0; i < replay.BreakActions.size(); i++) {
+            Block b = replay.BreakActions.get(i);
+            replay.BreakActions.set(i, world.getBlockAt(b.getX() + coord, b.getY(), b.getZ() + (inclined ? coord : 0)));
         }
     }
 }
