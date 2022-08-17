@@ -23,48 +23,50 @@ public class ReplayRecorder {
 
     public void PlayerItemHeldEvent(ItemStack stack) {
         if (isRecording) {
-            replay.HandItemTicks.add((!replay.HandItemTicks.isEmpty() && replay.HandItemTicks.get(replay.HandItemTicks.size() - 1) == NewTick + 1) ? NewTick + 2 : NewTick + 1);
+            ReplayTick replayTick = getTick();
             stack = stack == null ? new ItemStack(Material.AIR) : stack;
-            replay.HandItemActions.add(stack.getTypeId());
-            replay.HandItemDatas.add(stack.getData().getData());
-            replay.HandItemEnchants.add(stack.containsEnchantment(Glow.glow));
+            replayTick.handMaterial = stack.getTypeId();
+            replayTick.handDatas = stack.getData().getData();
+            replayTick.handEchants = stack.containsEnchantment(Glow.glow);
         }
     }
 
     public void PlayerToggleSneakEvent(boolean sneak) {
-        if (isRecording) {
-            replay.SneakTicks.add((!replay.SneakTicks.isEmpty() && replay.SneakTicks.get(replay.SneakTicks.size() - 1) == NewTick + 1) ? NewTick + 2 : NewTick + 1);
-            replay.SneakActions.add(sneak);
-        }
+        if (isRecording) getTick().sneak = sneak;
     }
 
     public void BlockBreakEvent(Block block) {
         if (isRecording) {
-            replay.BreakTicks.add((!replay.BreakTicks.isEmpty() && replay.BreakTicks.get(replay.BreakTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BreakActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0)));
-            replay.BreakTypes.add(block.getType().getId());
-            replay.BreakDatas.add(block.getData());
+            ReplayTick replayTick = getTick();
+            replayTick.breakLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
+            replayTick.breakMaterial = block.getType().getId();
+            replayTick.breakDatas = block.getData();
         }
     }
 
     public void BlockPlaceEvent(Block block) {
-        if (isRecording) {
-            replay.BlockTicks.add((!replay.BlockTicks.isEmpty() && replay.BlockTicks.get(replay.BlockTicks.size() - 1) == NewTick) ? NewTick + 1 : NewTick);
-            replay.BlockActions.add(block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0)));
-        }
+        if (isRecording)
+            getTick().blockLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
     }
 
     public void PlayerMoveEvent(Location loc) {
         if (isRecording) {
             NewTick += 1;
-            replay.LocationTicks.add(NewTick);
-            replay.LocationActions.add(loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0));
+            getTick().location = loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0);
         }
+    }
+
+    ReplayTick getTick() {
+        if (replay.ticks.isEmpty() || replay.ticks.get(replay.ticks.size() - 1).tick == NewTick) {
+            ReplayTick replayTick = new ReplayTick(NewTick + 1);
+            replay.ticks.add(replayTick);
+            return replayTick;
+        } else return replay.ticks.get(NewTick);
     }
 
     public void pause(boolean write, boolean TAS) {
         isRecording = false;
         if (write)
-            ReplayCompressor.write(replay, member.player.getUniqueId(),TAS);
+            ReplayCompressor.write(replay, member.player.getUniqueId(), TAS);
     }
 }

@@ -49,7 +49,7 @@ public class ServerEvent {
                 if (!member.finishNext)
                     SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 12);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
-                    member.currentMode.Fell(e.player, false);
+                    member.currentMode.Fell(member, false);
                     e.player.sendMessage(StringList.cancelled[member.lang]);
                 } else {
                     if (member.finishNext) {
@@ -83,31 +83,31 @@ public class ServerEvent {
                     case "world": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.Long.Fell(e.player, fell);
+                            Main.Long.Fell(member, fell);
                     }
                     break;
                     case "Short": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.Short.Fell(e.player, fell);
+                            Main.Short.Fell(member, fell);
                     }
                     break;
                     case "Onestack": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.OneStack.Fell(e.player, fell);
+                            Main.OneStack.Fell(member, fell);
                     }
                     break;
                     case "Inclined": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            Main.Inclined.Fell(e.player, fell);
+                            Main.Inclined.Fell(member, fell);
                     }
                     break;
                     case "Inclinedshort": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            Main.InclinedShort.Fell(e.player, fell);
+                            Main.InclinedShort.Fell(member, fell);
                     }
                     break;
                     case "Custom": {

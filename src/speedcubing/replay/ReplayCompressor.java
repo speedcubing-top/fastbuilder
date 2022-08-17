@@ -10,6 +10,7 @@ import speedcubing.system.speedcubingSystem;
 
 import java.sql.Blob;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.UUID;
 
 public class ReplayCompressor {
@@ -26,47 +27,39 @@ public class ReplayCompressor {
                 .append(doubleToString(replay.StartLocation.getPitch()))
                 .append(intToString(replay.StartItem.getTypeId(), 4))
                 .append(intToString(replay.StartItem.getData().getData(), 2));
-        for (int i = 0; i < replay.LocationTicks.size(); i++) {
-            int a = replay.LocationTicks.indexOf(i);
-            if (a != -1) {
-                Location location = replay.LocationActions.get(a);
-                s.append(intToString(0, 2)).
-                        append(doubleToString(location.getX())).
-                        append(doubleToString(location.getY())).
-                        append(doubleToString(location.getZ())).
-                        append(doubleToString(location.getYaw())).
-                        append(doubleToString(location.getPitch()));
-            }
-
-            a = replay.BlockTicks.indexOf(i);
-            if (a != -1) {
-                Block block = replay.BlockActions.get(a);
+        List<ReplayTick> ticks = replay.ticks;
+        for (int i = 0; i < ticks.size(); i++) {
+            ReplayTick replayTick = replay.ticks.get(i);
+            Location location = replayTick.location;
+            s.append(intToString(0, 2)).
+                    append(doubleToString(location.getX())).
+                    append(doubleToString(location.getY())).
+                    append(doubleToString(location.getZ())).
+                    append(doubleToString(location.getYaw())).
+                    append(doubleToString(location.getPitch()));
+            if (replayTick.blockLocation != null) {
+                Block block = replayTick.blockLocation;
                 s.append(intToString(1, 2))
                         .append(intToString(block.getX(), 4)).
                         append(intToString(block.getY(), 4)).
                         append(intToString(block.getZ(), 4));
             }
-
-            a = replay.BreakTicks.indexOf(i);
-            if (a != -1) {
-                Block block = replay.BreakActions.get(a);
+            if (replayTick.breakLocation != null) {
+                Block block = replayTick.breakLocation;
                 s.append(intToString(2, 2)).
                         append(intToString(block.getX(), 4)).
                         append(intToString(block.getY(), 4)).
                         append(intToString(block.getZ(), 4)).
-                        append(intToString(replay.BreakTypes.get(a), 4)).
-                        append(intToString(replay.BreakDatas.get(a), 2));
+                        append(intToString(replayTick.breakMaterial, 4)).
+                        append(intToString(replayTick.breakDatas, 2));
             }
-            a = replay.SneakTicks.indexOf(i);
-            if (a != -1) {
-                s.append(intToString(3, 2)).append(intToString(replay.SneakActions.get(a) ? 0 : 1, 2));
+            if (replayTick.sneak != null) {
+                s.append(intToString(3, 2)).append(intToString(replayTick.sneak ? 0 : 1, 2));
             }
-
-            a = replay.HandItemTicks.indexOf(i);
-            if (a != -1) {
-                s.append(intToString(4, 2)).append(intToString(replay.HandItemActions.get(a), 4)).
-                        append(intToString(replay.HandItemEnchants.get(a) ? 0 : 1, 2)).
-                        append(intToString(replay.HandItemDatas.get(a), 2));
+            if (replayTick.handMaterial != null) {
+                s.append(intToString(4, 2)).append(intToString(replayTick.handMaterial, 4)).
+                        append(intToString(replayTick.handEchants ? 0 : 1, 2)).
+                        append(intToString(replayTick.handDatas, 2));
             }
         }
         a = s.toString();
@@ -105,37 +98,35 @@ public class ReplayCompressor {
         replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
-        int i = -1;
+        ReplayTick replayTick = null;
+        int tick = -1;
         while (s.length() != 0) {
             if (s.toString().startsWith("00")) {
-                i += 1;
-                replay.LocationTicks.add(i);
-                replay.LocationActions.add(new Location(world,
+                tick++;
+                replayTick = new ReplayTick(tick);
+                replayTick.location = new Location(world,
                         StringToDouble(s.substring(2, 10)),
                         StringToDouble(s.substring(10, 18)),
                         StringToDouble(s.substring(18, 26)),
                         (float) StringToDouble(s.substring(26, 34)),
-                        (float) StringToDouble(s.substring(34, 42))));
+                        (float) StringToDouble(s.substring(34, 42)));
+                replay.ticks.add(replayTick);
                 s = new StringBuilder(s.substring(42));
             } else if (s.toString().startsWith("01")) {
-                replay.BlockTicks.add(i);
-                replay.BlockActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
+                replayTick.blockLocation = world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
                 s = new StringBuilder(s.substring(14));
             } else if (s.toString().startsWith("02")) {
-                replay.BreakTicks.add(i);
-                replay.BreakActions.add(world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14))));
-                replay.BreakTypes.add(stringToInt(s.substring(14, 18)));
-                replay.BreakDatas.add((byte) stringToInt(s.substring(18, 20)));
+                replayTick.breakLocation = world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
+                replayTick.breakMaterial = stringToInt(s.substring(14, 18));
+                replayTick.breakDatas = (byte) stringToInt(s.substring(18, 20));
                 s = new StringBuilder(s.substring(20));
             } else if (s.toString().startsWith("03")) {
-                replay.SneakTicks.add(i);
-                replay.SneakActions.add(stringToInt(s.substring(2, 4)) == 0);
+                replayTick.sneak = stringToInt(s.substring(2, 4)) == 0;
                 s = new StringBuilder(s.substring(4));
             } else if (s.toString().startsWith("04")) {
-                replay.HandItemTicks.add(i);
-                replay.HandItemActions.add(stringToInt(s.substring(2, 6)));
-                replay.HandItemEnchants.add(stringToInt(s.substring(6, 8)) == 0);
-                replay.HandItemDatas.add((byte) stringToInt(s.substring(8, 10)));
+                replayTick.handMaterial = stringToInt(s.substring(2, 6));
+                replayTick.handEchants = stringToInt(s.substring(6, 8)) == 0;
+                replayTick.handDatas = (byte) stringToInt(s.substring(8, 10));
                 s = new StringBuilder(s.substring(10));
             }
         }

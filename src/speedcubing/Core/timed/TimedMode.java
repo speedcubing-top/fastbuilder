@@ -81,8 +81,8 @@ public class TimedMode {
         int coord = roomToCoord(room);
         player.setAllowFlight(false);
         player.setGameMode(GameMode.SURVIVAL);
-        player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
+        player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         System.out.println(member.player.getName() + " " + member.PlayerCoord + " " + world.getName());
         setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.lang];
@@ -154,30 +154,31 @@ public class TimedMode {
         }
     }
 
-    public void Fell(Player player, boolean fell) {
-        Member member = Member.getMember(player);
+    public void Fell(Member member, boolean fell) {
+        if (System.currentTimeMillis() - member.quitReplay < 100)
+            return;
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
-            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(player.getWorld()));
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(member.player.getWorld()));
             member.waiting = false;
-            Inventory inventory = player.getInventory();
+            Inventory inventory = member.player.getInventory();
             ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
             if (member.replay != null) {
-                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(player.getWorld()));
-                Inventory inventory = player.getInventory();
+                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(member.player.getWorld()));
+                Inventory inventory = member.player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
-                SideBar.getSidebar(player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
+                SideBar.getSidebar(member.player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
             } else if (!fell) {
-                Location location = player.getLocation();
+                Location location = member.player.getLocation();
                 int coord = member.PlayerCoord;
                 int oldroom = coordToRoom(coord);
                 int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, rooms);
-                if (newroom == -1) player.sendMessage(StringList.nomapsavaliable[member.lang]);
+                if (newroom == -1) member.player.sendMessage(StringList.nomapsavaliable[member.lang]);
                 else {
                     member.PlayerCoord = roomToCoord(newroom);
                     System.out.println(member.player.getName() + " " + member.PlayerCoord + " " + world.getName());
@@ -186,14 +187,14 @@ public class TimedMode {
                     rooms[newroom] = false;
                 }
             }
-            player.closeInventory();
+            member.player.closeInventory();
         }
         if (member.replay != null) {
             member.replay.replayRecorder.pause(false, false);
             lastAttempt.put(member, member.replay);
         }
         member.replay = null;
-        player.teleport(new Location(player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));
+        member.player.teleport(new Location(member.player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));
     }
 
 

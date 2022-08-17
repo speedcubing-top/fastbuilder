@@ -2,7 +2,6 @@ package speedcubing.replay;
 
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -22,20 +21,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 public class ReplayViewer {
-    int Locationindex;
-    int nextLocation;
-
-    int Breakindex;
-    int nextBreak;
-
-    int Blockindex;
-    int nextBlock;
-
-    int SneakIndex;
-    int nextSneak;
-
-    int Handindex;
-    int nextHand;
     int task;
 
     ItemStack currentItem;
@@ -44,11 +29,6 @@ public class ReplayViewer {
     public final Replay replay;
     public final Player player;
     public final Member member;
-    final int locationlength;
-    final int breaklength;
-    final int blocklength;
-    final int sneaklength;
-    final int handlength;
     boolean playing;
     public boolean isSpec;
     public NPC npc;
@@ -62,11 +42,6 @@ public class ReplayViewer {
         this.member = member;
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         currentItem = replay.StartItem;
-        locationlength = replay.LocationTicks.size();
-        breaklength = replay.BreakTicks.size();
-        blocklength = replay.BlockTicks.size();
-        sneaklength = replay.SneakTicks.size();
-        handlength = replay.HandItemTicks.size();
         serial(member.ReplayCoord);
         npc = new NPC(replay.name, UUID.randomUUID(), true).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((player1, enumEntityUseAction) -> {
@@ -101,25 +76,20 @@ public class ReplayViewer {
     }
 
     void resetNPC() {
-        nextLocation = locationlength == 0 ? -1 : replay.LocationTicks.get(0);
-        nextBreak = breaklength == 0 ? -1 : replay.BreakTicks.get(0);
-        nextSneak = sneaklength == 0 ? -1 : replay.SneakTicks.get(0);
-        nextBlock = blocklength == 0 ? -1 : replay.BlockTicks.get(0);
-        nextHand = handlength == 0 ? -1 : replay.HandItemTicks.get(0);
         npc.setSneaking(replay.StartSneaking).setItemInHand(replay.StartItem).setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
     }
 
     void actionbar() {
-        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(locationlength - 2));
+        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(replay.ticks.size() - 2));
     }
 
     public void start() {
         if (!playing)
-            if (tick != locationlength - 1) {
+            if (tick != replay.ticks.size() - 1) {
                 player.getInventory().setItem(2, ItemStackList.PAUSE[member.lang]);
                 task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                     addoneTick();
-                    if (tick == locationlength - 1) {
+                    if (tick == replay.ticks.size() - 1) {
                         Bukkit.getScheduler().cancelTask(task);
                         playing = false;
                         player.getInventory().setItem(2, ItemStackList.RESTART[member.lang]);
@@ -128,14 +98,10 @@ public class ReplayViewer {
             } else {
                 tick = 0;
                 playing = true;
-                for (Block b : replay.BlockActions) {
-                    player.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+                for (ReplayTick replayTick : replay.ticks) {
+                    if (replayTick.blockLocation != null)
+                        player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
                 }
-                Locationindex = 0;
-                Breakindex = 0;
-                Blockindex = 0;
-                SneakIndex = 0;
-                Handindex = 0;
                 resetNPC();
                 player.getInventory().setItem(2, ItemStackList.START[member.lang]);
                 npc.updateNpcLocation();
@@ -152,95 +118,59 @@ public class ReplayViewer {
             if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
                 player.getInventory().setItem(2, ItemStackList.START[member.lang]);
             tick--;
-            if (locationlength != 0 && Locationindex != 0)
-                if (tick == replay.LocationTicks.get(Locationindex - 1)) {
-                    Locationindex--;
-                    Location loc = Locationindex == 0 ? replay.StartLocation : replay.LocationActions.get(Locationindex - 1);
-                    npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-                    npc.updateNpcLocation();
-                    nextLocation = replay.LocationTicks.get(Locationindex);
+            ReplayTick replayTick = replay.ticks.get(tick);
+            ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
+            if (tick == 0)
+                npc.setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
+            else
+                npc.setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
+            npc.updateNpcLocation();
+            if (replayTick.blockLocation != null)
+                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+            if (replayTick.breakLocation != null) {
+                Block newP = player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ());
+                newP.setType(Material.getMaterial(replayTick.breakMaterial));
+                newP.setData(replayTick.breakDatas);
+            }
+            if (replayTick.sneak != null)
+                npc.setSneaking(!replayTick.sneak);
+            if (replayTick.handMaterial != null) {
+                if (tick == 0)
+                    currentItem = replay.StartItem;
+                else {
+                    currentItem = new ItemStack(last.handMaterial, 1, last.handDatas);
+                    if (last.handEchants)
+                        ItemUtils.glow(currentItem);
                 }
-            if (blocklength != 0 && Blockindex != 0)
-                if (tick == replay.BlockTicks.get(Blockindex - 1)) {
-                    Blockindex--;
-                    Block p = replay.BlockActions.get(Blockindex);
-                    player.getWorld().getBlockAt(p.getX(), p.getY(), p.getZ()).setType(Material.AIR);
-                    nextBlock = replay.BlockTicks.get(Blockindex);
-                }
-            if (breaklength != 0 && Breakindex != 0)
-                if (tick == replay.BreakTicks.get(Breakindex - 1)) {
-                    Breakindex--;
-                    Block p = replay.BreakActions.get(Breakindex);
-                    Block newP = player.getWorld().getBlockAt(p.getX(), p.getY(), p.getZ());
-                    newP.setType(Material.getMaterial(replay.BreakTypes.get(Breakindex)));
-                    newP.setData(replay.BreakDatas.get(Breakindex));
-                    nextBreak = replay.BreakTicks.get(Breakindex);
-                }
-            if (sneaklength != 0 && SneakIndex != 0)
-                if (tick == replay.SneakTicks.get(SneakIndex - 1)) {
-                    SneakIndex--;
-                    npc.setSneaking(!replay.SneakActions.get(SneakIndex));
-                    nextSneak = replay.SneakTicks.get(SneakIndex);
-                }
-            if (handlength != 0 && Handindex != 0) {
-                if (tick == replay.HandItemTicks.get(Handindex - 1)) {
-                    Handindex--;
-                    if (Handindex != 0) {
-                        currentItem = new ItemStack(replay.HandItemActions.get(Handindex - 1), 1, (short) replay.HandItemDatas.get(Handindex - 1));
-                        if (replay.HandItemEnchants.get(Handindex - 1))
-                            ItemUtils.glow(currentItem);
-                    } else currentItem = replay.StartItem;
-                    npc.setItemInHand(currentItem);
-                    nextHand = replay.HandItemTicks.get(Handindex);
-                }
+                npc.setItemInHand(currentItem);
             }
             actionbar();
         }
     }
 
     public void addoneTick() {
-        if (tick != locationlength - 1) {
-            if (locationlength != 0)
-                if (tick == nextLocation) {
-                    Location loc = replay.LocationActions.get(Locationindex);
-                    npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-                    npc.updateNpcLocation();
-                    Locationindex++;
-                    nextLocation = Locationindex == locationlength ? Locationindex : replay.LocationTicks.get(Locationindex);
-                }
-            if (blocklength != 0)
-                if (tick == nextBlock) {
-                    Block p = replay.BlockActions.get(Blockindex);
-                    Block newP = player.getWorld().getBlockAt(p.getX(), p.getY(), p.getZ());
-                    newP.setType(Material.getMaterial(currentItem.getTypeId()));
-                    newP.setData(currentItem.getData().getData());
-                    npc.animation(0);
-                    Blockindex++;
-                    nextBlock = Blockindex == blocklength ? -1 : replay.BlockTicks.get(Blockindex);
-                }
-            if (breaklength != 0)
-                if (tick == nextBreak) {
-                    Block p = replay.BreakActions.get(Breakindex);
-                    player.getWorld().getBlockAt(p.getX(), p.getY(), p.getZ()).setType(Material.AIR);
-                    npc.animation(0);
-                    Breakindex++;
-                    nextBreak = Breakindex == breaklength ? -1 : replay.BreakTicks.get(Breakindex);
-                }
-            if (sneaklength != 0)
-                if (tick == nextSneak) {
-                    npc.setSneaking(replay.SneakActions.get(SneakIndex));
-                    SneakIndex++;
-                    nextSneak = SneakIndex == sneaklength ? -1 : replay.SneakTicks.get(SneakIndex);
-                }
-            if (handlength != 0)
-                if (tick == nextHand) {
-                    currentItem = new ItemStack(replay.HandItemActions.get(Handindex), 1, (short) replay.HandItemDatas.get(Handindex));
-                    if (replay.HandItemEnchants.get(Handindex))
-                        ItemUtils.glow(currentItem);
-                    npc.setItemInHand(currentItem);
-                    Handindex++;
-                    nextHand = Handindex == handlength ? -1 : replay.HandItemTicks.get(Handindex);
-                }
+        if (tick != replay.ticks.size() - 1) {
+            ReplayTick replayTick = replay.ticks.get(tick);
+            npc.setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
+            npc.updateNpcLocation();
+            if (replayTick.blockLocation != null) {
+                Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());
+                newP.setType(Material.getMaterial(currentItem.getTypeId()));
+                newP.setData(currentItem.getData().getData());
+                npc.animation(0);
+            }
+            if (replayTick.breakLocation != null) {
+                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
+                npc.animation(0);
+            }
+            if (replayTick.sneak != null)
+                npc.setSneaking(replayTick.sneak);
+            if (replayTick.handMaterial != null) {
+                currentItem = new ItemStack(replayTick.handMaterial, 1, replayTick.handDatas);
+                if (replayTick.handEchants)
+                    ItemUtils.glow(currentItem);
+                npc.setItemInHand(currentItem);
+            }
             tick++;
             actionbar();
         }
@@ -250,6 +180,7 @@ public class ReplayViewer {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
         member.replayPlayer = null;
+        member.quitReplay = System.currentTimeMillis();
         if (lastAttempt)
             serial(-member.PlayerCoord);
     }
@@ -260,18 +191,14 @@ public class ReplayViewer {
         replay.StartLocation.setX(replay.StartLocation.getX() + coord);
         if (inclined)
             replay.StartLocation.setZ(replay.StartLocation.getZ() + coord);
-        for (Location location : replay.LocationActions) {
-            location.setX(location.getX() + coord);
+        for (ReplayTick replayTick : replay.ticks) {
+            replayTick.location.setX(replayTick.location.getX() + coord);
             if (inclined)
-                location.setZ(location.getZ() + coord);
-        }
-        for (int i = 0; i < replay.BlockActions.size(); i++) {
-            Block b = replay.BlockActions.get(i);
-            replay.BlockActions.set(i, world.getBlockAt(b.getX() + coord, b.getY(), b.getZ() + (inclined ? coord : 0)));
-        }
-        for (int i = 0; i < replay.BreakActions.size(); i++) {
-            Block b = replay.BreakActions.get(i);
-            replay.BreakActions.set(i, world.getBlockAt(b.getX() + coord, b.getY(), b.getZ() + (inclined ? coord : 0)));
+                replayTick.location.setZ(replayTick.location.getZ() + coord);
+            if (replayTick.blockLocation != null)
+                replayTick.blockLocation = world.getBlockAt(replayTick.blockLocation.getX() + coord, replayTick.blockLocation.getY(), replayTick.blockLocation.getZ() + (inclined ? coord : 0));
+            if (replayTick.breakLocation != null)
+                replayTick.breakLocation = world.getBlockAt(replayTick.breakLocation.getX() + coord, replayTick.breakLocation.getY(), replayTick.breakLocation.getZ() + (inclined ? coord : 0));
         }
     }
 }

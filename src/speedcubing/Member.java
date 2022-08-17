@@ -71,6 +71,7 @@ public class Member extends User {
     public Location didntevenfuckingstart = new Location(player.getWorld(), 0, 0, 0);
     public final Location asyncLoc = new Location(player.getWorld(), 0, 0, 0);
     public boolean finishNext;
+    public long quitReplay;
 
     public Member(Player player) {
         super(player.getUniqueId());
