@@ -165,8 +165,10 @@ public class Member extends User {
         }, 40);
     }
 
-    public void validPlaceBlock(int x, int y, int z) {
+    public boolean validPlaceBlock(int x, int y, int z) {
         if (replay == null) {
+            if (z > 1)
+                return true;
             times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());
             replay.replayRecorder.PlayerMoveEvent(asyncLoc);
@@ -178,6 +180,7 @@ public class Member extends User {
         int empty = 1 - player.getInventory().getHeldItemSlot();
         if (inventory.getItem(empty) == null)
             inventory.setItem(empty, ItemStackList.Blocks[blockskin][lang]);
+        return false;
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {

@@ -80,34 +80,19 @@ public class ServerEvent {
                         if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
                             member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
                         break;
-                    case "world": {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.Long.Fell(member, fell);
-                    }
-                    break;
-                    case "Short": {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.Short.Fell(member, fell);
-                    }
-                    break;
+                    case "world":
+                    case "Short":
                     case "Onestack": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            Main.OneStack.Fell(member, fell);
+                            member.currentMode.Fell(member, fell);
                     }
                     break;
+                    case "Inclinedshort":
                     case "Inclined": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            Main.Inclined.Fell(member, fell);
-                    }
-                    break;
-                    case "Inclinedshort": {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            Main.InclinedShort.Fell(member, fell);
+                            member.currentMode.Fell(member, fell);
                     }
                     break;
                     case "Custom": {
@@ -153,23 +138,23 @@ public class ServerEvent {
                         case "world":
                             if (z < -1 || z > 54 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
                                 e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
+                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
                             break;
                         case "Short":
                         case "Onestack":
                             if (z < -1 || z > 31 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
                                 e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
+                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclined":
                             if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
                                 e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
+                            } else e.isCancelled =  member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclinedshort":
                             if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
                                 e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
+                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
                             break;
                         case "Custom":
                             if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {

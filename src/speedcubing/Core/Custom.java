@@ -64,31 +64,33 @@ public class Custom {
                 }
             }, 40);
         } else {
-            member.clear(world);
-            member.finishedOnce = true;
-            int[] center = member.Center;
-            int[] Settings = member.LengthSettings;
-            member.hits.clear();
-            if (Settings[1] + center[1] + 99 > 255) {
-                player.sendMessage("Height Limit reached!");
-                return;
-            }
-            for (int X = -2; X <= 2; X++) {
-                for (int Y = 97; Y <= 99; Y++) {
-                    for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                member.clear(world);
+                member.finishedOnce = true;
+                int[] center = member.Center;
+                int[] Settings = member.LengthSettings;
+                member.hits.clear();
+                if (Settings[1] + center[1] + 99 > 255) {
+                    player.sendMessage("Height Limit reached!");
+                    return;
+                }
+                for (int X = -2; X <= 2; X++) {
+                    for (int Y = 97; Y <= 99; Y++) {
+                        for (int Z = -2; Z <= 2; Z++) {
+                            world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                        }
                     }
                 }
-            }
-            for (int X = -2; X <= 2; X++) {
-                for (int Y = 100; Y >= 97; Y--) {
-                    for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                for (int X = -2; X <= 2; X++) {
+                    for (int Y = 100; Y >= 97; Y--) {
+                        for (int Z = -2; Z <= 2; Z++) {
+                            world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                        }
                     }
                 }
-            }
-            AddBB(5 + Settings[0] + center[0], Settings[1] + center[1], member.PlayerCoord, member);
-            member.Center = new int[]{5 + Settings[0] + center[0], Settings[1] + center[1]};
+                AddBB(5 + Settings[0] + center[0], Settings[1] + center[1], member.PlayerCoord, member);
+                member.Center = new int[]{5 + Settings[0] + center[0], Settings[1] + center[1]};
+            });
         }
     }
 
@@ -224,7 +226,7 @@ public class Custom {
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
         World world = player.getWorld();
-        member.clear(world);
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world));
         Inventory inventory = player.getInventory();
         inventory.setItem(5, ItemStackList.Length[member.lang]);
         inventory.setItem(6, ItemStackList.Height[member.lang]);
@@ -237,30 +239,31 @@ public class Custom {
             if (member.finishedOnce) {
                 int[] center = member.Center;
                 int[] Settings = member.LengthSettings;
-                for (int X = -2; X <= 2; X++) {
-                    for (int Y = 100; Y >= 97; Y--) {
-                        for (int Z = -2; Z <= 2; Z++) {
-                            if (Y != 100)
-                                world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
-                            world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z).setType(Material.AIR);
-                            world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
-                        }
-                    }
-                }
-                member.finishedOnce = false;
-                if (!member.hits.isEmpty()) {
-                    member.hits.clear();
+                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                     for (int X = -2; X <= 2; X++) {
-                        for (int Y = 97; Y <= 100; Y++) {
+                        for (int Y = 100; Y >= 97; Y--) {
                             for (int Z = -2; Z <= 2; Z++) {
-                                world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                if (Y != 100)
+                                    world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z).setType(Material.AIR);
+                                world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                             }
                         }
                     }
-                    AddBB(5 + Settings[0], Settings[1], member.PlayerCoord, member);
-                    member.Center = new int[]{5 + Settings[0], Settings[1]};
-                }
-
+                    member.finishedOnce = false;
+                    if (!member.hits.isEmpty()) {
+                        member.hits.clear();
+                        for (int X = -2; X <= 2; X++) {
+                            for (int Y = 97; Y <= 100; Y++) {
+                                for (int Z = -2; Z <= 2; Z++) {
+                                    world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                }
+                            }
+                        }
+                        AddBB(5 + Settings[0], Settings[1], member.PlayerCoord, member);
+                        member.Center = new int[]{5 + Settings[0], Settings[1]};
+                    }
+                });
             }
         }
         player.closeInventory();
