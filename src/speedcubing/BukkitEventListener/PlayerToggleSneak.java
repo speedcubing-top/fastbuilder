@@ -3,12 +3,12 @@ package speedcubing.BukkitEventListener;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
 import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
-import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import speedcubing.Member;
 
@@ -24,6 +24,13 @@ public class PlayerToggleSneak implements Listener {
             member.player.setAllowFlight(true);
             member.player.setFlying(true);
             member.player.teleport(new Location(member.player.getWorld(), npc.locX, npc.locY, npc.locZ, npc.yaw, npc.pitch));
+        }
+    }
+
+    @EventHandler
+    public void BlockPlaceEvent(BlockPlaceEvent e) {
+        if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            Member.getMember(e.getPlayer()).Blocks.add(e.getBlock());
         }
     }
 }

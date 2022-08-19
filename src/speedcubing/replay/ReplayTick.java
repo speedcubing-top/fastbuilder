@@ -4,9 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 public class ReplayTick {
-
-
-    public final int tick;
     public Location location;
 
     public Block blockLocation;
@@ -21,7 +18,4 @@ public class ReplayTick {
     public byte handDatas;
     public boolean handEchants;
 
-    public ReplayTick(int tick) {
-        this.tick = tick;
-    }
 }

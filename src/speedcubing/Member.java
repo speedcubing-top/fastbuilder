@@ -167,15 +167,13 @@ public class Member extends User {
 
     public boolean validPlaceBlock(int x, int y, int z) {
         if (replay == null) {
-            if (z > 1)
+            if ((currentMode.inclined ? x - z : z) > 1)
                 return true;
             times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());
             replay.replayRecorder.PlayerMoveEvent(asyncLoc);
         }
-        Block b = player.getWorld().getBlockAt(x, y, z);
-        replay.replayRecorder.BlockPlaceEvent(b);
-        Blocks.add(b);
+        replay.replayRecorder.BlockPlaceEvent(player.getWorld().getBlockAt(x, y, z));
         Inventory inventory = player.getInventory();
         int empty = 1 - player.getInventory().getHeldItemSlot();
         if (inventory.getItem(empty) == null)

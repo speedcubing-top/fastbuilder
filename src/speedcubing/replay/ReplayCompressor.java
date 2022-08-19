@@ -99,11 +99,9 @@ public class ReplayCompressor {
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
         ReplayTick replayTick = null;
-        int tick = -1;
         while (s.length() != 0) {
             if (s.toString().startsWith("00")) {
-                tick++;
-                replayTick = new ReplayTick(tick);
+                replayTick = new ReplayTick();
                 replayTick.location = new Location(world,
                         StringToDouble(s.substring(2, 10)),
                         StringToDouble(s.substring(10, 18)),

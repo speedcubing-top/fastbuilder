@@ -32,12 +32,12 @@ public class ReplayRecorder {
     }
 
     public void PlayerToggleSneakEvent(boolean sneak) {
-        if (isRecording) getTick().sneak = sneak;
+        if (isRecording) getTick2().sneak = sneak;
     }
 
     public void BlockBreakEvent(Block block) {
         if (isRecording) {
-            ReplayTick replayTick = getTick();
+            ReplayTick replayTick = getTick2();
             replayTick.breakLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
             replayTick.breakMaterial = block.getType().getId();
             replayTick.breakDatas = block.getData();
@@ -45,8 +45,9 @@ public class ReplayRecorder {
     }
 
     public void BlockPlaceEvent(Block block) {
-        if (isRecording)
-            getTick().blockLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
+        if (isRecording) {
+            getTick2().blockLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
+        }
     }
 
     public void PlayerMoveEvent(Location loc) {
@@ -57,11 +58,20 @@ public class ReplayRecorder {
     }
 
     ReplayTick getTick() {
-        if (replay.ticks.isEmpty() || replay.ticks.get(replay.ticks.size() - 1).tick == NewTick) {
-            ReplayTick replayTick = new ReplayTick(NewTick + 1);
+        int size = replay.ticks.size();
+        if (size == 0 || size == NewTick) {
+            ReplayTick replayTick = new ReplayTick();
             replay.ticks.add(replayTick);
             return replayTick;
         } else return replay.ticks.get(NewTick);
+    }
+
+    ReplayTick getTick2() {
+        int size = replay.ticks.size();
+        if (size == 0 || size - 1 >= NewTick) {
+            replay.ticks.add(new ReplayTick());
+            return replay.ticks.get(size - 1);
+        } else return replay.ticks.get(NewTick - 1);
     }
 
     public void pause(boolean write, boolean TAS) {
