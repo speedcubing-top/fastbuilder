@@ -136,25 +136,22 @@ public class ServerEvent {
                     int z = pos.getZ();
                     switch (e.player.getWorld().getName()) {
                         case "world":
-                            if (z < -1 || z > 54 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
-                                e.isCancelled = true;
-                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
-                            break;
                         case "Short":
                         case "Onestack":
-                            if (z < -1 || z > 31 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) {
+                            if ((z < -1 || z > member.currentMode.limit + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100)) {
                                 e.isCancelled = true;
-                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
+                            } else
+                                member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclined":
-                            if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) {
+                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) || (member.replay == null && y > 100)) {
                                 e.isCancelled = true;
-                            } else e.isCancelled =  member.validPlaceBlock(x, y, z);
+                            } else member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclinedshort":
                             if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
                                 e.isCancelled = true;
-                            } else e.isCancelled = member.validPlaceBlock(x, y, z);
+                            } else member.validPlaceBlock(x, y, z);
                             break;
                         case "Custom":
                             if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
