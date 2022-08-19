@@ -68,7 +68,7 @@ public class ReplayRecorder {
 
     ReplayTick getTick2() {
         int size = replay.ticks.size();
-        if (size == 0 || size - 1 >= NewTick) {
+        if (size == 0 || size > NewTick) {
             replay.ticks.add(new ReplayTick());
             return replay.ticks.get(size - 1);
         } else return replay.ticks.get(NewTick - 1);
