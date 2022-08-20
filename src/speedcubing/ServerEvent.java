@@ -31,7 +31,8 @@ public class ServerEvent {
     @LibEventHandler
     public void ddwdw(PlayInEvent e) {
         Member member = Member.getMember(e.player);
-        if (e.packet instanceof PacketPlayInFlying packetplayinflying) {
+        if (e.packet instanceof PacketPlayInFlying) {
+            PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.packet;
             member.didntevenfuckingstart = member.asyncLoc.clone();
             Location loc = member.asyncLoc;
             if (packetplayinflying.g() && !(packetplayinflying.g() && packetplayinflying.b() == -999.0D)) {
@@ -115,8 +116,9 @@ public class ServerEvent {
                     break;
                 }
             }
-        } else if (e.packet instanceof PacketPlayInBlockPlace p && p.getFace() != 255) {
-            if (e.player.getGameMode() == GameMode.SURVIVAL) {
+        } else if (e.packet instanceof PacketPlayInBlockPlace) {
+            PacketPlayInBlockPlace p = (PacketPlayInBlockPlace) e.packet;
+            if (p.getFace() != 255 && e.player.getGameMode() == GameMode.SURVIVAL) {
                 ItemStack stack = p.getItemStack() == null ? null : CraftItemStack.asBukkitCopy(p.getItemStack());
                 if (stack == null)
                     return;
