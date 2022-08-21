@@ -121,6 +121,7 @@ public class Member extends User {
         if (OVERLIMIT)
             player.sendMessage("§cThis score is out of range.");
         replay.replayRecorder.pause(true, TAS);
+        replay = null;
         waiting = true;
         int msrecord = time * 5;
         String display = FastBuilderUtils.tickToTime(time);
@@ -153,7 +154,6 @@ public class Member extends User {
         currentMode.a(this, time);
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
-                replay = null;
                 clear(currentMode.world);
                 player.teleport(new Location(player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0));
                 waiting = false;
