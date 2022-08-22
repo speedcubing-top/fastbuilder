@@ -33,7 +33,7 @@ public class TimedMode {
     public final int sqlId;
     public final int limit;
     public final boolean inclined;
-    private final int distance;
+    public final int distance;
     private final int height;
     public final World replayWorld;
     public int used = 0;

@@ -140,18 +140,14 @@ public class ServerEvent {
                         case "world":
                         case "Short":
                         case "Onestack":
-                            if ((z < -1 || z > member.currentMode.limit + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100)) {
+                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100)) {
                                 e.isCancelled = true;
                             } else
                                 member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclined":
-                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 58 || y < 92) || (member.replay == null && y > 100)) {
-                                e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
-                            break;
                         case "Inclinedshort":
-                            if (Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > 38 || y < 92) {
+                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100)) {
                                 e.isCancelled = true;
                             } else member.validPlaceBlock(x, y, z);
                             break;
