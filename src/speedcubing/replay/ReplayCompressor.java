@@ -67,7 +67,7 @@ public class ReplayCompressor {
     }
 
     public static Replay read(Member member, int slot) {
-        ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY fav DESC, time DESC LIMIT " + slot + ",1");
+        ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.user.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY fav DESC, time DESC LIMIT " + slot + ",1");
         StringBuilder s = new StringBuilder();
         String temp;
         String name;

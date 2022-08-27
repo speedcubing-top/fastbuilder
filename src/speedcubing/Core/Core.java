@@ -39,7 +39,7 @@ public class Core {
                 if (sc == 0)
                     result.add("§7-,---");
                 else
-                    result.add(speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc));
+                    result.add(speedcubingServer.getFormat(ses.user.rank)[1] + ses.user.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc));
             }
         }
         return result;

@@ -19,11 +19,11 @@ public class PlayerToggleSneak implements Listener {
         if (e.isSneaking() && member.replayPlayer != null && member.replayPlayer.isSpec) {
             member.replayPlayer.isSpec = false;
             EntityPlayer npc = member.replayPlayer.npc.entityPlayer;
-            ((CraftPlayer) member.player).getHandle().playerConnection.sendPacket(new PacketPlayOutCamera(((CraftPlayer) member.player).getHandle()));
-            ((CraftPlayer) member.player).getHandle().playerConnection.sendPacket(new PacketPlayOutGameStateChange(3, 2));
-            member.player.setAllowFlight(true);
-            member.player.setFlying(true);
-            member.player.teleport(new Location(member.player.getWorld(), npc.locX, npc.locY, npc.locZ, npc.yaw, npc.pitch));
+            ((CraftPlayer) member.user.player).getHandle().playerConnection.sendPacket(new PacketPlayOutCamera(((CraftPlayer) member.user.player).getHandle()));
+            ((CraftPlayer) member.user.player).getHandle().playerConnection.sendPacket(new PacketPlayOutGameStateChange(3, 2));
+            member.user.player.setAllowFlight(true);
+            member.user.player.setFlying(true);
+            member.user.player.teleport(new Location(member.user.player.getWorld(), npc.locX, npc.locY, npc.locZ, npc.yaw, npc.pitch));
         }
     }
 

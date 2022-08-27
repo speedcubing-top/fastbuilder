@@ -83,10 +83,10 @@ public class TimedMode {
         player.setGameMode(GameMode.SURVIVAL);
         player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
-        System.out.print("[Join] " + room + " " + member.player.getName() + " " + world.getName());
+        System.out.print("[Join] " + room + " " + member.user.player.getName() + " " + world.getName());
         setPressurePlate(member);
-        String[] sidebar = StringList.SideBar[member.lang];
-        int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.id));
+        String[] sidebar = StringList.SideBar[member.user.lang];
+        int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.user.id));
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)
@@ -105,7 +105,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = speedcubingServer.getFormat(ses.rank)[1] + ses.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
+                    result = speedcubingServer.getFormat(ses.user.rank)[1] + ses.user.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }
@@ -114,14 +114,14 @@ public class TimedMode {
                 .changeableLine(sidebar[9] + "§7-,---", 1)
                 .staticLine(sidebar[10], 0).create();
         PlayerInventory inventory = player.getInventory();
-        ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
+        ItemStack stack = ItemStackList.Blocks[member.blockskin][member.user.lang];
         inventory.clear();
         inventory.setItem(0, stack);
         inventory.setItem(1, stack);
-        inventory.setItem(2, ItemStackList.pickaxe[member.lang]);
-        inventory.setItem(6, ItemStackList.Replay[member.lang]);
-        inventory.setItem(7, ItemStackList.Settings[member.lang]);
-        inventory.setItem(8, ItemStackList.navigator[member.lang]);
+        inventory.setItem(2, ItemStackList.pickaxe[member.user.lang]);
+        inventory.setItem(6, ItemStackList.Replay[member.user.lang]);
+        inventory.setItem(7, ItemStackList.Settings[member.user.lang]);
+        inventory.setItem(8, ItemStackList.navigator[member.user.lang]);
         inventory.setHeldItemSlot(0);
         session.add(member);
         score.put(member, 0);
@@ -155,46 +155,46 @@ public class TimedMode {
     }
 
     public void Fell(Member member, boolean fell) {
-        if (member.player.getLocation().getY() != 100) {
+        if (member.user.player.getLocation().getY() != 100) {
             boolean reset = false;
             if (member.waiting) {
                 reset = true;
                 Bukkit.getScheduler().cancelTask(member.finishedtask);
                 member.waiting = false;
-                Inventory inventory = member.player.getInventory();
-                ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
+                Inventory inventory = member.user.player.getInventory();
+                ItemStack stack = ItemStackList.Blocks[member.blockskin][member.user.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
             } else {
                 if (member.replay != null) {
                     reset = true;
-                    Inventory inventory = member.player.getInventory();
-                    ItemStack stack = ItemStackList.Blocks[member.blockskin][member.lang];
+                    Inventory inventory = member.user.player.getInventory();
+                    ItemStack stack = ItemStackList.Blocks[member.blockskin][member.user.lang];
                     inventory.setItem(0, stack);
                     inventory.setItem(1, stack);
-                    SideBar.getSidebar(member.player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
+                    SideBar.getSidebar(member.user.player).setLine(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
                     member.replay.replayRecorder.pause(false, false);
                     lastAttempt.put(member, member.replay);
                     member.replay = null;
                 } else if (!fell) {
-                    Location location = member.player.getLocation();
+                    Location location = member.user.player.getLocation();
                     int coord = member.PlayerCoord;
                     int oldroom = coordToRoom(coord);
                     int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, rooms);
-                    if (newroom == -1) member.player.sendMessage(StringList.nomapsavaliable[member.lang]);
+                    if (newroom == -1) member.user.player.sendMessage(StringList.nomapsavaliable[member.user.lang]);
                     else {
                         member.PlayerCoord = roomToCoord(newroom);
                         setPressurePlate(member);
                         rooms[oldroom] = true;
                         rooms[newroom] = false;
-                        System.out.print("[Swap] " + oldroom + " " + newroom + " " + member.player.getName() + " " + world.getName());
+                        System.out.print("[Swap] " + oldroom + " " + newroom + " " + member.user.player.getName() + " " + world.getName());
                     }
                 }
-                member.player.closeInventory();
+                member.user.player.closeInventory();
             }
-            member.player.teleport(new Location(member.player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));
+            member.user.player.teleport(new Location(member.user.player.getWorld(), member.PlayerCoord + 0.5, 100, (inclined ? member.PlayerCoord : -4) + 0.5, inclined ? 225 : 0, 0));
             if (reset)
-                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(member.player.getWorld()));
+                Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(member.user.player.getWorld()));
         }
     }
 
@@ -205,7 +205,7 @@ public class TimedMode {
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
-        System.out.print("[Quit] " + coordToRoom(member.PlayerCoord) + " " + member.player.getName() + " " + world.getName());
+        System.out.print("[Quit] " + coordToRoom(member.PlayerCoord) + " " + member.user.player.getName() + " " + world.getName());
 
     }
 

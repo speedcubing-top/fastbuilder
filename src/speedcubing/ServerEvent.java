@@ -48,10 +48,10 @@ public class ServerEvent {
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 12);
+                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 12);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
                     member.currentMode.Fell(member, false);
-                    e.player.sendMessage(StringList.cancelled[member.lang]);
+                    e.player.sendMessage(StringList.cancelled[member.user.lang]);
                 } else {
                     if (member.finishNext) {
                         member.finish();
@@ -74,12 +74,12 @@ public class ServerEvent {
                     case "replay_onestack":
                     case "replay_short":
                         if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > 75.5 || loc.getY() < 0)
-                            member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                            member.user.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
                         break;
                     case "replay_inclined":
                     case "replay_incinedshort":
                         if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
-                            member.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
+                            member.user.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
                         break;
                     case "world":
                     case "Short":
@@ -189,7 +189,7 @@ public class ServerEvent {
                     first[i].addExtra(second[i]);
                     first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
                 }
-                Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[Member.getMember(a).lang]));
+                Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[Member.getMember(a).user.lang]));
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }
@@ -198,18 +198,18 @@ public class ServerEvent {
     @LibEventHandler
     public void ToggleFlyEvent(ToggleFlyEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).lang]);
+        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
     }
 
     @LibEventHandler
     public void NickEvent(NickEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).lang]);
+        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
     }
 
     @LibEventHandler
     public void SkinEvent(SkinEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).lang]);
+        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
     }
 }

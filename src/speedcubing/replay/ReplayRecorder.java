@@ -77,6 +77,6 @@ public class ReplayRecorder {
     public void pause(boolean write, boolean TAS) {
         isRecording = false;
         if (write)
-            ReplayCompressor.write(replay, member.player.getUniqueId(), TAS);
+            ReplayCompressor.write(replay, member.user.player.getUniqueId(), TAS);
     }
 }

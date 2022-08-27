@@ -26,8 +26,8 @@ public class PlayerQuit implements Listener {
         }
         new Thread(() -> {
             int x = member.blockskin;
-            speedcubingServer.connection.update("playersdata", "fastbuild_blockskin=" + x, "id=" + member.id);
+            speedcubingServer.connection.update("playersdata", "fastbuild_blockskin=" + x, "id=" + member.user.id);
         }).start();
-        Member.users.remove(member.id);
+        Member.users.remove(member.user.id);
     }
 }

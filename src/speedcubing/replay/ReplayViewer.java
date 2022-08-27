@@ -37,7 +37,7 @@ public class ReplayViewer {
 
     public ReplayViewer(Member member, Replay replay, boolean lastAttempt) {
         this.lastAttempt = lastAttempt;
-        player = member.player;
+        player = member.user.player;
         this.replay = replay;
         this.member = member;
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
@@ -86,13 +86,13 @@ public class ReplayViewer {
     public void start() {
         if (!playing)
             if (tick != replay.ticks.size() - 1) {
-                player.getInventory().setItem(2, ItemStackList.PAUSE[member.lang]);
+                player.getInventory().setItem(2, ItemStackList.PAUSE[member.user.lang]);
                 task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                     addoneTick();
                     if (tick == replay.ticks.size() - 1) {
                         Bukkit.getScheduler().cancelTask(task);
                         playing = false;
-                        player.getInventory().setItem(2, ItemStackList.RESTART[member.lang]);
+                        player.getInventory().setItem(2, ItemStackList.RESTART[member.user.lang]);
                     }
                 }, 0, 1);
             } else {
@@ -103,11 +103,11 @@ public class ReplayViewer {
                         player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
                 }
                 resetNPC();
-                player.getInventory().setItem(2, ItemStackList.START[member.lang]);
+                player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
                 npc.updateNpcLocation();
             }
         else {
-            player.getInventory().setItem(2, ItemStackList.START[member.lang]);
+            player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
             Bukkit.getScheduler().cancelTask(task);
         }
         playing = !playing;
@@ -116,7 +116,7 @@ public class ReplayViewer {
     public void minusTick() {
         if (tick != 0) {
             if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
-                player.getInventory().setItem(2, ItemStackList.START[member.lang]);
+                player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
             tick--;
             ReplayTick replayTick = replay.ticks.get(tick);
             ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);

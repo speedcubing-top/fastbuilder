@@ -64,7 +64,7 @@ public class InventoryClick implements Listener {
                         break;
                     case 14:
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).lang]);
+                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).user.lang]);
                         else if (player.getInventory().getItem(5) != null) {
                             Member member = Member.getMember(player);
                             int[] center = member.Center;
@@ -85,9 +85,9 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 11:
                         Member member = Member.getMember(player);
-                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + member.currentMode.sqlId + "_pb=0", "id=" + member.id)).start();
+                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + member.currentMode.sqlId + "_pb=0", "id=" + member.user.id)).start();
                         member.updateSidebar(player.getName(), member.currentMode, false);
-                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.lang][4] + "§7-,---", 4);
+                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.user.lang][4] + "§7-,---", 4);
                         player.closeInventory();
                         break;
                     case 15:

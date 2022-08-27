@@ -74,7 +74,7 @@ public class PlayerInteract implements Listener {
                         member.openSettings();
                         break;
                     case COMPASS: {
-                        int lang = Member.getMember(player).lang;
+                        int lang = Member.getMember(player).user.lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);
                         ItemBuilder[] builders = {
                                 new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0][lang]),
@@ -153,8 +153,8 @@ public class PlayerInteract implements Listener {
         }
         if (c) {
             player.updateInventory();
-            player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[member.lang] : ItemStackList.Height[member.lang]);
-            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[member.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
+            player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[member.user.lang] : ItemStackList.Height[member.user.lang]);
+            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[member.user.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
             member.LengthSettings[horizontal ? 0 : 1] += i;
             center[horizontal ? 0 : 1] += i;
             if (!UnLoop) Custom.AddBB(center[0], center[1], coord, member);

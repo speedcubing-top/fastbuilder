@@ -44,7 +44,7 @@ public class Custom {
         }
         Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
-        int lang = member.lang;
+        int lang = member.user.lang;
         SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 10);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
@@ -120,7 +120,7 @@ public class Custom {
                 }
             }
         }
-        int lang = member.lang;
+        int lang = member.user.lang;
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
         inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);
@@ -135,7 +135,7 @@ public class Custom {
         member.hits.clear();
         String[] sidebar = StringList.CustomSideBar[lang];
         new Thread(() -> {
-            int[] Settings = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "customfb_x,customfb_y", "id=" + member.id)));
+            int[] Settings = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "customfb_x,customfb_y", "id=" + member.user.id)));
             member.LengthSettings = Settings;
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 new SideBar(player, sidebar[0])
@@ -196,7 +196,7 @@ public class Custom {
         member.waiting = false;
         new Thread(() -> {
             int[] i = member.LengthSettings;
-            speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "id='" + member.id + "'");
+            speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "id='" + member.user.id + "'");
         }).start();
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
@@ -204,7 +204,7 @@ public class Custom {
 
     public static void validPlaceBlock(Player player, Block b) {
         Member member = Member.getMember(player);
-        int lang = member.lang;
+        int lang = member.user.lang;
         Inventory inventory = player.getInventory();
         if (member.times == -1) {
             member.times = 0;
@@ -228,8 +228,8 @@ public class Custom {
         World world = player.getWorld();
         Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world));
         Inventory inventory = player.getInventory();
-        inventory.setItem(5, ItemStackList.Length[member.lang]);
-        inventory.setItem(6, ItemStackList.Height[member.lang]);
+        inventory.setItem(5, ItemStackList.Length[member.user.lang]);
+        inventory.setItem(6, ItemStackList.Height[member.user.lang]);
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
             member.waiting = false;
