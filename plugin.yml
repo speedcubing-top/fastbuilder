@@ -1,5 +1,5 @@
 name: FastBuilder
-main: speedcubing.Main
+main: top.speedcubing.fastbuilder.Main
 version: 1.0
 commands:
   stats:
