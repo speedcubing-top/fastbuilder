@@ -81,6 +81,7 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
+        Bukkit.getPluginManager().registerEvents(new top.speedcubing.fastbuilder.replay.gui.InventoryClick(), this);
         new ReplayGUI().init();
         Long = new Long();
         Short = new Short();

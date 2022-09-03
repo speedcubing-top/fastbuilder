@@ -1,12 +1,12 @@
 package top.speedcubing.fastbuilder.replay.gui;
 
-import top.speedcubing.fastbuilder.Member;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.system.speedcubingSystem;
 
 public class InventoryClick implements Listener {
