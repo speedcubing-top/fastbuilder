@@ -1,6 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import top.speedcubing.fastbuilder.Core.Core;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,17 +14,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import top.speedcubing.fastbuilder.BukkitCommands.stats;
+import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.bukkit.WorldUtils;
-import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.lib.utils.SQL.SQLUtils;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.ReplayCompressor;
 import top.speedcubing.fastbuilder.replay.ReplayViewer;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
+import top.speedcubing.lib.bukkit.SideBar;
+import top.speedcubing.lib.bukkit.WorldUtils;
+import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
+import top.speedcubing.lib.utils.SQL.SQLUtils;
 import top.speedcubing.server.libs.User;
 import top.speedcubing.server.speedcubingServer;
 
@@ -113,8 +113,10 @@ public class Member {
 
     public void finish() {
         int time = replay.replayRecorder.NewTick - 1;
-        boolean TAS = (double) (MinecraftServer.currentTick - times) / time > 1.1;
+        double TASrate = (double) (MinecraftServer.currentTick - times) / time;
+        boolean TAS = TASrate > 10 / 9D || TASrate < 9D / 10;
         boolean OVERLIMIT = time < currentMode.limit;
+        boolean qualified = !TAS && !stats.SHIT && !OVERLIMIT;
         if (TAS)
             user.player.sendMessage("§cYou are using timer, right?");
         if (OVERLIMIT)
@@ -125,7 +127,7 @@ public class Member {
         int msrecord = time * 5;
         String display = FastBuilderUtils.tickToTime(time);
         int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + user.id));
-        if ((last == 0 || last > msrecord) && (!TAS && !stats.SHIT && !OVERLIMIT)) {
+        if ((last == 0 || last > msrecord) && qualified) {
             speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + user.id);
             SideBar.getSidebar(user.player).setLine(StringList.SideBar[user.lang][4] + display, 4);
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
@@ -146,11 +148,12 @@ public class Member {
                         "§8---------------------------------------------");
             }
         }
+        if (qualified)
+            currentMode.a(this, time);
         user.player.playSound(user.player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         PlayerConnection connection = ((CraftPlayer) user.player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[user.lang].replace("%time%", display))));
-        currentMode.a(this, time);
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(currentMode.world);
