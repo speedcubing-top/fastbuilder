@@ -1,12 +1,12 @@
 package top.speedcubing.fastbuilder.replay;
 
-import top.speedcubing.fastbuilder.Member;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
-import top.speedcubing.system.speedcubingSystem;
+import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.server.speedcubingServer;
 
 import java.sql.Blob;
 import java.sql.ResultSet;
@@ -63,11 +63,11 @@ public class ReplayCompressor {
             }
         }
         a = s.toString();
-        speedcubingSystem.connection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
+        speedcubingServer.systemConnection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
     }
 
     public static Replay read(Member member, int slot) {
-        ResultSet resultSet = speedcubingSystem.connection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.user.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY fav DESC, time DESC LIMIT " + slot + ",1");
+        ResultSet resultSet = speedcubingServer.systemConnection.select("fbreplay", "datas,name,value,signature,score", "owner='" + member.user.player.getUniqueId() + "' AND mode=" + member.currentMode.sqlId + " ORDER BY fav DESC, time DESC LIMIT " + slot + ",1");
         StringBuilder s = new StringBuilder();
         String temp;
         String name;
