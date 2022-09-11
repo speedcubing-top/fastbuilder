@@ -35,25 +35,6 @@ public class PlayerInteract implements Listener {
             } else {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
-                    case BLAZE_ROD:
-                        switch (e.getAction()) {
-                            case LEFT_CLICK_BLOCK:
-                            case LEFT_CLICK_AIR:
-                                member.replayPlayer.minusTick();
-                                break;
-                            case RIGHT_CLICK_AIR:
-                            case RIGHT_CLICK_BLOCK:
-                                member.replayPlayer.addoneTick();
-                                break;
-                        }
-                        return;
-                    case INK_SACK:
-                        member.replayPlayer.start();
-                        break;
-                    case BARRIER:
-                        member.replayPlayer.unwatch();
-                        member.currentMode.Join(player, true, false);
-                        break;
                     case BOOK:
                         ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
                         break;
@@ -100,6 +81,32 @@ public class PlayerInteract implements Listener {
                     case GOLD_INGOT:
                         e.setCancelled(true);
                         EditLength(false, (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) ? -1 : 1, player);
+                        break;
+                }
+            }
+        } else if (player.getGameMode() == GameMode.ADVENTURE) {
+            if (e.getAction() == Action.PHYSICAL) {
+                e.setCancelled(true);
+            } else {
+                switch (player.getItemInHand().getType()) {
+                    case BLAZE_ROD:
+                        switch (e.getAction()) {
+                            case LEFT_CLICK_BLOCK:
+                            case LEFT_CLICK_AIR:
+                                member.replayPlayer.minusTick();
+                                break;
+                            case RIGHT_CLICK_AIR:
+                            case RIGHT_CLICK_BLOCK:
+                                member.replayPlayer.addoneTick();
+                                break;
+                        }
+                        return;
+                    case INK_SACK:
+                        member.replayPlayer.start();
+                        break;
+                    case BARRIER:
+                        member.replayPlayer.unwatch();
+                        member.currentMode.Join(player, true, false);
                         break;
                 }
             }

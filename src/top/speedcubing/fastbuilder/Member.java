@@ -97,7 +97,7 @@ public class Member {
             user.player.setGameMode(GameMode.ADVENTURE);
             user.player.setAllowFlight(true);
             user.player.setFlying(true);
-            user.player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, 0, 0));
+            user.player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, currentMode.inclined ? 225 : 0, 0));
             replayPlayer = new ReplayViewer(this, replay, slot == 0);
             if (currentMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
