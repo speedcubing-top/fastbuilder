@@ -1,9 +1,5 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
-import top.speedcubing.fastbuilder.Core.Custom;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Member;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -12,36 +8,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import top.speedcubing.fastbuilder.Core.Custom;
+import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 
 public class PlayerInteract implements Listener {
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         Member member = Member.getMember(player);
-        switch (player.getItemInHand().getType()) {
-            case BLAZE_ROD:
-                switch (e.getAction()) {
-                    case LEFT_CLICK_BLOCK:
-                    case LEFT_CLICK_AIR:
-                        member.replayPlayer.minusTick();
-                        break;
-                    case RIGHT_CLICK_AIR:
-                    case RIGHT_CLICK_BLOCK:
-                        member.replayPlayer.addoneTick();
-                        break;
-                }
-                return;
-            case INK_SACK:
-                member.replayPlayer.start();
-                break;
-            case BARRIER:
-                member.replayPlayer.unwatch();
-                member.currentMode.Join(player, true,false);
-                break;
-        }
         if (member.waiting) {
             e.setCancelled(true);
             player.updateInventory();
@@ -56,6 +35,25 @@ public class PlayerInteract implements Listener {
             } else {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
+                    case BLAZE_ROD:
+                        switch (e.getAction()) {
+                            case LEFT_CLICK_BLOCK:
+                            case LEFT_CLICK_AIR:
+                                member.replayPlayer.minusTick();
+                                break;
+                            case RIGHT_CLICK_AIR:
+                            case RIGHT_CLICK_BLOCK:
+                                member.replayPlayer.addoneTick();
+                                break;
+                        }
+                        return;
+                    case INK_SACK:
+                        member.replayPlayer.start();
+                        break;
+                    case BARRIER:
+                        member.replayPlayer.unwatch();
+                        member.currentMode.Join(player, true, false);
+                        break;
                     case BOOK:
                         ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
                         break;
