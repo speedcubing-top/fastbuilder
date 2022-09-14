@@ -1,6 +1,7 @@
 package top.speedcubing.fastbuilder;
 
 
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.WorldCreator;
@@ -33,6 +34,7 @@ public class Main extends JavaPlugin implements Listener {
     public static TimedMode InclinedShort;
 
     public void onEnable() {
+        MinecraftServer.getServer().getPropertyManager().setProperty("server-name", "fastbuilder");
         Bukkit.getPluginManager().registerEvents(new FoodLevelChange(), this);
         Bukkit.getPluginManager().registerEvents(new BlockBreak(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChangedWorld(), this);
