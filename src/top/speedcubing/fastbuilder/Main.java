@@ -95,16 +95,6 @@ public class Main extends JavaPlugin implements Listener {
         new Custom().Load();
         LibEventManager.registerListeners(new ServerEvent());
         Bukkit.getPluginManager().registerEvents(this, this);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-//                Player player = Bukkit.getPlayer("speedcubing");
-//                if (player != null) {
-//                    System.out.println(Member.getMember(player).finishNext);
-//                }
-                speedcubingServer.tcp.sendClean(25576 - Bukkit.getPort() % 2, "online|2|" + Bukkit.getOnlinePlayers().size());
-            }
-        }, 0, 1000);
     }
 
 
