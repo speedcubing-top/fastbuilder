@@ -4,7 +4,9 @@ package top.speedcubing.fastbuilder;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.Material;
 import org.bukkit.WorldCreator;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -20,6 +22,7 @@ import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.replay.ReplayListener;
 import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.eventbus.LibEventManager;
+import top.speedcubing.lib.utils.Console;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -102,5 +105,20 @@ public class Main extends JavaPlugin implements Listener {
                 e.getPlayer().sendMessage("Cancelled.");
             }
         }
+    }
+
+    public static void setTypeCheck(Block b, Material type, int id) {
+        if (b.getWorld().getName().startsWith("replay_")) {
+            if (Math.abs(b.getX()) < 250) {
+                Console.sendColoredConsole("§cError: " + id + " " + b.getWorld() + " " + b.getX() + " " + b.getY() + " " + b.getZ());
+                return;
+            }
+        }
+        b.setType(type);
+    }
+
+
+    public static void setDataCheck(Block b, byte data) {
+        b.setData(data);
     }
 }

@@ -80,7 +80,8 @@ public class Member {
 
     public void clear(World world) {
         for (Block b : Blocks) {
-            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+            Main.setTypeCheck(world.getBlockAt(b.getX(), b.getY(), b.getZ()), Material.AIR, 23);
+//            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
         }
         Blocks.clear();
     }
@@ -129,7 +130,7 @@ public class Member {
         int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + user.id));
         if ((last == 0 || last > msrecord) && qualified) {
             speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + user.id);
-            SideBar.getSidebar(user.player).setLine(StringList.SideBar[user.lang][4] + display, 4);
+            SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][4] + display, 9);
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 fw(user.player);
                 fw(user.player);
@@ -198,7 +199,7 @@ public class Member {
             for (Player p : mode.world.getPlayers()) {
                 if (!p.getName().equals(name)) {
                     for (int j = i; j < 3; j++) {
-                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
+                        SideBar.getSidebar(p).setLineByScore(s.get(j - i), 6 - j);
                     }
                 }
             }

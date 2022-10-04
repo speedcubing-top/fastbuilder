@@ -147,7 +147,7 @@ public class TimedMode {
                 List<String> s = Core.getSideBar(i, session, score);
                 for (int j = i; j < 3; j++) {
                     for (Player p : world.getPlayers()) {
-                        SideBar.getSidebar(p).setLine(s.get(j - i), j + 7);
+                        SideBar.getSidebar(p).setLineByScore(s.get(j - i), 6 - j);
                     }
                 }
             }
@@ -172,7 +172,7 @@ public class TimedMode {
                     ItemStack stack = ItemStackList.Blocks[member.blockskin][member.user.lang];
                     inventory.setItem(0, stack);
                     inventory.setItem(1, stack);
-                    SideBar.getSidebar(member.user.player).setLine(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 12);
+                    SideBar.getSidebar(member.user.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick - 1), 1);
                     member.replay.replayRecorder.pause(false, false);
                     lastAttempt.put(member, member.replay);
                     member.replay = null;

@@ -48,7 +48,7 @@ public class ServerEvent {
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLine(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 12);
+                    SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
                     member.currentMode.Fell(member, false);
                     e.player.sendMessage(StringList.cancelled[member.user.lang]);

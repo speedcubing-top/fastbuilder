@@ -1,7 +1,5 @@
 package top.speedcubing.fastbuilder.replay;
 
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,10 +9,12 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.Main;
+import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.entity.NPC;
 import top.speedcubing.lib.bukkit.inventory.ItemUtils;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -99,8 +99,10 @@ public class ReplayViewer {
                 tick = 0;
                 playing = true;
                 for (ReplayTick replayTick : replay.ticks) {
-                    if (replayTick.blockLocation != null)
-                        player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+                    if (replayTick.blockLocation != null) {
+                        Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR,2);
+//                        player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+                    }
                 }
                 resetNPC();
                 player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
@@ -125,12 +127,16 @@ public class ReplayViewer {
             else
                 npc.setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
             npc.updateNpcLocation();
-            if (replayTick.blockLocation != null)
-                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+            if (replayTick.blockLocation != null) {
+                Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR,1);
+//                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+            }
             if (replayTick.breakLocation != null) {
                 Block newP = player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ());
-                newP.setType(Material.getMaterial(replayTick.breakMaterial));
-                newP.setData(replayTick.breakDatas);
+                Main.setTypeCheck(newP, Material.getMaterial(replayTick.breakMaterial),3);
+//                newP.setType(Material.getMaterial(replayTick.breakMaterial));
+                Main.setDataCheck(newP, replayTick.breakDatas);
+//                newP.setData(replayTick.breakDatas);
             }
             if (replayTick.sneak != null)
                 npc.setSneaking(!replayTick.sneak);
@@ -155,12 +161,15 @@ public class ReplayViewer {
             npc.updateNpcLocation();
             if (replayTick.blockLocation != null) {
                 Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());
-                newP.setType(Material.getMaterial(currentItem.getTypeId()));
-                newP.setData(currentItem.getData().getData());
+                Main.setTypeCheck(newP, Material.getMaterial(currentItem.getTypeId()),4);
+//                newP.setType(Material.getMaterial(currentItem.getTypeId()));
+                Main.setDataCheck(newP, currentItem.getData().getData());
+//                newP.setData(currentItem.getData().getData());
                 npc.animation(0);
             }
             if (replayTick.breakLocation != null) {
-                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
+                Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()), Material.AIR,5);
+//                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
                 npc.animation(0);
             }
             if (replayTick.sneak != null)

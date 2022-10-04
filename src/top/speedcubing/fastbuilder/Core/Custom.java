@@ -17,10 +17,10 @@ import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.utils.SQL.SQLUtils;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.server.speedcubingServer;
 
 import java.util.Set;
@@ -45,7 +45,7 @@ public class Custom {
         Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
-        SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 10);
+        SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
         PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
         connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)))));
@@ -77,14 +77,16 @@ public class Custom {
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = 97; Y <= 99; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                            Main.setTypeCheck(world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 6);
+//                            world.getBlockAt(5 + Settings[0] + center[0] + X, Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
                         }
                     }
                 }
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = 100; Y >= 97; Y--) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                            Main.setTypeCheck(world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z), Material.AIR, 7);
+//                            world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                         }
                     }
                 }
@@ -116,7 +118,8 @@ public class Custom {
         for (int x = -2; x <= 2; x++) {
             for (int y = 97; y <= 99; y++) {
                 for (int z = -2; z <= 2; z++) {
-                    world.getBlockAt(x, y, coord + z).setType(world.getBlockAt(-500 + x, y, z).getType());
+                    Main.setTypeCheck(world.getBlockAt(x, y, coord + z), world.getBlockAt(-500 + x, y, z).getType(), 8);
+//                    world.getBlockAt(x, y, coord + z).setType(world.getBlockAt(-500 + x, y, z).getType());
                 }
             }
         }
@@ -154,7 +157,8 @@ public class Custom {
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = 97; Y <= 99; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                            Main.setTypeCheck(world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 9);
+//                            world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
                         }
                     }
                 }
@@ -178,9 +182,12 @@ public class Custom {
         for (int X = -2; X <= 2; X++) {
             for (int Y = 100; Y >= 97; Y--) {
                 for (int Z = -2; Z <= 2; Z++) {
-                    if (f)
-                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
-                    world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                    if (f) {
+                        Main.setTypeCheck(world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z), Material.AIR, 10);
+//                        world.getBlockAt(-5 - Settings[0] + center[0] + X, -Settings[1] + center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                    }
+                    Main.setTypeCheck(world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z), Material.AIR, 11);
+//                    world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                 }
             }
         }
@@ -188,7 +195,8 @@ public class Custom {
             for (int X = -2; X <= 2; X++) {
                 for (int Y = 97; Y <= 99; Y++) {
                     for (int Z = -2; Z <= 2; Z++) {
-                        world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(Material.AIR);
+                        Main.setTypeCheck(world.getBlockAt(X, Y, member.PlayerCoord + Z), Material.AIR, 12);
+//                        world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(Material.AIR);
                     }
                 }
             }
@@ -210,7 +218,7 @@ public class Custom {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 member.times += 1;
-                SideBar.getSidebar(player).setLine(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 10);
+                SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
@@ -243,10 +251,14 @@ public class Custom {
                     for (int X = -2; X <= 2; X++) {
                         for (int Y = 100; Y >= 97; Y--) {
                             for (int Z = -2; Z <= 2; Z++) {
-                                if (Y != 100)
-                                    world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
-                                world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z).setType(Material.AIR);
-                                world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
+                                if (Y != 100) {
+                                    Main.setTypeCheck(world.getBlockAt(X, Y, member.PlayerCoord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 13);
+//                                    world.getBlockAt(X, Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                }
+                                Main.setTypeCheck(world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z), Material.AIR, 14);
+                                Main.setTypeCheck(world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z), Material.AIR, 15);
+//                                world.getBlockAt(center[0] + X - 5 - Settings[0], center[1] + Y - Settings[1], member.PlayerCoord + Z).setType(Material.AIR);
+//                                world.getBlockAt(center[0] + X, center[1] + Y, member.PlayerCoord + Z).setType(Material.AIR);
                             }
                         }
                     }
@@ -256,7 +268,8 @@ public class Custom {
                         for (int X = -2; X <= 2; X++) {
                             for (int Y = 97; Y <= 100; Y++) {
                                 for (int Z = -2; Z <= 2; Z++) {
-                                    world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
+                                    Main.setTypeCheck(world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 16);
+//                                    world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, member.PlayerCoord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
                                 }
                             }
                         }

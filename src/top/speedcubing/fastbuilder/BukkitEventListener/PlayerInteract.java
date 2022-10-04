@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import top.speedcubing.fastbuilder.Core.Custom;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.bukkit.SideBar;
@@ -44,7 +45,8 @@ public class PlayerInteract implements Listener {
                             if (member.Blocks.contains(b)) {
                                 member.replay.replayRecorder.BlockBreakEvent(b);
                                 member.Blocks.remove(b);
-                                b.setType(Material.AIR);
+                                Main.setTypeCheck(b,Material.AIR,17);
+//                                b.setType(Material.AIR);
                             }
                         }
                         break;
@@ -129,7 +131,8 @@ public class PlayerInteract implements Listener {
                 for (int X = -2; X <= 3; X++) {
                     for (int Y = 97; Y <= 100; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z).setType(X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType());
+                            Main.setTypeCheck(world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z),X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType(),18);
+//                            world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z).setType(X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType());
                         }
                     }
                 }
@@ -141,25 +144,28 @@ public class PlayerInteract implements Listener {
             } else {
                 if (UnLoop && i == -1)
                     for (int Z = -1; Z <= 1; Z++) {
-                        world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z).setType(Material.AIR);
+                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z),Material.AIR,19);
+//                        world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z).setType(Material.AIR);
                     }
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = -2; Y <= 1; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z).setType(Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType());
+                            Main.setTypeCheck( world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z),Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType(),20);
+//                            world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z).setType(Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType());
                         }
                     }
                 }
                 if (UnLoop)
                     for (int Z = -1; Z <= 1; Z++) {
-                        world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z).setType(Material.GOLD_PLATE);
+                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z),Material.GOLD_PLATE,21);
+//                        world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z).setType(Material.GOLD_PLATE);
                     }
             }
         }
         if (c) {
             player.updateInventory();
             player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[member.user.lang] : ItemStackList.Height[member.user.lang]);
-            SideBar.getSidebar(player).setLine(StringList.CustomSideBar[member.user.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 4 : 7);
+            SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[member.user.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 7 : 4);
             member.LengthSettings[horizontal ? 0 : 1] += i;
             center[horizontal ? 0 : 1] += i;
             if (!UnLoop) Custom.AddBB(center[0], center[1], coord, member);

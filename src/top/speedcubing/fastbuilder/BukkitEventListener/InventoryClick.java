@@ -74,7 +74,8 @@ public class InventoryClick implements Listener {
                             else
                                 member.hits.clear();
                             for (int z = -1; z <= 1; z++) {
-                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
+                                Main.setTypeCheck(player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z),Loop ? Material.AIR : Material.GOLD_PLATE,22);
+//                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
                             }
                             player.closeInventory();
                         }
@@ -87,7 +88,7 @@ public class InventoryClick implements Listener {
                         Member member = Member.getMember(player);
                         new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + member.currentMode.sqlId + "_pb=0", "id=" + member.user.id)).start();
                         member.updateSidebar(player.getName(), member.currentMode, false);
-                        SideBar.getSidebar(player).setLine(StringList.SideBar[member.user.lang][4] + "§7-,---", 4);
+                        SideBar.getSidebar(player).setLineByScore(StringList.SideBar[member.user.lang][4] + "§7-,---", 9);
                         player.closeInventory();
                         break;
                     case 15:
