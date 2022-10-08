@@ -1,6 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import top.speedcubing.fastbuilder.Core.Custom;
 import net.md_5.bungee.api.chat.*;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -12,13 +11,14 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.fastbuilder.Core.Custom;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
 import top.speedcubing.lib.eventbus.LibEventHandler;
 import top.speedcubing.lib.utils.Console;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.server.events.player.NickEvent;
 import top.speedcubing.server.events.player.SkinEvent;
 import top.speedcubing.server.events.player.ToggleFlyEvent;
@@ -189,7 +189,7 @@ public class ServerEvent {
                     first[i].addExtra(second[i]);
                     first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
                 }
-                Bukkit.getOnlinePlayers().forEach(a -> a.spigot().sendMessage(first[Member.getMember(a).user.lang]));
+                speedcubingServer.globalChat(Bukkit.getOnlinePlayers(), player, first);
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }
