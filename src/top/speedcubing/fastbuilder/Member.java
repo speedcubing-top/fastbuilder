@@ -25,7 +25,6 @@ import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.WorldUtils;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.lib.utils.SQL.SQLUtils;
 import top.speedcubing.server.libs.User;
 import top.speedcubing.server.speedcubingServer;
 
@@ -75,7 +74,7 @@ public class Member {
         this.user = User.getUser(player);
         this.asyncLoc = new Location(user.player.getWorld(), 0, 0, 0);
         users.put(user.id, this);
-        blockskin = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fastbuild_blockskin", "id=" + user.id));
+        blockskin = speedcubingServer.connection.select("fastbuild_blockskin").from("playersdata").where("id=" + user.id).getInt();
     }
 
     public void clear(World world) {
@@ -127,7 +126,7 @@ public class Member {
         waiting = true;
         int msrecord = time * 5;
         String display = FastBuilderUtils.tickToTime(time);
-        int last = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + currentMode.sqlId + "_pb", "id=" + user.id));
+        int last = speedcubingServer.connection.select("fb_" + currentMode.sqlId + "_pb").from("playersdata").where("id=" + user.id).getInt();
         if ((last == 0 || last > msrecord) && qualified) {
             speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + user.id);
             SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][4] + display, 9);

@@ -20,7 +20,6 @@ import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.utils.SQL.SQLUtils;
 import top.speedcubing.server.speedcubingServer;
 
 import java.util.Set;
@@ -138,7 +137,7 @@ public class Custom {
         member.hits.clear();
         String[] sidebar = StringList.CustomSideBar[lang];
         new Thread(() -> {
-            int[] Settings = ArrayUtils.toPrimitive(SQLUtils.getIntArray(speedcubingServer.connection.select("playersdata", "customfb_x,customfb_y", "id=" + member.user.id)));
+            int[] Settings = ArrayUtils.toPrimitive(speedcubingServer.connection.select("customfb_x,customfb_y").from("playersdata").where("id=" + member.user.id).getIntArray());
             member.LengthSettings = Settings;
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 new SideBar(player, sidebar[0])

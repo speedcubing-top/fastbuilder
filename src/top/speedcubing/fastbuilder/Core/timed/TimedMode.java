@@ -1,11 +1,5 @@
 package top.speedcubing.fastbuilder.Core.timed;
 
-import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.fastbuilder.replay.Replay;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -15,10 +9,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import top.speedcubing.fastbuilder.Core.Core;
+import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.Main;
+import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.Replay;
+import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.utils.SQL.SQLUtils;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.server.speedcubingServer;
 
 import java.util.*;
@@ -86,7 +85,7 @@ public class TimedMode {
         System.out.print("[Join] " + room + " " + member.user.player.getName() + " " + world.getName());
         setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.user.lang];
-        int a = SQLUtils.getInt(speedcubingServer.connection.select("playersdata", "fb_" + sqlId + "_pb", "id=" + member.user.id));
+        int a = speedcubingServer.connection.select("fb_" + sqlId + "_pb").from("playersdata").where("id=" + member.user.id).getInt();
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)
