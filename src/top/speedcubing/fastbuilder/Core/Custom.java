@@ -2,13 +2,9 @@ package top.speedcubing.fastbuilder.Core;
 
 
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import net.minecraft.server.v1_8_R3.ChatComponentText;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +15,9 @@ import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.BungeePluginMessage;
+import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
+import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.server.speedcubingServer;
 
 import java.util.Set;
@@ -45,9 +43,7 @@ public class Custom {
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
         SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
-        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)))));
+        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)));
         member.times = -1;
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         if (pressure) {

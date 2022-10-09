@@ -43,7 +43,7 @@ public class ReplayViewer {
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         currentItem = replay.StartItem;
         serial(member.ReplayCoord);
-        npc = new NPC(replay.name, UUID.randomUUID(), true).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
+        npc = new NPC(replay.name, UUID.randomUUID(), true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((player1, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
                         PlayerConnection connection = ((CraftPlayer) player1).getHandle().playerConnection;
@@ -58,7 +58,7 @@ public class ReplayViewer {
                     }
                 }));
         resetNPC();
-        npc.listener.add(((CraftPlayer) player).getHandle().playerConnection);
+        npc.addListener(player);
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

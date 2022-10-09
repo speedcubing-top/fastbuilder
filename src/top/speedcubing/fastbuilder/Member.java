@@ -72,6 +72,7 @@ public class Member {
 
     public Member(Player player) {
         this.user = User.getUser(player);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
         this.asyncLoc = new Location(user.player.getWorld(), 0, 0, 0);
         users.put(user.id, this);
         blockskin = speedcubingServer.connection.select("fastbuild_blockskin").from("playersdata").where("id=" + user.id).getInt();
