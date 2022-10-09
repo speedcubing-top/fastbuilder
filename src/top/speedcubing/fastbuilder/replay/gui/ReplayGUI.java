@@ -35,7 +35,7 @@ public class ReplayGUI {
                 {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
         };
         try {
-            ResultSet resultSet = speedcubingServer.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.player.getUniqueId() + "' AND mode=" + mode + " ORDER BY fav DESC,time DESC").executeQuery();
+            ResultSet resultSet = speedcubingServer.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.player.getUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
             Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.user.lang]);
             inventory.setItem(0, ItemStackList.LASTATTEMPT[user.user.lang]);
             int i = 1;
