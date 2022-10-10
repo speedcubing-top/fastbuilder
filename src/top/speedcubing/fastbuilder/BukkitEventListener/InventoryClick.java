@@ -1,11 +1,5 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
-import top.speedcubing.fastbuilder.Core.BlockEditor;
-import top.speedcubing.fastbuilder.Core.Custom;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,8 +8,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import top.speedcubing.fastbuilder.Core.BlockEditor;
+import top.speedcubing.fastbuilder.Core.Custom;
+import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.Main;
+import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.server.speedcubingServer;
 
 public class InventoryClick implements Listener {
     @EventHandler
@@ -33,23 +32,23 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 10:
                         if (!player.getWorld().getName().equals("world"))
-                            Main.Long.Join(player, false,false);
+                            Main.Long.Join(player, false, false);
                         break;
                     case 11:
                         if (!player.getWorld().getName().equals("Short"))
-                            Main.Short.Join(player, false,false);
+                            Main.Short.Join(player, false, false);
                         break;
                     case 12:
                         if (!player.getWorld().getName().equals("Onestack"))
-                            Main.OneStack.Join(player, false,false);
+                            Main.OneStack.Join(player, false, false);
                         break;
                     case 13:
                         if (!player.getWorld().getName().equals("Inclined"))
-                            Main.Inclined.Join(player, false,false);
+                            Main.Inclined.Join(player, false, false);
                         break;
                     case 14:
                         if (!player.getWorld().getName().equals("Inclinedshort"))
-                            Main.InclinedShort.Join(player, false,false);
+                            Main.InclinedShort.Join(player, false, false);
                         break;
                     case 16:
                         if (!player.getWorld().getName().equals("Custom"))
@@ -74,7 +73,7 @@ public class InventoryClick implements Listener {
                             else
                                 member.hits.clear();
                             for (int z = -1; z <= 1; z++) {
-                                Main.setTypeCheck(player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z),Loop ? Material.AIR : Material.GOLD_PLATE,22);
+                                Main.setTypeCheck(player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z), Loop ? Material.AIR : Material.GOLD_PLATE, 22);
 //                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
                             }
                             player.closeInventory();
@@ -86,7 +85,7 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 11:
                         Member member = Member.getMember(player);
-                        new Thread(() -> speedcubingServer.connection.update("playersdata", "fb_" + member.currentMode.sqlId + "_pb=0", "id=" + member.user.id)).start();
+                        member.user.dbUpdate("fb_" + member.currentMode.sqlId + "_pb=0");
                         member.updateSidebar(player.getName(), member.currentMode, false);
                         SideBar.getSidebar(player).setLineByScore(StringList.SideBar[member.user.lang][4] + "§7-,---", 9);
                         player.closeInventory();

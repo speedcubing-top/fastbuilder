@@ -1,8 +1,8 @@
 package top.speedcubing.fastbuilder;
 
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -22,11 +22,12 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.ReplayCompressor;
 import top.speedcubing.fastbuilder.replay.ReplayViewer;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
+import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
+import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.WorldUtils;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.libs.User;
-import top.speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
@@ -75,7 +76,7 @@ public class Member {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
         this.asyncLoc = new Location(user.player.getWorld(), 0, 0, 0);
         users.put(user.id, this);
-        blockskin = speedcubingServer.connection.select("fastbuild_blockskin").from("playersdata").where("id=" + user.id).getInt();
+        blockskin = user.dbSelect("fastbuild_blockskin").getInt();
     }
 
     public void clear(World world) {
@@ -127,9 +128,9 @@ public class Member {
         waiting = true;
         int msrecord = time * 5;
         String display = FastBuilderUtils.tickToTime(time);
-        int last = speedcubingServer.connection.select("fb_" + currentMode.sqlId + "_pb").from("playersdata").where("id=" + user.id).getInt();
+        int last = user.dbSelect("fb_" + currentMode.sqlId + "_pb").getInt();
         if ((last == 0 || last > msrecord) && qualified) {
-            speedcubingServer.connection.update("playersdata", "fb_" + currentMode.sqlId + "_pb=" + msrecord, "id=" + user.id);
+            user.dbUpdate("fb_" + currentMode.sqlId + "_pb=" + msrecord);
             SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][4] + display, 9);
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 fw(user.player);
@@ -152,9 +153,7 @@ public class Member {
         if (qualified)
             currentMode.a(this, time);
         user.player.playSound(user.player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
-        PlayerConnection connection = ((CraftPlayer) user.player).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutTitle(5, 60, 5));
-        connection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(StringList.timedisplay[user.lang].replace("%time%", display))));
+        PlayerUtils.sendTitle(user.player, TitleType.TITLE, StringList.timedisplay[user.lang].replace("%time%", display));
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(currentMode.world);

@@ -85,7 +85,7 @@ public class TimedMode {
         System.out.print("[Join] " + room + " " + member.user.player.getName() + " " + world.getName());
         setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.user.lang];
-        int a = speedcubingServer.connection.select("fb_" + sqlId + "_pb").from("playersdata").where("id=" + member.user.id).getInt();
+        int a = member.user.dbSelect("fb_" + sqlId + "_pb").getInt();
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)

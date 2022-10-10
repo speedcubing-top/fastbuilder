@@ -18,7 +18,6 @@ import top.speedcubing.lib.bukkit.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
-import top.speedcubing.server.speedcubingServer;
 
 import java.util.Set;
 
@@ -133,7 +132,7 @@ public class Custom {
         member.hits.clear();
         String[] sidebar = StringList.CustomSideBar[lang];
         new Thread(() -> {
-            int[] Settings = ArrayUtils.toPrimitive(speedcubingServer.connection.select("customfb_x,customfb_y").from("playersdata").where("id=" + member.user.id).getIntArray());
+            int[] Settings = ArrayUtils.toPrimitive(member.user.dbSelect("customfb_x,customfb_y").getIntArray());
             member.LengthSettings = Settings;
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 new SideBar(player, sidebar[0])
@@ -199,7 +198,7 @@ public class Custom {
         member.waiting = false;
         new Thread(() -> {
             int[] i = member.LengthSettings;
-            speedcubingServer.connection.update("playersdata", "customfb_x=" + i[0] + ",customfb_y=" + i[1], "id='" + member.user.id + "'");
+            member.user.dbUpdate("customfb_x=" + i[0] + ",customfb_y=" + i[1]);
         }).start();
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
