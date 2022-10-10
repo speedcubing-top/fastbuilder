@@ -18,7 +18,6 @@ import top.speedcubing.lib.bukkit.inventory.ItemUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 public class ReplayViewer {
     int task;
@@ -43,7 +42,7 @@ public class ReplayViewer {
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         currentItem = replay.StartItem;
         serial(member.ReplayCoord);
-        npc = new NPC(replay.name, UUID.randomUUID(), true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
+        npc = new NPC(replay.name, null, true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((player1, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
                         PlayerConnection connection = ((CraftPlayer) player1).getHandle().playerConnection;
