@@ -58,7 +58,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             } else if (RawSlot >= 1 && RawSlot <= ItemStackList.categoryblockeditor.length) {
                 e.setCancelled(true);
                 switch (RawSlot) {
@@ -178,7 +178,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == woolholder) {
             e.setCancelled(true);
@@ -191,7 +191,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == oreblockeditor) {
             e.setCancelled(true);
@@ -204,7 +204,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == oreeditor) {
             e.setCancelled(true);
@@ -217,7 +217,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == quartzeditor) {
             e.setCancelled(true);
@@ -230,7 +230,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == woodeditor) {
             e.setCancelled(true);
@@ -243,7 +243,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         } else if (holder == clayeditor) {
             e.setCancelled(true);
@@ -256,7 +256,7 @@ public class BlockEditor {
                 ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
                 player.getInventory().setItem(0, stack);
                 player.getInventory().setItem(1, stack);
-                player.sendMessage(GlobalString.SavedSettings[member.user.lang]);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
             }
         }
     }

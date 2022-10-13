@@ -180,7 +180,7 @@ public class TimedMode {
                     int coord = member.PlayerCoord;
                     int oldroom = coordToRoom(coord);
                     int newroom = Core.cal(oldroom, inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, rooms);
-                    if (newroom == -1) member.user.player.sendMessage(StringList.nomapsavaliable[member.user.lang]);
+                    if (newroom == -1) member.user.sendLangMessage(StringList.nomapsavaliable);
                     else {
                         member.PlayerCoord = roomToCoord(newroom);
                         setPressurePlate(member);

@@ -3,6 +3,7 @@ package top.speedcubing.fastbuilder;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import org.apache.logging.log4j.core.lookup.StrLookup;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -110,7 +111,7 @@ public class Member {
             user.player.getInventory().setItem(4, ItemStackList.TICK[user.lang]);
             user.player.getInventory().setItem(6, ItemStackList.QUITREPLAY[user.lang]);
         } else
-            user.player.sendMessage("not found");
+            user.sendLangMessage(StringList.replayNotFound);
     }
 
     public void finish() {
@@ -120,9 +121,9 @@ public class Member {
         boolean OVERLIMIT = time < currentMode.limit;
         boolean qualified = !TAS && !stats.SHIT && !OVERLIMIT;
         if (TAS)
-            user.player.sendMessage("§cYou are using timer, right?");
+            user.sendLangMessage(StringList.timer);
         if (OVERLIMIT)
-            user.player.sendMessage("§cThis score is out of range.");
+            user.sendLangMessage(StringList.tooFast);
         replay.replayRecorder.pause(true, TAS);
         replay = null;
         waiting = true;
@@ -137,18 +138,10 @@ public class Member {
                 fw(user.player);
                 fw(user.player);
             });
-            if (last == 0) {
-                user.player.sendMessage("§8---------------------------------------------\n" +
-                        "                        §bCongratulations!\n" +
-                        "             §aYou got your first score of §e" + FastBuilderUtils.tickToTime(time) + "§a!\n" +
-                        "§8---------------------------------------------");
-            } else {
-                user.player.sendMessage("§8---------------------------------------------\n" +
-                        "                        §bCongratulations!\n" +
-                        "                        §e" + FastBuilderUtils.tickToTime(last / 5) + " §8-> §e" + FastBuilderUtils.tickToTime(time) + " \n" +
-                        "                        §8(§bbeated by §a" + FastBuilderUtils.tickToTime(last / 5 - time) + "§8)\n" +
-                        "§8---------------------------------------------");
-            }
+            if (last == 0)
+                user.langMessageSender(StringList.firstScore).replace("%t%", FastBuilderUtils.tickToTime(time)).send();
+            else
+                user.langMessageSender(StringList.pb).replace("%1%", FastBuilderUtils.tickToTime(last / 5)).replace("%2%", FastBuilderUtils.tickToTime(time)).replace("%3%", FastBuilderUtils.tickToTime(last / 5 - time)).send();
         }
         if (qualified)
             currentMode.a(this, time);

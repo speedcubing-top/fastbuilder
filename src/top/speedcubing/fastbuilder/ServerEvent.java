@@ -51,7 +51,7 @@ public class ServerEvent {
                     SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
                     member.currentMode.Fell(member, false);
-                    e.player.sendMessage(StringList.cancelled[member.user.lang]);
+                    member.user.sendLangMessage(StringList.cancelled);
                 } else {
                     if (member.finishNext) {
                         member.finish();
@@ -198,18 +198,18 @@ public class ServerEvent {
     @LibEventHandler
     public void ToggleFlyEvent(ToggleFlyEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
+        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @LibEventHandler
     public void NickEvent(NickEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
+        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @LibEventHandler
     public void SkinEvent(SkinEvent e) {
         e.isCancelled = true;
-        e.player.sendMessage(GlobalString.OnlyInHub[Member.getMember(e.player).user.lang]);
+        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 }

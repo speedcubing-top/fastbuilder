@@ -13,25 +13,18 @@ public class StringList {
     };
     public static final String[] MenuTitle = {"§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu"};
     public static final String[] Settings = {"§cSettings", "§cSettings", "§cSettings", "§cSettings"};
-
-    public static String[] min = {
-            "§cThe minimum value is 1",
-            "§cThe minimum value is 1",
-            "§cThe minimum value is 1",
-            "§cThe minimum value is 1"
-    };
-
-    public static String[] max = {
-            "§cThe maximum value is 20",
-            "§cThe maximum value is 20",
-            "§cThe maximum value is 20",
-            "§cThe maximum value is 20"
-    };
     public static String[][] LoopLore = {
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"},
             {"§bLoop the bridging arena", "", "§dCurrent: §aOn", "§dCurrent: §cOff"}
+    };
+
+    public static final String[] replayNotFound = {
+            "not found.",
+            "not found.",
+            "not found.",
+            "not found."
     };
     public static final String[] timedisplay = {
             "§aTime: §e%time%",
@@ -78,6 +71,56 @@ public class StringList {
             "§7[§bFastBuilder§7] §cWe couldn't find any available slot.",
             "§7[§bFastBuilder§7] §cWe couldn't find any available slot."};
 
+
+    public static String[] timer = {
+            "§cYou are using timer, right?", "§cYou are using timer, right?", "§cYou are using timer, right?", "§cYou are using timer, right?"
+    };
+
+    public static String[] tooFast = {
+            "§cThis score is out of range.", "§cThis score is out of range.", "§cThis score is out of range.", "§cThis score is out of range."
+    };
+
+    public static String[] firstScore = {
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "             §aYou got your first score of §e%t%§a!\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "             §aYou got your first score of §e%t%§a!\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "             §aYou got your first score of §e%t%§a!\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "             §aYou got your first score of §e%t%§a!\n" +
+                    "§8---------------------------------------------"
+    };
+
+    public static String[] pb = {
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "                        §e%1% §8-> §e%2% \n" +
+                    "                        §8(§bbeated by §a%3%§8)\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "                        §e%1% §8-> §e%2% \n" +
+                    "                        §8(§bbeated by §a%3%§8)\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "                        §e%1% §8-> §e%2% \n" +
+                    "                        §8(§bbeated by §a%3%§8)\n" +
+                    "§8---------------------------------------------",
+            "§8---------------------------------------------\n" +
+                    "                        §bCongratulations!\n" +
+                    "                        §e%1% §8-> §e%2% \n" +
+                    "                        §8(§bbeated by §a%3%§8)\n" +
+                    "§8---------------------------------------------"
+    };
     public static String[] cancelled = {
             "§7[§bFastBuilder§7] §cThe bridging attempt is cancelled! (timed out)",
             "§7[§bFastBuilder§7] §cThe bridging attempt is cancelled! (timed out)",
