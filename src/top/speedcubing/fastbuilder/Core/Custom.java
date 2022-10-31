@@ -14,7 +14,7 @@ import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
-import top.speedcubing.lib.bukkit.BungeePluginMessage;
+import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
