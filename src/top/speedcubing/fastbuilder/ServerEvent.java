@@ -49,7 +49,7 @@ public class ServerEvent {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
                     SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
-                if (member.replay.replayRecorder.NewTick >= 2400) {
+                if (member.replay.replayRecorder.NewTick > 2400) {
                     member.currentMode.Fell(member, false, true);
                     member.user.sendLangMessage(StringList.cancelled);
                 } else {

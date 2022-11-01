@@ -48,6 +48,7 @@ public class Member {
     public int times;
 
     public boolean waiting;
+    public boolean resetted;
     public int blockskin;
     public int MainTimer;
     public int finishedtask;
