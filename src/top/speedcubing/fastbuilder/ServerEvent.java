@@ -50,7 +50,7 @@ public class ServerEvent {
                 if (!member.finishNext)
                     SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick >= 2400) {
-                    member.currentMode.Fell(member, false);
+                    member.currentMode.Fell(member, false, true);
                     member.user.sendLangMessage(StringList.cancelled);
                 } else {
                     if (member.finishNext) {
@@ -86,14 +86,14 @@ public class ServerEvent {
                     case "Onestack": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            member.currentMode.Fell(member, fell);
+                            member.currentMode.Fell(member, fell, false);
                     }
                     break;
                     case "Inclinedshort":
                     case "Inclined": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            member.currentMode.Fell(member, fell);
+                            member.currentMode.Fell(member, fell, false);
                     }
                     break;
                     case "Custom": {

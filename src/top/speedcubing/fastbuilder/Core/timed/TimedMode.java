@@ -153,7 +153,7 @@ public class TimedMode {
         }
     }
 
-    public void Fell(Member member, boolean fell) {
+    public void Fell(Member member, boolean fell,boolean timeOut) {
         boolean reset = false;
         if (member.waiting) {
             reset = true;
@@ -174,7 +174,7 @@ public class TimedMode {
                 member.replay.replayRecorder.pause(false, false);
                 lastAttempt.put(member, member.replay);
                 member.replay = null;
-            } else if (!fell) {
+            } else if (!fell && !timeOut) {
                 Location location = member.user.player.getLocation();
                 int coord = member.PlayerCoord;
                 int oldroom = coordToRoom(coord);
