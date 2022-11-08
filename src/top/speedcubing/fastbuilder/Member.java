@@ -3,7 +3,6 @@ package top.speedcubing.fastbuilder;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import org.apache.logging.log4j.core.lookup.StrLookup;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -72,6 +71,8 @@ public class Member {
     public final Location asyncLoc;
     public boolean finishNext;
     public long quitReplay;
+    public Location tped = new Location(Bukkit.getWorlds().get(0),0,0,0,0,0);
+    public boolean locationLock;
 
     public Member(Player player) {
         this.user = User.getUser(player);
@@ -89,6 +90,12 @@ public class Member {
         Blocks.clear();
     }
 
+    public void setLoc(World world, double x, double y, double z, float yaw, float pitch) {
+        tped = new Location(world, x, y, z, yaw, pitch);
+        user.player.teleport(tped);
+        locationLock = true;
+    }
+
     public void joinReplay(int slot) {
         Replay replay = slot == 0 ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
         if (replay != null) {
@@ -101,7 +108,7 @@ public class Member {
             user.player.setGameMode(GameMode.ADVENTURE);
             user.player.setAllowFlight(true);
             user.player.setFlying(true);
-            user.player.teleport(new Location(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, currentMode.inclined ? 225 : 0, 0));
+            setLoc(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, currentMode.inclined ? 225 : 0, 0);
             replayPlayer = new ReplayViewer(this, replay, slot == 0);
             if (currentMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
@@ -151,7 +158,7 @@ public class Member {
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(currentMode.world);
-                user.player.teleport(new Location(user.player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0));
+                setLoc(user.player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0);
                 waiting = false;
                 Inventory inventory = user.player.getInventory();
                 ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
@@ -172,6 +179,48 @@ public class Member {
         int empty = 1 - user.player.getInventory().getHeldItemSlot();
         if (inventory.getItem(empty) == null)
             inventory.setItem(empty, ItemStackList.Blocks[blockskin][user.lang]);
+    }
+
+    public void Fell(boolean fell) {
+        boolean reset = false;
+        if (waiting) {
+            reset = true;
+            Bukkit.getScheduler().cancelTask(finishedtask);
+            waiting = false;
+            Inventory inventory = user.player.getInventory();
+            ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
+            inventory.setItem(0, stack);
+            inventory.setItem(1, stack);
+        } else {
+            if (replay != null) {
+                reset = true;
+                Inventory inventory = user.player.getInventory();
+                ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
+                inventory.setItem(0, stack);
+                inventory.setItem(1, stack);
+                SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][9] + FastBuilderUtils.tickToTime(replay.replayRecorder.NewTick - 1), 1);
+                replay.replayRecorder.pause(false, false);
+                currentMode.lastAttempt.put(this, replay);
+                replay = null;
+            } else if (!fell) {
+                Location location = user.player.getLocation();
+                int coord = PlayerCoord;
+                int oldroom = currentMode.coordToRoom(coord);
+                int newroom = Core.cal(oldroom, currentMode.inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, currentMode.rooms);
+                if (newroom == -1) user.sendLangMessage(StringList.nomapsavaliable);
+                else {
+                    PlayerCoord = currentMode.roomToCoord(newroom);
+                    currentMode.setPressurePlate(this);
+                    currentMode.rooms[oldroom] = true;
+                    currentMode.rooms[newroom] = false;
+                    System.out.print("[Swap] " + oldroom + " " + newroom + " " + user.player.getName() + " " + currentMode.world.getName());
+                }
+            }
+            user.player.closeInventory();
+        }
+        setLoc(user.player.getWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0);
+        if (reset)
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> clear(user.player.getWorld()));
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {

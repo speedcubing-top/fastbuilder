@@ -44,13 +44,17 @@ public class ServerEvent {
                 loc.setYaw(packetplayinflying.d());
                 loc.setPitch(packetplayinflying.e());
             }
+            if (LocationUtils.sameCoord(loc, member.tped))
+                member.locationLock = false;
+            if (member.locationLock)
+                return;
 
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
                     SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick > 2400) {
-                    member.currentMode.Fell(member, false, true);
+                    member.Fell(false);
                     member.user.sendLangMessage(StringList.cancelled);
                 } else {
                     if (member.finishNext) {
@@ -86,14 +90,14 @@ public class ServerEvent {
                     case "Onestack": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            member.currentMode.Fell(member, fell, false);
+                            member.Fell(fell);
                     }
                     break;
                     case "Inclinedshort":
                     case "Inclined": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            member.currentMode.Fell(member, fell, false);
+                            member.Fell(fell);
                     }
                     break;
                     case "Custom": {
