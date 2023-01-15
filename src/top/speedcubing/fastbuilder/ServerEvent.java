@@ -186,7 +186,7 @@ public class ServerEvent {
                 BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
                 TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
                 TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
-                String[] format = GlobalString.MessageFormat[0];
+                String[] format = GlobalString.MessageFormat;
                 for (int i = 0; i < second.length; i++) {
                     second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
                     second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
