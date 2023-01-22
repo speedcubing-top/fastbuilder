@@ -115,9 +115,9 @@ public class Member {
             else
                 WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
             user.player.getInventory().clear();
-            user.player.getInventory().setItem(2, ItemStackList.START[user.lang]);
+            user.player.getInventory().setItem(3, ItemStackList.START[user.lang]);
             user.player.getInventory().setItem(4, ItemStackList.TICK[user.lang]);
-            user.player.getInventory().setItem(6, ItemStackList.QUITREPLAY[user.lang]);
+            user.player.getInventory().setItem(5, ItemStackList.QUITREPLAY[user.lang]);
         } else
             user.sendLangMessage(StringList.replayNotFound);
     }

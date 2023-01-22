@@ -144,21 +144,20 @@ public class ServerEvent {
                         case "world":
                         case "Short":
                         case "Onestack":
-                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100)) {
+                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100))
                                 e.isCancelled = true;
-                            } else
-                                member.validPlaceBlock(x, y, z);
+                            else member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclined":
                         case "Inclinedshort":
-                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100)) {
+                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
                                 e.isCancelled = true;
-                            } else member.validPlaceBlock(x, y, z);
+                            else member.validPlaceBlock(x, y, z);
                             break;
                         case "Custom":
-                            if (Math.abs(z - member.PlayerCoord) > 6 || y < 92) {
+                            if (Math.abs(z - member.PlayerCoord) > 6 || y < 92)
                                 e.isCancelled = true;
-                            } else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
+                            else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
                             break;
                     }
                 }
