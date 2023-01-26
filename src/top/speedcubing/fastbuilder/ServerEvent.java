@@ -24,6 +24,7 @@ import top.speedcubing.server.events.player.SkinEvent;
 import top.speedcubing.server.events.player.ToggleFlyEvent;
 import top.speedcubing.server.libs.GlobalString;
 import top.speedcubing.server.libs.User;
+import top.speedcubing.server.share.Chat;
 import top.speedcubing.server.speedcubingServer;
 
 public class ServerEvent {
@@ -177,22 +178,31 @@ public class ServerEvent {
         if (e.packet instanceof PacketPlayInChat) {
             String message = ((PacketPlayInChat) e.packet).a();
             if (message.charAt(0) != '/') {
-                Player player = e.player;
                 e.isCancelled = true;
+                if (Chat.checkBlockedText(message))
+                    return;
+                Player player = e.player;
+                String filtered = Chat.filter(message);
                 String[] formats = speedcubingServer.getFormat(User.getUser(player).rank);
                 String playerName = player.getName();
                 BaseComponent[] empty = TextComponent.fromLegacyText("");
                 BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
                 TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
                 TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
+                TextComponent[] first2 = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
+                TextComponent[] second2 = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
                 String[] format = GlobalString.MessageFormat;
                 for (int i = 0; i < second.length; i++) {
                     second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
                     second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
+                    second2[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
+                    second2[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
                     first[i].addExtra(second[i]);
                     first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
+                    first2[i].addExtra(second[i]);
+                    first2[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + filtered))));
                 }
-                speedcubingServer.globalChat(Bukkit.getOnlinePlayers(), player, first);
+                Chat.globalChat(Bukkit.getOnlinePlayers(), player, first, first2);
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }
