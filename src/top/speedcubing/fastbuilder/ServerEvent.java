@@ -198,9 +198,9 @@ public class ServerEvent {
                     second2[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
                     second2[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
                     first[i].addExtra(second[i]);
-                    first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + message))));
+                    first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", message))));
                     first2[i].addExtra(second[i]);
-                    first2[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%text%", "").replace("%text2%", formats[2] + filtered))));
+                    first2[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", filtered))));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, first, first2);
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
