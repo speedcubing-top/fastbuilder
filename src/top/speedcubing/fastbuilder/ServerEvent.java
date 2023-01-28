@@ -1,6 +1,8 @@
 package top.speedcubing.fastbuilder;
 
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -17,6 +19,7 @@ import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
+import top.speedcubing.lib.bungee.TextBuilder;
 import top.speedcubing.lib.eventbus.LibEventHandler;
 import top.speedcubing.lib.utils.Console;
 import top.speedcubing.server.events.player.NickEvent;
@@ -185,22 +188,21 @@ public class ServerEvent {
                 String filtered = Chat.filter(message);
                 String[] formats = speedcubingServer.getFormat(User.getUser(player).rank);
                 String playerName = player.getName();
-                BaseComponent[] empty = TextComponent.fromLegacyText("");
-                BaseComponent[] name = TextComponent.fromLegacyText(formats[0] + playerName);
-                TextComponent[] first = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
-                TextComponent[] second = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
-                TextComponent[] first2 = {new TextComponent(empty), new TextComponent(empty), new TextComponent(empty), new TextComponent(empty)};
-                TextComponent[] second2 = {new TextComponent(name), new TextComponent(name), new TextComponent(name), new TextComponent(name)};
                 String[] format = GlobalString.MessageFormat;
-                for (int i = 0; i < second.length; i++) {
-                    second[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
-                    second[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
-                    second2[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(StringList.hover[i].replace("%name%", formats[1] + playerName)).create()));
-                    second2[i].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats " + playerName));
-                    first[i].addExtra(second[i]);
-                    first[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", message))));
-                    first2[i].addExtra(second[i]);
-                    first2[i].addExtra(new TextComponent(TextComponent.fromLegacyText(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", filtered))));
+                TextBuilder[] first = new TextBuilder[format.length];
+                TextBuilder[] first2 = new TextBuilder[format.length];
+                for (int i = 0; i < format.length; i++) {
+                    new TextBuilder().build();
+                    first[i] = new TextBuilder()
+                            .both(formats[0] + playerName,
+                                    ClickEvent.Action.RUN_COMMAND, "/stats " + playerName,
+                                    HoverEvent.Action.SHOW_TEXT, new TextBuilder().str(StringList.hover[i].replace("%name%", formats[1] + playerName)).build())
+                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", message));
+                    first2[i] = new TextBuilder()
+                            .both(formats[0] + playerName,
+                                    ClickEvent.Action.RUN_COMMAND, "/stats " + playerName,
+                                    HoverEvent.Action.SHOW_TEXT, new TextBuilder().str(StringList.hover[i].replace("%name%", formats[1] + playerName)).build())
+                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", filtered));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, first, first2);
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
