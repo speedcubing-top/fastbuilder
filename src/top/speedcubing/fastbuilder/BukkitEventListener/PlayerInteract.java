@@ -125,7 +125,7 @@ public class PlayerInteract implements Listener {
         boolean UnLoop = member.hits.isEmpty();
         if (horizontal) {
             if ((settings[0] == 5 && i == -1) || (settings[0] == 64 && i == 1)) {
-                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
+                 member.user.sound(Sound.NOTE_PLING);
                 c = false;
             } else {
                 for (int X = -2; X <= 3; X++) {
@@ -139,7 +139,7 @@ public class PlayerInteract implements Listener {
             }
         } else {
             if ((settings[1] == 0 && i == -1) || (settings[1] == 64 && i == 1)) {
-                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1F, 1F);
+                 member.user.sound(Sound.NOTE_PLING);
                 c = false;
             } else {
                 if (UnLoop && i == -1)

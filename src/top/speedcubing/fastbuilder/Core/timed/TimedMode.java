@@ -82,7 +82,7 @@ public class TimedMode {
         player.setGameMode(GameMode.SURVIVAL);
         player.teleport(new Location(world, coord + 0.5, 100, (inclined ? coord : -4) + 0.5, inclined ? 225 : 0, 0));
         member.PlayerCoord = coord;
-        System.out.print("[Join] " + room + " " + member.user.player.getName() + " " + world.getName());
+        System.out.print("[Join] " + room + " " + member.user.bGetName() + " " + world.getName());
         setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.user.lang];
         int a = member.user.dbSelect("fb_" + sqlId + "_pb").getInt();
@@ -104,7 +104,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = speedcubingServer.getFormat(ses.user.rank)[1] + ses.user.player.getName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
+                    result = speedcubingServer.getFormat(ses.user.rank)[1] + ses.user.bGetName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }
@@ -160,7 +160,7 @@ public class TimedMode {
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;
-        System.out.print("[Quit] " + coordToRoom(member.PlayerCoord) + " " + member.user.player.getName() + " " + world.getName());
+        System.out.print("[Quit] " + coordToRoom(member.PlayerCoord) + " " + member.user.bGetName() + " " + world.getName());
     }
 
     public int coordToRoom(int i) {

@@ -82,12 +82,12 @@ public class ServerEvent {
                     case "replay_onestack":
                     case "replay_short":
                         if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > 75.5 || loc.getY() < 0)
-                            member.user.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
                         break;
                     case "replay_inclined":
                     case "replay_incinedshort":
                         if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
-                            member.user.player.teleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
+                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
                         break;
                     case "world":
                     case "Short":

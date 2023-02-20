@@ -24,8 +24,8 @@ public class Replay {
         replayRecorder = new ReplayRecorder(this, member);
         this.StartSneaking = member.user.player.isSneaking();
         this.StartLocation = startLocation.subtract(member.PlayerCoord, 0, 0);
-        this.StartItem = member.user.player.getItemInHand();
-        this.name = member.user.player.getName();
+        this.StartItem = member.user.bGetItemInHand();
+        this.name = member.user.bGetName();
         Property profile = ((CraftPlayer) member.user.player).getProfile().getProperties().get("textures").iterator().next();
         this.value = profile.getValue();
         this.signature = profile.getSignature();
