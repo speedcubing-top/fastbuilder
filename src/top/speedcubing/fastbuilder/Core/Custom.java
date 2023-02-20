@@ -14,10 +14,10 @@ import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
-import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
+import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class Custom {
         SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
         PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)));
         member.times = -1;
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+        member.user.sound(Sound.LEVEL_UP);
         if (pressure) {
             member.waiting = true;
             member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
