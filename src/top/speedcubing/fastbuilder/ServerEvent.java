@@ -1,8 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -21,6 +18,8 @@ import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
 import top.speedcubing.lib.bungee.TextBuilder;
 import top.speedcubing.lib.eventbus.LibEventHandler;
+import top.speedcubing.lib.minecraft.text.ClickEvent;
+import top.speedcubing.lib.minecraft.text.HoverEvent;
 import top.speedcubing.lib.utils.Console;
 import top.speedcubing.server.events.player.NickEvent;
 import top.speedcubing.server.events.player.SkinEvent;
@@ -195,13 +194,13 @@ public class ServerEvent {
                     new TextBuilder().build();
                     first[i] = new TextBuilder()
                             .both(formats[0] + playerName,
-                                    ClickEvent.Action.RUN_COMMAND, "/stats " + playerName,
-                                    HoverEvent.Action.SHOW_TEXT, new TextBuilder().str(StringList.hover[i].replace("%name%", formats[1] + playerName)).build())
+                                    ClickEvent.runCommand("/stats " + playerName),
+                                    HoverEvent.showText(StringList.hover[i].replace("%name%", formats[1] + playerName)))
                             .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", message));
                     first2[i] = new TextBuilder()
                             .both(formats[0] + playerName,
-                                    ClickEvent.Action.RUN_COMMAND, "/stats " + playerName,
-                                    HoverEvent.Action.SHOW_TEXT, new TextBuilder().str(StringList.hover[i].replace("%name%", formats[1] + playerName)).build())
+                                    ClickEvent.runCommand("/stats " + playerName),
+                                    HoverEvent.showText(StringList.hover[i].replace("%name%", formats[1] + playerName)))
                             .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", filtered));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, first, first2);
