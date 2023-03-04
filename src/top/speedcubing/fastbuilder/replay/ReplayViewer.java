@@ -43,16 +43,16 @@ public class ReplayViewer {
         currentItem = replay.StartItem;
         serial(member.ReplayCoord);
         npc = new NPC(replay.name, null, true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
-                .setClickEvent(((player1, enumEntityUseAction) -> {
+                .setClickEvent(((p, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
-                        PlayerConnection connection = ((CraftPlayer) player1).getHandle().playerConnection;
+                        PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
                         connection.sendPacket(new PacketPlayOutGameStateChange(3, 3));
                         connection.sendPacket(new PacketPlayOutCamera(npc.entityPlayer));
                         PacketPlayOutAbilities abilities = new PacketPlayOutAbilities();
                         abilities.b(true);
                         abilities.c(true);
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(abilities);
-                        ((CraftPlayer) player).getHandle().playerConnection.a(member.ReplayCoord, 90, 0, 0, 0);
+                        connection.sendPacket(abilities);
+                        connection.a(member.ReplayCoord, 90, 0, 0, 0);
                         isSpec = true;
                     }
                 }));

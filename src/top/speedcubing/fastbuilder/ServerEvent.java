@@ -147,7 +147,7 @@ public class ServerEvent {
                         case "world":
                         case "Short":
                         case "Onestack":
-                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 6 || y < 92) || (member.replay == null && y > 100))
+                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 5 || y < 92) || (member.replay == null && y > 100))
                                 e.isCancelled = true;
                             else member.validPlaceBlock(x, y, z);
                             break;

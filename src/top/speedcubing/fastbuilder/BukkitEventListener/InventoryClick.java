@@ -17,7 +17,7 @@ import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.SideBar;
 
 public class InventoryClick implements Listener {
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void InventoryClickEvent(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         Inventory inventory = e.getInventory();
