@@ -2,6 +2,7 @@ package top.speedcubing.fastbuilder.replay;
 
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -52,7 +53,7 @@ public class ReplayViewer {
                         abilities.b(true);
                         abilities.c(true);
                         connection.sendPacket(abilities);
-                        connection.a(member.ReplayCoord, 90, 0, 0, 0);
+                        p.teleport(new Location(p.getWorld(), member.ReplayCoord, 90, 0, 0, 0));
                         isSpec = true;
                     }
                 }));

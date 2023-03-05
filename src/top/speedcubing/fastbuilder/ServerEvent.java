@@ -167,11 +167,15 @@ public class ServerEvent {
 
                 if (e.isCancelled) {
                     EntityPlayer nmsPlayer = ((CraftPlayer) e.player).getHandle();
-                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, p.a()));
-                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, shifted));
-                    nmsPlayer.playerConnection.sendPacket(new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, nmsPlayer.activeContainer.getSlot(nmsPlayer.inventory, nmsPlayer.inventory.itemInHandIndex).rawSlotIndex, nmsPlayer.inventory.getItemInHand()));
+                    member.user.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, p.a()), new PacketPlayOutBlockChange(nmsPlayer.world, shifted), new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, nmsPlayer.activeContainer.getSlot(nmsPlayer.inventory, nmsPlayer.inventory.itemInHandIndex).rawSlotIndex, nmsPlayer.inventory.getItemInHand()));
                 }
             }
+
+            if (!e.isCancelled)
+                if (e.player.getGameMode() != GameMode.CREATIVE) {
+                    BlockPosition pos = p.a();
+                    member.Blocks.add(e.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
+                }
         }
     }
 
