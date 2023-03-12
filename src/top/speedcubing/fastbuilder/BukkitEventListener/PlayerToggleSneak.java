@@ -2,6 +2,7 @@ package top.speedcubing.fastbuilder.BukkitEventListener;
 
 import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
 import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -16,7 +17,7 @@ public class PlayerToggleSneak implements Listener {
             member.user.sendPacket(new PacketPlayOutCamera(member.user.toNMS()), new PacketPlayOutGameStateChange(3, 2));
             member.user.bSetAllowFlight(true);
             member.user.bSetFlying(true);
-            member.user.bTeleport(member.replayPlayer.npc.entityPlayer.getBukkitEntity());
+            member.user.bTeleport(new Location(member.user.bGetWorld(), member.replayPlayer.npc.entityPlayer.locX, member.replayPlayer.npc.entityPlayer.locY, member.replayPlayer.npc.entityPlayer.locZ, member.replayPlayer.npc.entityPlayer.yaw, member.replayPlayer.npc.entityPlayer.pitch));
         }
     }
 }

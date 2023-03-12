@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,12 +36,24 @@ public class ReplayViewer {
     final Timer timer;
     public boolean lastAttempt;
 
+    //    public EntityPlayer test;
     public ReplayViewer(Member member, Replay replay, boolean lastAttempt) {
+        WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
+//        test = new EntityPlayer(((CraftServer)Bukkit.getServer()).getServer(),world,new GameProfile(UUID.randomUUID(),"test"), new PlayerInteractManager(world));
         this.lastAttempt = lastAttempt;
         player = member.user.player;
         this.replay = replay;
         this.member = member;
-        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+//        String[] sidebar = StringList.replaySidebar[member.user.lang];
+//        new SideBar(player, sidebar[0])
+//                .staticLine(sidebar[1], 7)
+//                .staticLine(sidebar[2], 6)
+//                .changeableLine(sidebar[3] + replay.StartLocation.getX(), 5)
+//                .changeableLine(sidebar[4] + replay.StartLocation.getY(), 4)
+//                .changeableLine(sidebar[5] + replay.StartLocation.getZ(), 3)
+//                .changeableLine(sidebar[6] + replay.StartLocation.getYaw(), 2)
+//                .changeableLine(sidebar[7] + replay.StartLocation.getPitch(), 1)
+//                .staticLine(sidebar[8], 0).create();
         currentItem = replay.StartItem;
         serial(member.ReplayCoord);
         npc = new NPC(replay.name, null, true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
@@ -53,11 +66,12 @@ public class ReplayViewer {
                         abilities.b(true);
                         abilities.c(true);
                         connection.sendPacket(abilities);
+//                        test.setSpectatorTarget(npc.entityPlayer);
                         p.teleport(new Location(p.getWorld(), member.ReplayCoord, 90, 0, 0, 0));
                         isSpec = true;
                     }
                 }));
-        resetNPC();
+        resetNPC(false);
         npc.addListener(player);
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -69,11 +83,15 @@ public class ReplayViewer {
         npc.spawn().hideFromTab(4000).updateNpcLocation();
     }
 
-    void resetNPC() {
-        npc.setSneaking(replay.StartSneaking).setItemInHand(replay.StartItem).setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
+    private void resetNPC(boolean resetSidebar) {
+        npc.setSneaking(replay.StartSneaking).setItemInHand(replay.StartItem);
+        if (resetSidebar)
+            setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
+        else
+            npc.setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
     }
 
-    void actionbar() {
+    private void actionbar() {
         PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(replay.ticks.size() - 2));
     }
 
@@ -98,7 +116,7 @@ public class ReplayViewer {
 //                        player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
                     }
                 }
-                resetNPC();
+                resetNPC(true);
                 player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
                 npc.updateNpcLocation();
             }
@@ -109,6 +127,19 @@ public class ReplayViewer {
         playing = !playing;
     }
 
+    private void setLocation(double x, double y, double z, float headRotation, float pitch) {
+        npc.setLocation(x, y, z, headRotation, pitch);
+//        System.out.println(test.locX);
+//        player.sendMessage(x + " " + npc.entityPlayer.locX + " " + npc.entityPlayer.lastX + " " + Reflections.getField(((CraftPlayer) player).getHandle(), "bU") + " " + player.getLocation().getX());
+//        String[] sidebar = StringList.replaySidebar[member.user.lang];
+//        SideBar.getSidebar(player)
+//                .setLineByScore(sidebar[3] + x, 5)
+//                .setLineByScore(sidebar[4] + y, 4)
+//                .setLineByScore(sidebar[5] + z, 3)
+//                .setLineByScore(sidebar[6] + headRotation, 2)
+//                .setLineByScore(sidebar[7] + pitch, 1);
+    }
+
     public void minusTick() {
         if (tick != 0) {
             if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
@@ -117,9 +148,9 @@ public class ReplayViewer {
             ReplayTick replayTick = replay.ticks.get(tick);
             ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
             if (tick == 0)
-                npc.setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
+                setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
             else
-                npc.setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
+                setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
             npc.updateNpcLocation();
             if (replayTick.blockLocation != null) {
                 Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR, 1);
@@ -151,7 +182,7 @@ public class ReplayViewer {
     public void addoneTick() {
         if (tick != replay.ticks.size() - 1) {
             ReplayTick replayTick = replay.ticks.get(tick);
-            npc.setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
+            setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
             npc.updateNpcLocation();
             if (replayTick.blockLocation != null) {
                 Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());

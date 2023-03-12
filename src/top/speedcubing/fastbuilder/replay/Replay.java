@@ -22,7 +22,7 @@ public class Replay {
 
     public Replay(Member member, Location startLocation) {
         replayRecorder = new ReplayRecorder(this, member);
-        this.StartSneaking = member.user.player.isSneaking();
+        this.StartSneaking = member.user.bIsSneaking();
         this.StartLocation = startLocation.subtract(member.PlayerCoord, 0, 0);
         this.StartItem = member.user.bGetItemInHand();
         this.name = member.user.bGetName();

@@ -38,6 +38,12 @@ public class StringList {
             {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"},
             {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§b§lPersonal Best:", "§2§8» §e", "§8", "§aSession Top 3:", "§3", "§aTime:", "§1§8» §e", "§0"}
     };
+    public static final String[][] replaySidebar = {
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§aX: §8» §b", "§aY: §8» §b","§aZ: §8» §b","§aYaw: §8» §b","§aPitch: §8» §b","§a"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§aX: §8» §b", "§aY: §8» §b","§aZ: §8» §b","§aYaw: §8» §b","§aPitch: §8» §b","§a"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§aX: §8» §b", "§aY: §8» §b","§aZ: §8» §b","§aYaw: §8» §b","§aPitch: §8» §b","§a"},
+            {"§3FastBuilder", "§6" + config.SERVERIP, "§f", "§aX: §8» §b", "§aY: §8» §b","§aZ: §8» §b","§aYaw: §8» §b","§aPitch: §8» §b","§a"}
+    };
     public static final String[][] CustomSideBar = {
             {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"},
             {"§3FastBuilder", "§6" + config.SERVERIP, "§8", "§aLength:", "§3§8» §e", "§5", "§aHeight:", "§2§8» §e", "§3", "§aTime:", "§1§8» §e", "§0"},
