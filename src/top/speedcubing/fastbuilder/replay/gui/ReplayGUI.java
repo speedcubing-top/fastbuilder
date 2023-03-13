@@ -7,6 +7,7 @@ import org.bukkit.inventory.InventoryHolder;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
+import top.speedcubing.server.database.Database;
 import top.speedcubing.server.speedcubingServer;
 
 import java.sql.ResultSet;
@@ -35,7 +36,7 @@ public class ReplayGUI {
                 {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
         };
         try {
-            ResultSet resultSet = speedcubingServer.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.bGetUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
+            ResultSet resultSet = Database.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.bGetUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
             Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.user.lang]);
             inventory.setItem(0, ItemStackList.LASTATTEMPT[user.user.lang]);
             int i = 1;

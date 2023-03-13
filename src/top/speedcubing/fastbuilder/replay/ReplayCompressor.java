@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.server.database.Database;
 import top.speedcubing.server.speedcubingServer;
 
 import java.sql.Blob;
@@ -63,11 +64,11 @@ public class ReplayCompressor {
             }
         }
         a = s.toString();
-        speedcubingServer.systemConnection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
+        Database.systemConnection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
     }
 
     public static Replay read(Member member, int slot) {
-        ResultSet resultSet = speedcubingServer.systemConnection.select("datas,name,value,signature,score").from("fbreplay").where("owner='" + member.user.bGetUniqueId() + "' AND mode=" + member.currentMode.sqlId).orderBy("fav DESC, time DESC").limit(slot, 1).executeQuery();
+        ResultSet resultSet = Database.systemConnection.select("datas,name,value,signature,score").from("fbreplay").where("owner='" + member.user.bGetUniqueId() + "' AND mode=" + member.currentMode.sqlId).orderBy("fav DESC, time DESC").limit(slot, 1).executeQuery();
         StringBuilder s = new StringBuilder();
         String temp;
         String name;

@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.server.database.Database;
 import top.speedcubing.server.speedcubingServer;
 
 public class InventoryClick implements Listener {
@@ -26,7 +27,7 @@ public class InventoryClick implements Listener {
                         case PICKUP_HALF:
                             if (i > 0) {
                                 Member member = Member.getMember(e.getWhoClicked());
-                                speedcubingServer.systemConnection.update("fbreplay", "fav=" + (s.getType().equals(Material.EMPTY_MAP) ? 0 : 1), "id='" + member.replays.get(i - 1) + "'");
+                                Database.systemConnection.update("fbreplay", "fav=" + (s.getType().equals(Material.EMPTY_MAP) ? 0 : 1), "id='" + member.replays.get(i - 1) + "'");
                                 ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
                             } else
                                 Member.getMember(e.getWhoClicked()).joinReplay(i);
