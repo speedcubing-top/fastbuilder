@@ -27,7 +27,6 @@ import top.speedcubing.server.events.player.ToggleFlyEvent;
 import top.speedcubing.server.libs.GlobalString;
 import top.speedcubing.server.libs.User;
 import top.speedcubing.server.share.Chat;
-import top.speedcubing.server.speedcubingServer;
 
 public class ServerEvent {
 
@@ -183,7 +182,7 @@ public class ServerEvent {
                     return;
                 Player player = e.player;
                 String filtered = Chat.filter(message);
-                String[] formats = speedcubingServer.getFormat(User.getUser(player).rank);
+                String[] formats = User.getUser(player).getFormat();
                 String playerName = player.getName();
                 String[] format = GlobalString.MessageFormat;
                 TextBuilder[] first = new TextBuilder[format.length];

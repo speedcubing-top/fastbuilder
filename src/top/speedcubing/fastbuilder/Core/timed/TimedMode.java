@@ -6,19 +6,16 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
-import top.speedcubing.server.speedcubingServer;
 
 import java.util.*;
 
@@ -104,7 +101,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = speedcubingServer.getFormat(ses.user.rank)[1] + ses.user.bGetName() + "§8: §e" + FastBuilderUtils.tickToTime(sc);
+                    result = ses.user.getFormatName(false) + "§8: §e" + FastBuilderUtils.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }
