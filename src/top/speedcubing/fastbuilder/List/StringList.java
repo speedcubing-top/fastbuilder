@@ -78,9 +78,6 @@ public class StringList {
             "§7[§bFastBuilder§7] §cWe couldn't find any available slot."};
 
 
-    public static String[] timer = {
-            "§cYou are using timer, right?", "§cYou are using timer, right?", "§cYou are using timer, right?", "§cYou are using timer, right?"
-    };
 
     public static String[] tooFast = {
             "§cThis score is out of range.", "§cThis score is out of range.", "§cThis score is out of range.", "§cThis score is out of range."

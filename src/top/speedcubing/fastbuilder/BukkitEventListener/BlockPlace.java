@@ -1,6 +1,5 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +8,7 @@ import top.speedcubing.fastbuilder.Member;
 
 public class BlockPlace implements Listener {
     @EventHandler
-    public void BlockPlacEvent(BlockPlaceEvent e){
+    public void BlockPlacEvent(BlockPlaceEvent e) {
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
             Member.getMember(e.getPlayer()).Blocks.add(e.getBlock());
     }

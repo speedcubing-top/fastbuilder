@@ -69,9 +69,10 @@ public class Member {
     public Location didntevenfuckingstart;
     public final Location asyncLoc;
     public boolean finishNext;
-    public long quitReplay;
     public Location tped = new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0, 0);
     public boolean locationLock;
+    public boolean openlingBook;
+    public int asyncHeldItemSlot;
 
     public Member(Player player) {
         this.user = User.getUser(player);
@@ -99,9 +100,8 @@ public class Member {
         Replay replay = slot == 0 ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
         if (replay != null) {
             int room = 1;
-            while (currentMode.replayRoom.contains(room)) {
+            while (currentMode.replayRoom.contains(room))
                 room++;
-            }
             currentMode.replayRoom.add(room);
             ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
             user.bSetGameMode(GameMode.ADVENTURE);
@@ -127,8 +127,6 @@ public class Member {
         boolean TAS = TASrate > 10 / 9D || TASrate < 9D / 10;
         boolean OVERLIMIT = time < currentMode.limit;
         boolean qualified = !TAS && !stats.SHIT && !OVERLIMIT;
-        if (TAS)
-            user.sendLangMessage(StringList.timer);
         if (OVERLIMIT)
             user.sendLangMessage(StringList.tooFast);
         replay.replayRecorder.pause(true, TAS);
@@ -173,11 +171,13 @@ public class Member {
             replay = new Replay(this, didntevenfuckingstart.clone());
             replay.replayRecorder.PlayerMoveEvent(asyncLoc);
         }
-        replay.replayRecorder.BlockPlaceEvent(user.bGetWorld().getBlockAt(x, y, z));
-        Inventory inventory = user.bGetInventory();
+        replay.replayRecorder.BlockPlaceEvent(x, y, z);
         int empty = 1 - user.bGetInventory().getHeldItemSlot();
-        if (inventory.getItem(empty) == null)
-            inventory.setItem(empty, ItemStackList.Blocks[blockskin][user.lang]);
+        if (empty > 0) {
+            Inventory inventory = user.bGetInventory();
+            if (inventory.getItem(empty) == null)
+                inventory.setItem(empty, ItemStackList.Blocks[blockskin][user.lang]);
+        }
     }
 
     public void Fell(boolean fell) {

@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,24 +37,10 @@ public class ReplayViewer {
 
     //    public EntityPlayer test;
     public ReplayViewer(Member member, Replay replay, boolean lastAttempt) {
-        WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
-//        test = new EntityPlayer(((CraftServer)Bukkit.getServer()).getServer(),world,new GameProfile(UUID.randomUUID(),"test"), new PlayerInteractManager(world));
         this.lastAttempt = lastAttempt;
         player = member.user.player;
-        this.replay = replay;
         this.member = member;
-//        String[] sidebar = StringList.replaySidebar[member.user.lang];
-//        new SideBar(player, sidebar[0])
-//                .staticLine(sidebar[1], 7)
-//                .staticLine(sidebar[2], 6)
-//                .changeableLine(sidebar[3] + replay.StartLocation.getX(), 5)
-//                .changeableLine(sidebar[4] + replay.StartLocation.getY(), 4)
-//                .changeableLine(sidebar[5] + replay.StartLocation.getZ(), 3)
-//                .changeableLine(sidebar[6] + replay.StartLocation.getYaw(), 2)
-//                .changeableLine(sidebar[7] + replay.StartLocation.getPitch(), 1)
-//                .staticLine(sidebar[8], 0).create();
         currentItem = replay.StartItem;
-        serial(member.ReplayCoord);
         npc = new NPC(replay.name, null, true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
                 .setClickEvent(((p, enumEntityUseAction) -> {
                     if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
@@ -66,13 +51,30 @@ public class ReplayViewer {
                         abilities.b(true);
                         abilities.c(true);
                         connection.sendPacket(abilities);
-//                        test.setSpectatorTarget(npc.entityPlayer);
                         p.teleport(new Location(p.getWorld(), member.ReplayCoord, 90, 0, 0, 0));
                         isSpec = true;
                     }
                 }));
+        //Validate Replay
+        ReplayTick tick = null;
+        ReplayTick lastTick = null;
+        for (int i = 0; i < replay.tickSize; i++) {
+            if (i != 0)
+                lastTick = tick;
+            tick = replay.ticks.get(i);
+            if (tick.handMaterial == null && lastTick != null) {
+                tick.handMaterial = lastTick.handMaterial;
+                tick.handEchants = lastTick.handEchants;
+                tick.handDatas = lastTick.handDatas;
+            }
+        }
+        this.replay = replay;
+        serial(member.ReplayCoord);
+        //NPC
         resetNPC(false);
         npc.addListener(player);
+        npc.spawn().hideFromTab(4000).updateNpcLocation();
+        //ActionBar
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -80,7 +82,6 @@ public class ReplayViewer {
                 actionbar();
             }
         }, 0, 1000);
-        npc.spawn().hideFromTab(4000).updateNpcLocation();
     }
 
     private void resetNPC(boolean resetSidebar) {
@@ -92,16 +93,16 @@ public class ReplayViewer {
     }
 
     private void actionbar() {
-        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(replay.ticks.size() - 2));
+        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(replay.tickSize - 2));
     }
 
     public void start() {
         if (!playing)
-            if (tick != replay.ticks.size() - 1) {
+            if (tick != replay.tickSize - 1) {
                 player.getInventory().setItem(2, ItemStackList.PAUSE[member.user.lang]);
                 task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                     addoneTick();
-                    if (tick == replay.ticks.size() - 1) {
+                    if (tick == replay.tickSize - 1) {
                         Bukkit.getScheduler().cancelTask(task);
                         playing = false;
                         player.getInventory().setItem(2, ItemStackList.RESTART[member.user.lang]);
@@ -142,20 +143,26 @@ public class ReplayViewer {
 
     public void minusTick() {
         if (tick != 0) {
+
             if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
                 player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
-            tick--;
-            ReplayTick replayTick = replay.ticks.get(tick);
-            ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
-            if (tick == 0)
+            ReplayTick replayTick = replay.ticks.get(tick - 1);
+            ReplayTick last = tick == 1 ? null : replay.ticks.get(tick - 2);
+
+            //NPC Location
+            if (tick == 1)
                 setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
             else
                 setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
             npc.updateNpcLocation();
+
+            //Undo Place
             if (replayTick.blockLocation != null) {
                 Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR, 1);
 //                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
             }
+
+            //Undo Break
             if (replayTick.breakLocation != null) {
                 Block newP = player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ());
                 Main.setTypeCheck(newP, Material.getMaterial(replayTick.breakMaterial), 3);
@@ -163,10 +170,14 @@ public class ReplayViewer {
                 Main.setDataCheck(newP, replayTick.breakDatas);
 //                newP.setData(replayTick.breakDatas);
             }
+
+            //Sneak
             if (replayTick.sneak != null)
                 npc.setSneaking(!replayTick.sneak);
-            if (replayTick.handMaterial != null) {
-                if (tick == 0)
+
+            //Hand
+            if (replayTick.handMaterial != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
+                if (tick == 1)
                     currentItem = replay.StartItem;
                 else {
                     currentItem = new ItemStack(last.handMaterial, 1, last.handDatas);
@@ -175,35 +186,53 @@ public class ReplayViewer {
                 }
                 npc.setItemInHand(currentItem);
             }
+
+            tick--;
             actionbar();
         }
     }
 
     public void addoneTick() {
-        if (tick != replay.ticks.size() - 1) {
+        if (tick != replay.tickSize - 1) {
+
             ReplayTick replayTick = replay.ticks.get(tick);
+
+            //NPC Location
             setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
             npc.updateNpcLocation();
+
+            //Place
             if (replayTick.blockLocation != null) {
                 Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());
-                Main.setTypeCheck(newP, Material.getMaterial(currentItem.getTypeId()), 4);
+                ReplayTick next = replay.ticks.get(tick + 1);
+                ItemStack b = currentItem.getType().isBlock() ? currentItem : new ItemStack(next.handMaterial, 1, next.handDatas);
+                Main.setTypeCheck(newP, Material.getMaterial(b.getTypeId()), 4);
 //                newP.setType(Material.getMaterial(currentItem.getTypeId()));
-                Main.setDataCheck(newP, currentItem.getData().getData());
+                Main.setDataCheck(newP, b.getData().getData());
 //                newP.setData(currentItem.getData().getData());
                 npc.animation(0);
             }
+
+            //Break
             if (replayTick.breakLocation != null) {
                 Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()), Material.AIR, 5);
 //                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
                 npc.animation(0);
             }
+
+            //Sneak
             if (replayTick.sneak != null)
                 npc.setSneaking(replayTick.sneak);
+
+            //Hand
             if (replayTick.handMaterial != null) {
-                currentItem = new ItemStack(replayTick.handMaterial, 1, replayTick.handDatas);
-                if (replayTick.handEchants)
-                    ItemUtils.glow(currentItem);
-                npc.setItemInHand(currentItem);
+                ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
+                if (last != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
+                    currentItem = new ItemStack(replayTick.handMaterial, 1, replayTick.handDatas);
+                    if (replayTick.handEchants)
+                        ItemUtils.glow(currentItem);
+                    npc.setItemInHand(currentItem);
+                }
             }
             tick++;
             actionbar();
@@ -214,7 +243,6 @@ public class ReplayViewer {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
         member.replayPlayer = null;
-        member.quitReplay = System.currentTimeMillis();
         if (lastAttempt)
             serial(-member.PlayerCoord);
     }

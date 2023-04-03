@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Core.Custom;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
@@ -130,6 +131,10 @@ public class ServerEvent {
                     return;
                 if (stack.getType() == Material.REDSTONE_COMPARATOR)
                     return;
+                if (stack.getType() == Material.BOOK)
+                    return;
+                if (stack.getType() == Material.COMPASS)
+                    return;
                 BlockPosition pos = p.a();
                 BlockPosition shifted = p.a().shift(EnumDirection.fromType1(p.getFace()));
                 Block block = e.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
@@ -138,7 +143,7 @@ public class ServerEvent {
 
                 if (member.waiting)
                     e.isCancelled = true;
-                else if (e.player.getInventory().getHeldItemSlot() < 2) {
+                else {
                     int x = pos.getX();
                     int y = pos.getY();
                     int z = pos.getZ();
@@ -163,12 +168,17 @@ public class ServerEvent {
                             break;
                     }
                 }
-
                 if (e.isCancelled) {
                     EntityPlayer nmsPlayer = ((CraftPlayer) e.player).getHandle();
                     member.user.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, p.a()), new PacketPlayOutBlockChange(nmsPlayer.world, shifted), new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, nmsPlayer.activeContainer.getSlot(nmsPlayer.inventory, nmsPlayer.inventory.itemInHandIndex).rawSlotIndex, nmsPlayer.inventory.getItemInHand()));
                 }
             }
+        } else if (e.packet instanceof PacketPlayInHeldItemSlot) {
+            int i = ((PacketPlayInHeldItemSlot) e.packet).a();
+            member.asyncHeldItemSlot = i;
+            Replay replay = Member.getMember(e.player).replay;
+            if (replay != null)
+                replay.replayRecorder.PlayerItemHeldEvent(e.player.getInventory().getItem(i));
         }
     }
 

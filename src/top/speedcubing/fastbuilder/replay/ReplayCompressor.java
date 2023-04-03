@@ -7,7 +7,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.server.database.Database;
-import top.speedcubing.server.speedcubingServer;
 
 import java.sql.Blob;
 import java.sql.ResultSet;
@@ -16,8 +15,7 @@ import java.util.UUID;
 
 public class ReplayCompressor {
 
-    public static String a;
-
+    //upload replay object to db
     public static void write(Replay replay, UUID owner, boolean TAS) {
         StringBuilder s = new StringBuilder();
         s.append(intToString(replay.StartSneaking ? 0 : 1, 2))
@@ -63,10 +61,10 @@ public class ReplayCompressor {
                         append(intToString(replayTick.handDatas, 2));
             }
         }
-        a = s.toString();
         Database.systemConnection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
     }
 
+    //read replay from db
     public static Replay read(Member member, int slot) {
         ResultSet resultSet = Database.systemConnection.select("datas,name,value,signature,score").from("fbreplay").where("owner='" + member.user.bGetUniqueId() + "' AND mode=" + member.currentMode.sqlId).orderBy("fav DESC, time DESC").limit(slot, 1).executeQuery();
         StringBuilder s = new StringBuilder();
@@ -129,6 +127,7 @@ public class ReplayCompressor {
                 s = new StringBuilder(s.substring(10));
             }
         }
+        replay.tickSize = replay.ticks.size();
         return replay;
     }
 

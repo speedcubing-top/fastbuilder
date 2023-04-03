@@ -3,7 +3,7 @@ package top.speedcubing.fastbuilder.Core.timed;
 
 public class Short extends TimedMode {
     public Short() {
-        super("Short", 1, 76, false, 29, 103, "replay_short");
+        super("Short", 1, 75, false, 29, 103, "replay_short");
     }
 
 

@@ -5,10 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.database.Database;
-import top.speedcubing.server.speedcubingServer;
 
 import java.sql.ResultSet;
 import java.time.Instant;
@@ -28,36 +28,45 @@ public class ReplayGUI {
     }
 
     public static void openFastBuilderReplay(Member user, int mode) {
-        String[][] modeName = {
-                {"Normal", "Normal", "Normal", "Normal"},
-                {"Short", "Short", "Short", "Short"},
-                {"Onestack", "Onestack", "Onestack", "Onestack"},
-                {"Inclined", "Inclined", "Inclined", "Inclined"},
-                {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
-        };
-        try {
-            ResultSet resultSet = Database.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.bGetUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
-            Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.user.lang]);
-            inventory.setItem(0, ItemStackList.LASTATTEMPT[user.user.lang]);
-            int i = 1;
-            user.replays.clear();
-            while (resultSet.next()) {
-                if (i < 63) {
-                    user.replays.add(resultSet.getString(4));
-                    inventory.setItem(i, new ItemBuilder(resultSet.getBoolean(3) ? Material.EMPTY_MAP : Material.PAPER).name("§aFastBuilder").lore(
-                            "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(resultSet.getInt(2)), ZoneId.systemDefault())),
-                            "",
-                            "§bTime: §e" + FastBuilderUtils.tickToTime(resultSet.getInt(1)),
-                            "",
-                            "§aLeft click to watch",
-                            "§dRight click to add/remove from favorite"
-                    ).build());
+        if (!user.openlingBook) {
+            new Thread(() -> {
+                user.openlingBook = true;
+                String[][] modeName = {
+                        {"Normal", "Normal", "Normal", "Normal"},
+                        {"Short", "Short", "Short", "Short"},
+                        {"Onestack", "Onestack", "Onestack", "Onestack"},
+                        {"Inclined", "Inclined", "Inclined", "Inclined"},
+                        {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
+                };
+                try {
+                    ResultSet resultSet = Database.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.bGetUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
+                    Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.user.lang]);
+                    inventory.setItem(0, ItemStackList.LASTATTEMPT[user.user.lang]);
+                    int i = 1;
+                    user.replays.clear();
+                    while (resultSet.next()) {
+                        if (i < 63) {
+                            user.replays.add(resultSet.getString(4));
+                            inventory.setItem(i, new ItemBuilder(resultSet.getBoolean(3) ? Material.EMPTY_MAP : Material.PAPER).name("§aFastBuilder").lore(
+                                    "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(resultSet.getInt(2)), ZoneId.systemDefault())),
+                                    "",
+                                    "§bTime: §e" + FastBuilderUtils.tickToTime(resultSet.getInt(1)),
+                                    "",
+                                    "§aLeft click to watch",
+                                    "§dRight click to add/remove from favorite"
+                            ).build());
+                        }
+                        i++;
+                    }
+                    Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                        user.openlingBook = false;
+                        user.user.bOpenInventory(inventory);
+                    });
+                } catch (Exception e) {
+                    user.openlingBook = false;
+                    e.printStackTrace();
                 }
-                i++;
-            }
-            user.user.bOpenInventory(inventory);
-        } catch (Exception e) {
-            e.printStackTrace();
+            }).start();
         }
     }
 }

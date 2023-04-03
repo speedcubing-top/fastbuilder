@@ -1,13 +1,24 @@
 package top.speedcubing.fastbuilder.replay;
 
-import top.speedcubing.fastbuilder.Member;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.Glow;
 
-public class ReplayRecorder {
+public class ReplayRecorder implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void a(PlayerToggleSneakEvent e) {
+        Replay replay = Member.getMember(e.getPlayer()).replay;
+        if (replay != null)
+            replay.replayRecorder.PlayerToggleSneakEvent(e.isSneaking());
+    }
 
     public int NewTick = -1;
 
@@ -44,9 +55,9 @@ public class ReplayRecorder {
         }
     }
 
-    public void BlockPlaceEvent(Block block) {
+    public void BlockPlaceEvent(int x, int y, int z) {
         if (isRecording) {
-            getTick2().blockLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
+            getTick2().blockLocation = member.currentMode.world.getBlockAt(x - member.PlayerCoord, y, z - (member.currentMode.inclined ? member.PlayerCoord : 0));
         }
     }
 
@@ -70,8 +81,8 @@ public class ReplayRecorder {
         int size = replay.ticks.size();
         if (size == 0 || size > NewTick) {
             replay.ticks.add(new ReplayTick());
-            return replay.ticks.get(size - 1);
-        } else return replay.ticks.get(NewTick - 1);
+        }
+        return replay.ticks.get(size - 1);
     }
 
     public void pause(boolean write, boolean TAS) {
