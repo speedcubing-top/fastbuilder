@@ -79,9 +79,8 @@ public class ReplayRecorder implements Listener {
 
     ReplayTick getTick2() {
         int size = replay.ticks.size();
-        if (size == 0 || size > NewTick) {
+        if (size == 0 || size > NewTick)
             replay.ticks.add(new ReplayTick());
-        }
         return replay.ticks.get(size - 1);
     }
 

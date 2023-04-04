@@ -1,31 +1,23 @@
 package top.speedcubing.fastbuilder;
 
-import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkMeta;
 import top.speedcubing.fastbuilder.BukkitCommands.stats;
 import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.replay.Replay;
-import top.speedcubing.fastbuilder.replay.ReplayCompressor;
-import top.speedcubing.fastbuilder.replay.ReplayViewer;
+import top.speedcubing.fastbuilder.List.*;
+import top.speedcubing.fastbuilder.replay.*;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
-import top.speedcubing.lib.bukkit.PlayerUtils;
-import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.bukkit.TitleType;
-import top.speedcubing.lib.bukkit.WorldUtils;
+import top.speedcubing.lib.bukkit.*;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.libs.User;
 
@@ -97,7 +89,8 @@ public class Member {
     }
 
     public void joinReplay(int slot) {
-        Replay replay = slot == 0 ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
+        boolean lastAttempt = slot == 0;
+        Replay replay = lastAttempt ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
         if (replay != null) {
             int room = 1;
             while (currentMode.replayRoom.contains(room))
@@ -108,7 +101,9 @@ public class Member {
             user.bSetAllowFlight(true);
             user.bSetFlying(true);
             setLoc(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, currentMode.inclined ? 225 : 0, 0);
-            replayPlayer = new ReplayViewer(this, replay, slot == 0);
+            if (lastAttempt)
+                replay.tickSize = replay.ticks.size();
+            replayPlayer = new ReplayViewer(this, replay, lastAttempt);
             if (currentMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
             else
