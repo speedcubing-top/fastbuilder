@@ -6,17 +6,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
+import org.bukkit.inventory.*;
+import top.speedcubing.fastbuilder.List.*;
+import top.speedcubing.fastbuilder.*;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
-import top.speedcubing.lib.bukkit.PlayerUtils;
-import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.bukkit.TitleType;
+import top.speedcubing.lib.bukkit.*;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 
 import java.util.Set;
@@ -104,7 +98,7 @@ public class Custom {
             }
         }
         rooms[room] = false;
-        used += 1;
+        used ++;
         Member member = Member.getMember(player);
         member.currentMode = null;
         int coord = 250 * (room * (int) Math.pow(-1, room + 1) + room % 2);
@@ -206,19 +200,20 @@ public class Custom {
 
     public static void validPlaceBlock(Player player, Block b) {
         Member member = Member.getMember(player);
+        member.placedBlock ++;
         int lang = member.user.lang;
         Inventory inventory = player.getInventory();
         if (member.times == -1) {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                member.times += 1;
+                member.times ++;
                 SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
         }
         member.Blocks.add(b);
-        member.Blockplaced += 1;
+        member.Blockplaced ++;
         if (member.Blockplaced > 32) {
             member.Blockplaced = 0;
             inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);

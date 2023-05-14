@@ -1,10 +1,8 @@
 package top.speedcubing.fastbuilder;
 
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -17,16 +15,12 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
-import top.speedcubing.lib.bungee.TextBuilder;
+import top.speedcubing.lib.minecraft.text.TextBuilder;
 import top.speedcubing.lib.eventbus.LibEventHandler;
-import top.speedcubing.lib.minecraft.text.ClickEvent;
-import top.speedcubing.lib.minecraft.text.HoverEvent;
+import top.speedcubing.lib.minecraft.text.*;
 import top.speedcubing.lib.utils.Console;
-import top.speedcubing.server.events.player.NickEvent;
-import top.speedcubing.server.events.player.SkinEvent;
-import top.speedcubing.server.events.player.ToggleFlyEvent;
-import top.speedcubing.server.libs.GlobalString;
-import top.speedcubing.server.libs.User;
+import top.speedcubing.server.events.player.*;
+import top.speedcubing.server.libs.*;
 import top.speedcubing.server.share.Chat;
 
 public class ServerEvent {
@@ -188,29 +182,19 @@ public class ServerEvent {
             String message = ((PacketPlayInChat) e.packet).a();
             if (message.charAt(0) != '/') {
                 e.isCancelled = true;
-                if (Chat.checkBlockedText(message))
-                    return;
                 Player player = e.player;
-                String filtered = Chat.filter(message);
                 String[] formats = User.getUser(player).getFormat();
                 String playerName = player.getName();
                 String[] format = GlobalString.MessageFormat;
-                TextBuilder[] first = new TextBuilder[format.length];
-                TextBuilder[] first2 = new TextBuilder[format.length];
+                TextBuilder[] text = new TextBuilder[format.length];
                 for (int i = 0; i < format.length; i++) {
-                    new TextBuilder().build();
-                    first[i] = new TextBuilder()
+                    text[i] = new TextBuilder()
                             .both(formats[0] + playerName,
                                     ClickEvent.runCommand("/stats " + playerName),
                                     HoverEvent.showText(StringList.hover[i].replace("%name%", formats[1] + playerName)))
-                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", message));
-                    first2[i] = new TextBuilder()
-                            .both(formats[0] + playerName,
-                                    ClickEvent.runCommand("/stats " + playerName),
-                                    HoverEvent.showText(StringList.hover[i].replace("%name%", formats[1] + playerName)))
-                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]).replace("%msg%", filtered));
+                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]));
                 }
-                Chat.globalChat(Bukkit.getOnlinePlayers(), player, first, first2);
+                Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
                 Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }

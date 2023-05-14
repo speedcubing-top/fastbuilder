@@ -63,7 +63,7 @@ public class ReplayRecorder implements Listener {
 
     public void PlayerMoveEvent(Location loc) {
         if (isRecording) {
-            NewTick += 1;
+            NewTick ++;
             getTick().location = loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0);
         }
     }

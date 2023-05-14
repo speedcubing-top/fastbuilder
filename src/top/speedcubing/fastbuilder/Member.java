@@ -65,6 +65,7 @@ public class Member {
     public boolean locationLock;
     public boolean openlingBook;
     public int asyncHeldItemSlot;
+    public int placedBlock;
 
     public Member(Player player) {
         this.user = User.getUser(player);
@@ -161,6 +162,7 @@ public class Member {
     }
 
     public void validPlaceBlock(int x, int y, int z) {
+        placedBlock ++;
         if (replay == null) {
             times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());

@@ -71,7 +71,7 @@ public class TimedMode {
             }
         }
         rooms[room] = false;
-        used += 1;
+        used ++;
         Member member = Member.getMember(player);
         member.currentMode = this;
         int coord = roomToCoord(room);

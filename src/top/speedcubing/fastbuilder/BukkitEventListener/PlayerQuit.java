@@ -1,14 +1,11 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerQuitEvent;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.*;
 
 public class PlayerQuit implements Listener {
     @EventHandler
@@ -23,7 +20,7 @@ public class PlayerQuit implements Listener {
             }
             player.teleport(new Location(Bukkit.getWorld("world"), 0.5, 1000, 0.5, 0, 0));
         }
-        member.user.dbUpdate("fastbuild_blockskin=" + member.blockskin);
+        member.user.dbUpdate("fastbuild_blockskin=" + member.blockskin + ",fb_blockplace=fb_blockplace+" + member.placedBlock);
         Member.users.remove(member.user.id);
     }
 }
