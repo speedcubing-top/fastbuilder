@@ -111,7 +111,7 @@ public class Main extends JavaPlugin implements Listener {
     public static void setTypeCheck(Block b, Material type, int id) {
         if (b.getWorld().getName().startsWith("replay_")) {
             if (Math.abs(b.getX()) < 250) {
-                Console.sendColoredConsole("§cError: " + id + " " + b.getWorld() + " " + b.getX() + " " + b.getY() + " " + b.getZ());
+                Console.printlnColor("§cError: " + id + " " + b.getWorld() + " " + b.getX() + " " + b.getY() + " " + b.getZ());
                 return;
             }
         }

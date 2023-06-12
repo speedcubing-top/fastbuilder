@@ -195,7 +195,7 @@ public class ServerEvent {
                             .str(format[i].replace("%0%", "").replace("%1%", formats[2]));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
-                Console.sendColoredConsole("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
+                Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }
     }
