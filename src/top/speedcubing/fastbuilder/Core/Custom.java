@@ -36,7 +36,7 @@ public class Custom {
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
         SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
-        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay[lang].replace("%time%", FastBuilderUtils.tickToTime(member.times)));
+        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%time%", FastBuilderUtils.tickToTime(member.times)));
         member.times = -1;
         member.user.sound(Sound.LEVEL_UP);
         if (pressure) {
@@ -98,7 +98,7 @@ public class Custom {
             }
         }
         rooms[room] = false;
-        used ++;
+        used++;
         Member member = Member.getMember(player);
         member.currentMode = null;
         int coord = 250 * (room * (int) Math.pow(-1, room + 1) + room % 2);
@@ -200,20 +200,20 @@ public class Custom {
 
     public static void validPlaceBlock(Player player, Block b) {
         Member member = Member.getMember(player);
-        member.placedBlock ++;
+        member.placedBlock++;
         int lang = member.user.lang;
         Inventory inventory = player.getInventory();
         if (member.times == -1) {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
-                member.times ++;
+                member.times++;
                 SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
         }
         member.Blocks.add(b);
-        member.Blockplaced ++;
+        member.Blockplaced++;
         if (member.Blockplaced > 32) {
             member.Blockplaced = 0;
             inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);

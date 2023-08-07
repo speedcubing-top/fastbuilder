@@ -1,12 +1,9 @@
 package top.speedcubing.fastbuilder.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.*;
+import org.bukkit.inventory.*;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.server.libs.GlobalString;
+import top.speedcubing.server.lang.GlobalString;
 
 public class ItemStackList {
     public static final InventoryHolder menu = () -> null;
@@ -84,13 +81,13 @@ public class ItemStackList {
             ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability(13).name(yes[i]).build());
             ResetConfirm[i].setItem(15, new ItemBuilder(Material.STAINED_CLAY).durability(14).name(no[i]).build());
             ItemStack[] categoryblockeditor = {
-                    new ItemBuilder(Material.SANDSTONE).name(block[0][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.WOOL).name(block[1][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.DIAMOND_BLOCK).name(block[2][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.DIAMOND_ORE).name(block[3][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.QUARTZ_BLOCK).name(block[4][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.WOOD).name(block[5][i]).lore(GlobalString.category[i]).build(),
-                    new ItemBuilder(Material.STAINED_CLAY).name(block[6][i]).lore(GlobalString.category[i]).build()
+                    new ItemBuilder(Material.SANDSTONE).name(block[0][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.WOOL).name(block[1][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.DIAMOND_BLOCK).name(block[2][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.DIAMOND_ORE).name(block[3][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.QUARTZ_BLOCK).name(block[4][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.WOOD).name(block[5][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).name(block[6][i]).lore(GlobalString.category.get(i)).build()
             };
 
             ItemStack[] blockeditor = {

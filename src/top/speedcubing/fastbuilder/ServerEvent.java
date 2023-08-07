@@ -15,12 +15,12 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
-import top.speedcubing.lib.minecraft.text.TextBuilder;
 import top.speedcubing.lib.eventbus.LibEventHandler;
 import top.speedcubing.lib.minecraft.text.*;
 import top.speedcubing.lib.utils.Console;
 import top.speedcubing.server.events.player.*;
-import top.speedcubing.server.libs.*;
+import top.speedcubing.server.lang.*;
+import top.speedcubing.server.player.User;
 import top.speedcubing.server.share.Chat;
 
 public class ServerEvent {
@@ -185,17 +185,17 @@ public class ServerEvent {
                 Player player = e.player;
                 String[] formats = User.getUser(player).getFormat();
                 String playerName = player.getName();
-                String[] format = GlobalString.MessageFormat;
-                TextBuilder[] text = new TextBuilder[format.length];
-                for (int i = 0; i < format.length; i++) {
+                LangMessage format = GlobalString.MessageFormat;
+                TextBuilder[] text = new TextBuilder[4];
+                for (int i = 0; i < text.length; i++) {
                     text[i] = new TextBuilder()
                             .both(formats[0] + playerName,
                                     ClickEvent.runCommand("/stats " + playerName),
-                                    HoverEvent.showText(StringList.hover[i].replace("%name%", formats[1] + playerName)))
-                            .str(format[i].replace("%0%", "").replace("%1%", formats[2]));
+                                    HoverEvent.showText(StringList.hover.get(i).replace("%1%", formats[1] + playerName)))
+                            .str(format.get(i).replace("%0%", "").replace("%1%", formats[2]));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
-                Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format[1].replace("%text%", "").replace("%text2%", formats[2] + message));
+                Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format.get(1).replace("%text%", "").replace("%text2%", formats[2] + message));
             }
         }
     }

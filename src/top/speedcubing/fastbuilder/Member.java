@@ -19,7 +19,7 @@ import top.speedcubing.fastbuilder.replay.*;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.*;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.server.libs.User;
+import top.speedcubing.server.player.User;
 
 import java.util.*;
 
@@ -140,14 +140,14 @@ public class Member {
                 fw(user.player);
             });
             if (last == 0)
-                user.langMessageSender(StringList.firstScore).replace("%t%", FastBuilderUtils.tickToTime(time)).send();
+                user.sendLangMessage(StringList.firstScore, FastBuilderUtils.tickToTime(time));
             else
-                user.langMessageSender(StringList.pb).replace("%1%", FastBuilderUtils.tickToTime(last / 5)).replace("%2%", FastBuilderUtils.tickToTime(time)).replace("%3%", FastBuilderUtils.tickToTime(last / 5 - time)).send();
+                user.sendLangMessage(StringList.pb, FastBuilderUtils.tickToTime(last / 5), FastBuilderUtils.tickToTime(time), FastBuilderUtils.tickToTime(last / 5 - time));
         }
         if (qualified)
             currentMode.a(this, time);
         user.sound(Sound.LEVEL_UP);
-        PlayerUtils.sendTitle(user.player, TitleType.TITLE, StringList.timedisplay[user.lang].replace("%time%", display));
+        PlayerUtils.sendTitle(user.player, TitleType.TITLE, StringList.timedisplay.get(user.lang).replace("%1%", display));
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(currentMode.world);
@@ -162,7 +162,7 @@ public class Member {
     }
 
     public void validPlaceBlock(int x, int y, int z) {
-        placedBlock ++;
+        placedBlock++;
         if (replay == null) {
             times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());
@@ -245,7 +245,7 @@ public class Member {
     }
 
     public void openSettings() {
-        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings[user.lang]);
+        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings.get(user.lang));
         inventory.setItem(12, ItemStackList.openkit[user.lang]);
         if (!user.bGetWorld().getName().equals("Custom"))
             inventory.setItem(14, ItemStackList.Reset[user.lang]);

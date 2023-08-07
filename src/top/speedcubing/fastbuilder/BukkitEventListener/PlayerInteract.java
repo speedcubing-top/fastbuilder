@@ -3,16 +3,13 @@ package top.speedcubing.fastbuilder.BukkitEventListener;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import top.speedcubing.fastbuilder.Core.Custom;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.List.*;
+import top.speedcubing.fastbuilder.*;
 import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
@@ -45,7 +42,7 @@ public class PlayerInteract implements Listener {
                             if (member.Blocks.contains(b)) {
                                 member.replay.replayRecorder.BlockBreakEvent(b);
                                 member.Blocks.remove(b);
-                                Main.setTypeCheck(b,Material.AIR,17);
+                                Main.setTypeCheck(b, Material.AIR, 17);
 //                                b.setType(Material.AIR);
                             }
                         }
@@ -56,14 +53,14 @@ public class PlayerInteract implements Listener {
                         break;
                     case COMPASS: {
                         int lang = Member.getMember(player).user.lang;
-                        Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle[lang]);
+                        Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle.get(lang));
                         ItemBuilder[] builders = {
-                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0][lang]),
-                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1][lang]),
-                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[3][lang]),
-                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[2][lang]),
-                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4][lang]),
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5][lang])
+                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[3].get(lang)),
+                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[2].get(lang)),
+                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5].get(lang))
                         };
                         if (!player.getWorld().getName().equals("Custom"))
                             builders[member.currentMode.sqlId].glow();
@@ -125,13 +122,13 @@ public class PlayerInteract implements Listener {
         boolean UnLoop = member.hits.isEmpty();
         if (horizontal) {
             if ((settings[0] == 5 && i == -1) || (settings[0] == 64 && i == 1)) {
-                 member.user.sound(Sound.NOTE_PLING);
+                member.user.sound(Sound.NOTE_PLING);
                 c = false;
             } else {
                 for (int X = -2; X <= 3; X++) {
                     for (int Y = 97; Y <= 100; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            Main.setTypeCheck(world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z),X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType(),18);
+                            Main.setTypeCheck(world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z), X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType(), 18);
 //                            world.getBlockAt(center[0] - X * i + i, center[1] + Y, coord + Z).setType(X == -3 * i ? Material.AIR : world.getBlockAt(center[0] - X * i, center[1] + Y, coord + Z).getType());
                         }
                     }
@@ -139,25 +136,25 @@ public class PlayerInteract implements Listener {
             }
         } else {
             if ((settings[1] == 0 && i == -1) || (settings[1] == 64 && i == 1)) {
-                 member.user.sound(Sound.NOTE_PLING);
+                member.user.sound(Sound.NOTE_PLING);
                 c = false;
             } else {
                 if (UnLoop && i == -1)
                     for (int Z = -1; Z <= 1; Z++) {
-                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z),Material.AIR,19);
+                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z), Material.AIR, 19);
 //                        world.getBlockAt(center[0] - 1, center[1] + 100, coord + Z).setType(Material.AIR);
                     }
                 for (int X = -2; X <= 2; X++) {
                     for (int Y = -2; Y <= 1; Y++) {
                         for (int Z = -2; Z <= 2; Z++) {
-                            Main.setTypeCheck( world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z),Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType(),20);
+                            Main.setTypeCheck(world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z), Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType(), 20);
 //                            world.getBlockAt(center[0] + X, center[1] - Y * i + 98, coord + Z).setType(Y == 1 ? Material.AIR : world.getBlockAt(center[0] + X, center[1] - i - Y * i + 98, coord + Z).getType());
                         }
                     }
                 }
                 if (UnLoop)
                     for (int Z = -1; Z <= 1; Z++) {
-                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z),Material.GOLD_PLATE,21);
+                        Main.setTypeCheck(world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z), Material.GOLD_PLATE, 21);
 //                        world.getBlockAt(center[0] - 1, center[1] + i + 100, coord + Z).setType(Material.GOLD_PLATE);
                     }
             }
