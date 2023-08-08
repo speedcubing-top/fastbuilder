@@ -192,7 +192,7 @@ public class ServerEvent {
                             .both(formats[0] + playerName,
                                     ClickEvent.runCommand("/stats " + playerName),
                                     HoverEvent.showText(StringList.hover.get(i).replace("%1%", formats[1] + playerName)))
-                            .str(format.get(i).replace("%0%", "").replace("%1%", formats[2]));
+                            .str(format.get(i).replace("%1%", "").replace("%2%", formats[2]));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
                 Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format.get(1).replace("%text%", "").replace("%text2%", formats[2] + message));

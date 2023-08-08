@@ -36,7 +36,7 @@ public class Custom {
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
         SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
-        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%time%", FastBuilderUtils.tickToTime(member.times)));
+        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%1%", FastBuilderUtils.tickToTime(member.times)));
         member.times = -1;
         member.user.sound(Sound.LEVEL_UP);
         if (pressure) {
