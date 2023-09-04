@@ -21,7 +21,7 @@ import top.speedcubing.fastbuilder.Core.timed.*;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.replay.ReplayRecorder;
 import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
-import top.speedcubing.lib.eventbus.LibEventManager;
+import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.utils.Console;
 
 public class Main extends JavaPlugin implements Listener {
@@ -93,7 +93,7 @@ public class Main extends JavaPlugin implements Listener {
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();
-        LibEventManager.registerListeners(new ServerEvent());
+        CubingEventManager.registerListeners(new ServerEvent());
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 

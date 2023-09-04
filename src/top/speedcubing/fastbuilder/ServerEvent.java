@@ -15,7 +15,7 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
-import top.speedcubing.lib.eventbus.LibEventHandler;
+import top.speedcubing.lib.eventbus.CubingEventHandler;
 import top.speedcubing.lib.minecraft.text.*;
 import top.speedcubing.lib.utils.Console;
 import top.speedcubing.server.events.player.*;
@@ -25,7 +25,7 @@ import top.speedcubing.server.share.Chat;
 
 public class ServerEvent {
 
-    @LibEventHandler
+    @CubingEventHandler
     public void ddwdw(PlayInEvent e) {
         Member member = Member.getMember(e.player);
         if (e.packet instanceof PacketPlayInFlying) {
@@ -176,7 +176,7 @@ public class ServerEvent {
         }
     }
 
-    @LibEventHandler
+    @CubingEventHandler
     public void PlayInEvent(PlayInEvent e) {
         if (e.packet instanceof PacketPlayInChat) {
             String message = ((PacketPlayInChat) e.packet).a();
@@ -200,19 +200,19 @@ public class ServerEvent {
         }
     }
 
-    @LibEventHandler
+    @CubingEventHandler
     public void ToggleFlyEvent(ToggleFlyEvent e) {
         e.isCancelled = true;
         Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
-    @LibEventHandler
+    @CubingEventHandler
     public void NickEvent(NickEvent e) {
         e.isCancelled = true;
         Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
-    @LibEventHandler
+    @CubingEventHandler
     public void SkinEvent(SkinEvent e) {
         e.isCancelled = true;
         Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
