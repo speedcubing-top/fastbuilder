@@ -72,9 +72,10 @@ public class ServerEvent {
             if (e.player.getGameMode() != GameMode.CREATIVE) {
                 switch (e.player.getWorld().getName()) {
                     case "replay_normal":
+                    case "replay_long":
                     case "replay_onestack":
                     case "replay_short":
-                        if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > 75.5 || loc.getY() < 0)
+                        if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) >  member.currentMode.distance + 10.5 || loc.getY() < 0)
                             member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
                         break;
                     case "replay_inclined":
@@ -84,6 +85,7 @@ public class ServerEvent {
                         break;
                     case "world":
                     case "Short":
+                    case "long":
                     case "Onestack": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
@@ -144,6 +146,7 @@ public class ServerEvent {
                     switch (e.player.getWorld().getName()) {
                         case "world":
                         case "Short":
+                        case "long":
                         case "Onestack":
                             if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 5 || y < 92) || (member.replay == null && y > 100))
                                 e.isCancelled = true;

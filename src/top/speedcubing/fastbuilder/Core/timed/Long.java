@@ -1,9 +1,8 @@
 package top.speedcubing.fastbuilder.Core.timed;
 
-
 public class Long extends TimedMode {
     public Long() {
-        super("world", 0, 143, false,52,106, "replay_normal");
+        super("long", 2, 230, false, 84, 110, "replay_long");
     }
 
     public int roomToCoord(int room) {

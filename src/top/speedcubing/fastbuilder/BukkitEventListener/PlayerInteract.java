@@ -55,12 +55,13 @@ public class PlayerInteract implements Listener {
                         int lang = Member.getMember(player).user.lang;
                         Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle.get(lang));
                         ItemBuilder[] builders = {
-                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(2).name(StringList.typename[0].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(1).name(StringList.typename[0].get(lang)),
                                 new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[3].get(lang)),
-                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[2].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[2].get(lang)),
+                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[3].get(lang)),
                                 new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[5].get(lang))
+                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[5].get(lang)),
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[6].get(lang))
                         };
                         if (!player.getWorld().getName().equals("Custom"))
                             builders[member.currentMode.sqlId].glow();

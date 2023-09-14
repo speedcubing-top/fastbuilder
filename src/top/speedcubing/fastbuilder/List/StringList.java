@@ -7,9 +7,10 @@ public class StringList {
     public static final LangMessage[] typename = {
             new LangMessage("§bNormal", "§bNormal", "§bNormal", "§bNormal"),
             new LangMessage("§bShort", "§bShort", "§bShort", "§bShort"),
+            new LangMessage("§bLong", "§bLong", "§bLong", "§bLong"),
             new LangMessage("§bInclined", "§bInclined", "§bInclined", "§bInclined"),
+            new LangMessage("§bInclined Short", "§bInclined Short", "§bInclined Short", "§bInclined Short"),
             new LangMessage("§bOneStack", "§bOneStack", "§bOneStack", "§bOneStack"),
-            new LangMessage("§bInclinedShort", "§bInclinedShort", "§bInclinedShort", "§bInclinedShort"),
             new LangMessage("§bCustom", "§bCustom", "§bCustom", "§bCustom")
     };
     public static final LangMessage MenuTitle = new LangMessage("§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu");

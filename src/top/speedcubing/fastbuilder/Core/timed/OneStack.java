@@ -2,7 +2,7 @@ package top.speedcubing.fastbuilder.Core.timed;
 
 public class OneStack extends TimedMode {
     public OneStack() {
-        super("Onestack", 2, 220, false, 29, 128, "replay_onestack");
+        super("Onestack", 5, 220, false, 29, 128, "replay_onestack");
     }
 
     public int roomToCoord(int room) {

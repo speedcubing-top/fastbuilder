@@ -108,7 +108,7 @@ public class Member {
             if (currentMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
             else
-                WorldUtils.cloneArea(-4, 83, -9, 5, 132, 57, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
+                WorldUtils.cloneArea(-4, 83, -9, 5, 132, 100, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
             user.bGetInventory().clear();
             user.bGetInventory().setItem(2, ItemStackList.START[user.lang]);
             user.bGetInventory().setItem(4, ItemStackList.TICK[user.lang]);

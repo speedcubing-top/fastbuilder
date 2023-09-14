@@ -1,19 +1,13 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import top.speedcubing.fastbuilder.Core.BlockEditor;
-import top.speedcubing.fastbuilder.Core.Custom;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
+import org.bukkit.inventory.*;
+import top.speedcubing.fastbuilder.Core.*;
+import top.speedcubing.fastbuilder.List.*;
+import top.speedcubing.fastbuilder.*;
 import top.speedcubing.lib.bukkit.SideBar;
 
 public class InventoryClick implements Listener {
@@ -32,15 +26,15 @@ public class InventoryClick implements Listener {
                 switch (RawSlot) {
                     case 10:
                         if (!player.getWorld().getName().equals("world"))
-                            Main.Long.Join(player, false, false);
+                            Main.Normal.Join(player, false, false);
                         break;
                     case 11:
                         if (!player.getWorld().getName().equals("Short"))
                             Main.Short.Join(player, false, false);
                         break;
                     case 12:
-                        if (!player.getWorld().getName().equals("Onestack"))
-                            Main.OneStack.Join(player, false, false);
+                        if (!player.getWorld().getName().equals("long"))
+                            Main.Long.Join(player, false, false);
                         break;
                     case 13:
                         if (!player.getWorld().getName().equals("Inclined"))
@@ -49,6 +43,10 @@ public class InventoryClick implements Listener {
                     case 14:
                         if (!player.getWorld().getName().equals("Inclinedshort"))
                             Main.InclinedShort.Join(player, false, false);
+                        break;
+                    case 15:
+                        if (!player.getWorld().getName().equals("Onestack"))
+                            Main.OneStack.Join(player, false, false);
                         break;
                     case 16:
                         if (!player.getWorld().getName().equals("Custom"))

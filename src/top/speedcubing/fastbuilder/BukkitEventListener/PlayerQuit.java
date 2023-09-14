@@ -13,7 +13,7 @@ public class PlayerQuit implements Listener {
         Player player = e.getPlayer();
         Member member = Member.getMember(player);
         if (player.getWorld().getName().equals("world"))
-            Main.Long.Quit(player);
+            Main.Normal.Quit(player);
         else {
             if (player.getWorld().getName().startsWith("replay_")) {
                 member.replayPlayer.unwatch();

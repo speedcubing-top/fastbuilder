@@ -1,16 +1,11 @@
 package top.speedcubing.fastbuilder.Core.timed;
 
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.List.*;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
@@ -43,10 +38,14 @@ public class TimedMode {
         this.inclined = inclined;
         this.limit = limit;
         this.sqlId = sqlId;
-        this.world = Bukkit.getWorld(world);
         this.distance = distance;
         this.height = height;
-        this.replayWorld = Bukkit.getWorld(replayWorld);
+        this.world = Bukkit.getServer().createWorld(new WorldCreator(world));
+        this.world.setDifficulty(Difficulty.PEACEFUL);
+        this.world.setTime(6000);
+        this.replayWorld = Bukkit.getServer().createWorld(new WorldCreator(replayWorld));
+        this.replayWorld.setDifficulty(Difficulty.PEACEFUL);
+        this.replayWorld.setTime(6000);
     }
 
     public void Join(Player player, boolean fromReplay, boolean kick) {
@@ -71,7 +70,7 @@ public class TimedMode {
             }
         }
         rooms[room] = false;
-        used ++;
+        used++;
         Member member = Member.getMember(player);
         member.currentMode = this;
         int coord = roomToCoord(room);

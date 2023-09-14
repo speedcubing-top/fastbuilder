@@ -1,14 +1,10 @@
 package top.speedcubing.fastbuilder.Core;
 
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.*;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
-import top.speedcubing.server.speedcubingServer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Core {
     public static String msToTime(int ms) {
@@ -48,15 +44,17 @@ public class Core {
     public static TimedMode getInstance(String world) {
         switch (world.toLowerCase()) {
             case "world":
-                return Main.Long;
+                return Main.Normal;
             case "short":
                 return Main.Short;
+            case "long":
+                return Main.Long;
             case "inclined":
                 return Main.Inclined;
-            case "onestack":
-                return Main.OneStack;
             case "inclinedshort":
                 return Main.InclinedShort;
+            case "onestack":
+                return Main.OneStack;
         }
         return null;
     }
