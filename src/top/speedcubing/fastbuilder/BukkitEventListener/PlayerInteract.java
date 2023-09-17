@@ -70,7 +70,8 @@ public class PlayerInteract implements Listener {
                         inventory.setItem(12, builders[2].build());
                         inventory.setItem(13, builders[3].build());
                         inventory.setItem(14, builders[4].build());
-                        inventory.setItem(16, builders[5].build());
+                        inventory.setItem(15, builders[5].build());
+                        inventory.setItem(16, builders[6].build());
                         player.openInventory(inventory);
                     }
                     break;
