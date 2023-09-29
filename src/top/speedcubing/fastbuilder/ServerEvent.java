@@ -92,7 +92,7 @@ public class ServerEvent {
                             member.Fell(fell);
                     }
                     break;
-                    case "Inclinedshort":
+                    case "InclinedShort":
                     case "Inclined": {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
@@ -153,7 +153,7 @@ public class ServerEvent {
                             else member.validPlaceBlock(x, y, z);
                             break;
                         case "Inclined":
-                        case "Inclinedshort":
+                        case "InclinedShort":
                             if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
                                 e.isCancelled = true;
                             else member.validPlaceBlock(x, y, z);

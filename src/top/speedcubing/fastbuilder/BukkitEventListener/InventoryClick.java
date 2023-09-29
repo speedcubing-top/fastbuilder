@@ -41,7 +41,7 @@ public class InventoryClick implements Listener {
                             Main.Inclined.Join(player, false, false);
                         break;
                     case 14:
-                        if (!player.getWorld().getName().equals("Inclinedshort"))
+                        if (!player.getWorld().getName().equals("InclinedShort"))
                             Main.InclinedShort.Join(player, false, false);
                         break;
                     case 15:
