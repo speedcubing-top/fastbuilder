@@ -32,9 +32,7 @@ public class TimedMode {
     public final Map<Member, Replay> lastAttempt = new HashMap<>();
 
     public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, String replayWorld) {
-        for (int i = 0; i < size; i++) {
-            rooms[i] = true;
-        }
+        Arrays.fill(rooms,true);
         this.inclined = inclined;
         this.limit = limit;
         this.sqlId = sqlId;
@@ -141,6 +139,7 @@ public class TimedMode {
             if (i < 4) {
                 List<String> s = Core.getSideBar(i, session, score);
                 for (int j = i; j < 3; j++) {
+                    System.out.println(s.get(j - i) + " " + (6 - j));
                     for (Player p : world.getPlayers()) {
                         SideBar.getSidebar(p).setLineByScore(s.get(j - i), 6 - j);
                     }

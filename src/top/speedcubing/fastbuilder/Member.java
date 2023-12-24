@@ -122,7 +122,7 @@ public class Member {
         double TASrate = (double) (MinecraftServer.currentTick - times) / time;
         boolean TAS = TASrate > 10 / 9D || TASrate < 9D / 10;
         boolean OVERLIMIT = time < currentMode.limit;
-        boolean qualified = !TAS && !stats.SHIT && !OVERLIMIT;
+        boolean qualified = !TAS && !OVERLIMIT;
         if (OVERLIMIT)
             user.sendLangMessage(StringList.tooFast);
         replay.replayRecorder.pause(true, TAS);

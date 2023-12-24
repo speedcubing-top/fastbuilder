@@ -1,17 +1,10 @@
 package top.speedcubing.fastbuilder.BukkitCommands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class stats implements CommandExecutor, TabCompleter {
-
-    public static boolean SHIT = Bukkit.getPort() % 2 == 0;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
