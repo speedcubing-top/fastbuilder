@@ -42,9 +42,12 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PlayerDropItem(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
         Bukkit.getPluginManager().registerEvents(new ReplayRecorder(null, null), this);
+
         getServer().createWorld(new WorldCreator("Custom"));
         Bukkit.getWorld("Custom").setDifficulty(Difficulty.PEACEFUL);
         Bukkit.getWorld("Custom").setTime(6000);
+        Bukkit.getWorld("Custom").setAutoSave(false);
+
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);

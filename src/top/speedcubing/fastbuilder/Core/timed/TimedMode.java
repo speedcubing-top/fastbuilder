@@ -41,9 +41,11 @@ public class TimedMode {
         this.world = Bukkit.getServer().createWorld(new WorldCreator(world));
         this.world.setDifficulty(Difficulty.PEACEFUL);
         this.world.setTime(6000);
+        this.world.setAutoSave(false);
         this.replayWorld = Bukkit.getServer().createWorld(new WorldCreator(replayWorld));
         this.replayWorld.setDifficulty(Difficulty.PEACEFUL);
         this.replayWorld.setTime(6000);
+        this.replayWorld.setAutoSave(false);
     }
 
     public void Join(Player player, boolean fromReplay, boolean kick) {
