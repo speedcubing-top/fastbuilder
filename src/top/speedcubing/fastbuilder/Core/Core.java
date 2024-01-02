@@ -10,8 +10,10 @@ public class Core {
     public static String msToTime(int ms) {
         return String.format("%.3f", ms * 0.01);
     }
-
-
+    
+    public static String tickToTime(int tick) {
+        return String.format("%.3f", tick * 0.05);
+    }
     public static int cal(int oldroom, boolean left, boolean[] b) {
         int a = left ? 0 : 1;
         int l = b.length - (a * -1 + 2);
@@ -35,27 +37,16 @@ public class Core {
                 if (sc == 0)
                     result.add("§7-,---");
                 else
-                    result.add(ses.user.getFormatName(false) + "§8: §e" + FastBuilderUtils.tickToTime(sc));
+                    result.add(ses.user.getFormatName(false) + "§8: §e" + tickToTime(sc));
             }
         }
         return result;
     }
 
     public static TimedMode getInstance(String world) {
-        switch (world.toLowerCase()) {
-            case "world":
-                return Main.Normal;
-            case "short":
-                return Main.Short;
-            case "long":
-                return Main.Long;
-            case "inclined":
-                return Main.Inclined;
-            case "inclinedshort":
-                return Main.InclinedShort;
-            case "onestack":
-                return Main.OneStack;
-        }
+        for (TimedMode m : Main.modes)
+            if (m.world.getName().equals(world))
+                return m;
         return null;
     }
 }

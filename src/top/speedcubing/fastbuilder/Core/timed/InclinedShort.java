@@ -1,8 +1,10 @@
 package top.speedcubing.fastbuilder.Core.timed;
 
 public class InclinedShort extends TimedMode {
+    public static TimedMode instance;
     public InclinedShort() {
-        super("InclinedShort", 4, 40, true, 18, 103, "replay_inclinedshort");
+        super("map_fb_inclinedshort", "map_fb_replay_inclinedshort","fb_inclinedshort_yours", 4, 40, true, 18, 103);
+        instance = this;
     }
 
     public int roomToCoord(int room) {

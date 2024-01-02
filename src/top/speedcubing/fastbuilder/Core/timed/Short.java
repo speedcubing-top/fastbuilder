@@ -2,8 +2,10 @@ package top.speedcubing.fastbuilder.Core.timed;
 
 
 public class Short extends TimedMode {
+    public static TimedMode instance;
     public Short() {
-        super("Short", 1, 74, false, 29, 103, "replay_short");
+        super("map_fb_short", "map_fb_replay_short","fb_short_yours", 1, 74, false, 29, 103);
+        instance = this;
     }
 
 

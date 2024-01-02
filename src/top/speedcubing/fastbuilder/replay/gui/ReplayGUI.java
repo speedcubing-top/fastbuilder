@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
@@ -50,7 +51,7 @@ public class ReplayGUI {
                             inventory.setItem(i, new ItemBuilder(resultSet.getBoolean(3) ? Material.EMPTY_MAP : Material.PAPER).name("§aFastBuilder").lore(
                                     "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(resultSet.getInt(2)), ZoneId.systemDefault())),
                                     "",
-                                    "§bTime: §e" + FastBuilderUtils.tickToTime(resultSet.getInt(1)),
+                                    "§bTime: §e" + Core.tickToTime(resultSet.getInt(1)),
                                     "",
                                     "§aLeft click to watch",
                                     "§dRight click to add/remove from favorite"

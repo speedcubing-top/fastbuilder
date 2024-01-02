@@ -2,8 +2,10 @@ package top.speedcubing.fastbuilder.Core.timed;
 
 
 public class Normal extends TimedMode {
+    public static TimedMode instance;
     public Normal() {
-        super("world", 0, 143, false,52,106, "replay_normal");
+        super("map_fb_normal", "map_fb_replay_normal", "fb_normal_yours",0, 143, false,52,106);
+        instance = this;
     }
 
     public int roomToCoord(int room) {

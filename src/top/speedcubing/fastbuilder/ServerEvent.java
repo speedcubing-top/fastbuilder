@@ -8,11 +8,10 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.speedcubing.fastbuilder.Core.Custom;
+import top.speedcubing.fastbuilder.Core.*;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.event.PlayInEvent;
 import top.speedcubing.lib.eventbus.CubingEventHandler;
@@ -49,7 +48,7 @@ public class ServerEvent {
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + FastBuilderUtils.tickToTime(member.replay.replayRecorder.NewTick), 1);
+                    SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick > 2400) {
                     member.Fell(false);
                     member.user.sendLangMessage(StringList.cancelled);
@@ -70,53 +69,40 @@ public class ServerEvent {
             }
 
             if (e.player.getGameMode() != GameMode.CREATIVE) {
-                switch (e.player.getWorld().getName()) {
-                    case "replay_normal":
-                    case "replay_long":
-                    case "replay_onestack":
-                    case "replay_short":
-                        if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) >  member.currentMode.distance + 10.5 || loc.getY() < 0)
-                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
-                        break;
-                    case "replay_inclined":
-                    case "replay_incinedshort":
+                if (member.currentMode == null && member.user.bGetWorld().getName().equals("Custom")) {
+                    if (loc.getY() <= member.Center[1] + 99 - member.LengthSettings[1] - TimedMode.FALL || Math.abs(loc.getZ() - member.PlayerCoord - 0.5) > 149.5)
+                        Custom.Fell(e.player);
+                    else {
+                        if (loc.getX() >= 4 && member.MainTimer == -1) {
+                            e.player.getInventory().setItem(5, new ItemStack(Material.AIR));
+                            e.player.getInventory().setItem(6, new ItemStack(Material.AIR));
+                        }
+                        if (!member.hits.isEmpty())
+                            for (AxisAlignedBB b : member.hits) {
+                                if (((CraftPlayer) e.player).getHandle().getBoundingBox().b(b)) {
+                                    Custom.Finish(e.player, false);
+                                    break;
+                                }
+                            }
+                    }
+                } else if (member.isInReplay()) {
+                    if (member.currentMode.inclined) {
                         if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
                             member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
-                        break;
-                    case "world":
-                    case "Short":
-                    case "long":
-                    case "Onestack": {
+                    } else {
+                        if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > member.currentMode.distance + 10.5 || loc.getY() < 0)
+                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                    }
+                } else {
+                    if (member.currentMode.inclined) {
+                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
+                        if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
+                            member.Fell(fell);
+                    } else {
                         boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                         if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
                             member.Fell(fell);
                     }
-                    break;
-                    case "InclinedShort":
-                    case "Inclined": {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            member.Fell(fell);
-                    }
-                    break;
-                    case "Custom": {
-                        if (loc.getY() <= member.Center[1] + 99 - member.LengthSettings[1] - TimedMode.FALL || Math.abs(loc.getZ() - member.PlayerCoord - 0.5) > 149.5)
-                            Custom.Fell(e.player);
-                        else {
-                            if (loc.getX() >= 4 && member.MainTimer == -1) {
-                                e.player.getInventory().setItem(5, new ItemStack(Material.AIR));
-                                e.player.getInventory().setItem(6, new ItemStack(Material.AIR));
-                            }
-                            if (!member.hits.isEmpty())
-                                for (AxisAlignedBB b : member.hits) {
-                                    if (((CraftPlayer) e.player).getHandle().getBoundingBox().b(b)) {
-                                        Custom.Finish(e.player, false);
-                                        break;
-                                    }
-                                }
-                        }
-                    }
-                    break;
                 }
             }
         } else if (e.packet instanceof PacketPlayInBlockPlace) {
@@ -143,26 +129,18 @@ public class ServerEvent {
                     int x = pos.getX();
                     int y = pos.getY();
                     int z = pos.getZ();
-                    switch (e.player.getWorld().getName()) {
-                        case "world":
-                        case "Short":
-                        case "long":
-                        case "Onestack":
-                            if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 5 || y < 92) || (member.replay == null && y > 100))
-                                e.isCancelled = true;
-                            else member.validPlaceBlock(x, y, z);
-                            break;
-                        case "Inclined":
-                        case "InclinedShort":
-                            if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
-                                e.isCancelled = true;
-                            else member.validPlaceBlock(x, y, z);
-                            break;
-                        case "Custom":
-                            if (Math.abs(z - member.PlayerCoord) > 6 || y < 92)
-                                e.isCancelled = true;
-                            else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
-                            break;
+                    if (member.currentMode == null && member.user.bGetWorld().getName().equals("Custom")) {
+                        if (Math.abs(z - member.PlayerCoord) > 6 || y < 92)
+                            e.isCancelled = true;
+                        else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
+                    } else if (member.currentMode.inclined) {
+                        if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
+                            e.isCancelled = true;
+                        else member.validPlaceBlock(x, y, z);
+                    } else {
+                        if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 5 || y < 92) || (member.replay == null && y > 100))
+                            e.isCancelled = true;
+                        else member.validPlaceBlock(x, y, z);
                     }
                 }
                 if (e.isCancelled) {

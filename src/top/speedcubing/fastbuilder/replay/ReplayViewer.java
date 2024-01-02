@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
@@ -93,7 +94,7 @@ public class ReplayViewer {
     }
 
     private void actionbar() {
-        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : FastBuilderUtils.tickToTime(tick - 1)) + " §8/§e " + FastBuilderUtils.tickToTime(replay.tickSize - 2));
+        PlayerUtils.sendActionBar(player, "§e" + (tick < 1 ? "DNS" : Core.tickToTime(tick - 1)) + " §8/§e " + Core.tickToTime(replay.tickSize - 2));
     }
 
     public void start() {

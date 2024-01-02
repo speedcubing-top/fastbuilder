@@ -7,12 +7,14 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
+import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.*;
 import top.speedcubing.fastbuilder.*;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.*;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 
+import java.sql.Time;
 import java.util.Set;
 
 public class Custom {
@@ -35,8 +37,8 @@ public class Custom {
         Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
-        SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
-        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%1%", FastBuilderUtils.tickToTime(member.times)));
+        SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 1);
+        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%1%", Core.tickToTime(member.times)));
         member.times = -1;
         member.user.sound(Sound.LEVEL_UP);
         if (pressure) {
@@ -207,7 +209,7 @@ public class Custom {
             member.times = 0;
             member.MainTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                 member.times++;
-                SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + FastBuilderUtils.tickToTime(member.times), 1);
+                SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 1);
             }, 0, 1);
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));

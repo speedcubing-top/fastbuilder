@@ -11,6 +11,7 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
+import top.speedcubing.server.utils.MapManager;
 
 import java.util.*;
 
@@ -20,32 +21,31 @@ public class TimedMode {
     public final boolean[] rooms = new boolean[size];
     public final List<Member> session = new ArrayList<>();
     public final Map<Member, Integer> score = new HashMap<>();
-    public World world;
     public final int sqlId;
     public final int limit;
     public final boolean inclined;
     public final int distance;
     private final int height;
-    public final World replayWorld;
+    public World replayWorld;
+    public World world;
     public int used = 0;
     public final Set<Integer> replayRoom = new HashSet<>();
     public final Map<Member, Replay> lastAttempt = new HashMap<>();
 
-    public TimedMode(String world, int sqlId, int limit, boolean inclined, int distance, int height, String replayWorld) {
+    public TimedMode(String world, String replayWorld, String worldName, int sqlId, int limit, boolean inclined, int distance, int height) {
         Arrays.fill(rooms, true);
         this.inclined = inclined;
         this.limit = limit;
         this.sqlId = sqlId;
         this.distance = distance;
         this.height = height;
-        this.world = Bukkit.getServer().createWorld(new WorldCreator(world));
-        this.world.setDifficulty(Difficulty.PEACEFUL);
-        this.world.setTime(6000);
-        this.world.setAutoSave(false);
-        this.replayWorld = Bukkit.getServer().createWorld(new WorldCreator(replayWorld));
-        this.replayWorld.setDifficulty(Difficulty.PEACEFUL);
-        this.replayWorld.setTime(6000);
-        this.replayWorld.setAutoSave(false);
+        try {
+            this.world = MapManager.install(worldName, world, Difficulty.PEACEFUL, 6000, false);
+            this.replayWorld = MapManager.install(replayWorld, replayWorld, Difficulty.PEACEFUL, 6000, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getServer().shutdown();
+        }
     }
 
     public void Join(Player player, boolean fromReplay, boolean kick) {
@@ -100,7 +100,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = ses.user.getFormatName(false) + "§8: §e" + FastBuilderUtils.tickToTime(sc);
+                    result = ses.user.getFormatName(false) + "§8: §e" + Core.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }

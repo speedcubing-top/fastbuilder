@@ -1,6 +1,7 @@
 package top.speedcubing.fastbuilder;
 
 
+import java.util.*;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -21,12 +22,7 @@ import top.speedcubing.lib.utils.Console;
 
 public class Main extends JavaPlugin implements Listener {
 
-    public static TimedMode Normal;
-    public static TimedMode Short;
-    public static TimedMode Long;
-    public static TimedMode Inclined;
-    public static TimedMode OneStack;
-    public static TimedMode InclinedShort;
+    public static List<TimedMode> modes = new ArrayList<>();
 
     public void onEnable() {
         MinecraftServer.getServer().getPropertyManager().setProperty("server-name", "fastbuilder");
@@ -53,12 +49,12 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
         Bukkit.getPluginManager().registerEvents(new top.speedcubing.fastbuilder.replay.gui.InventoryClick(), this);
         new ReplayGUI().init();
-        Normal = new Normal();
-        Short = new Short();
-        Long = new Long();
-        Inclined = new Inclined();
-        OneStack = new OneStack();
-        InclinedShort = new InclinedShort();
+        modes.add(new Normal());
+        modes.add(new Short());
+        modes.add(new Long());
+        modes.add(new Inclined());
+        modes.add(new OneStack());
+        modes.add(new InclinedShort());
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();
@@ -78,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static void setTypeCheck(Block b, Material type, int id) {
-        if (b.getWorld().getName().startsWith("replay_")) {
+        if (b.getWorld().getName().startsWith("map_fb_replay")) {
             if (Math.abs(b.getX()) < 250) {
                 Console.printlnColor("§cError: " + id + " " + b.getWorld() + " " + b.getX() + " " + b.getY() + " " + b.getZ());
                 return;
@@ -86,7 +82,6 @@ public class Main extends JavaPlugin implements Listener {
         }
         b.setType(type);
     }
-
 
     public static void setDataCheck(Block b, byte data) {
         b.setData(data);

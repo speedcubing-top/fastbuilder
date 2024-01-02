@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import top.speedcubing.fastbuilder.*;
+import top.speedcubing.fastbuilder.Core.timed.Normal;
 
 public class PlayerJoin implements Listener {
     @EventHandler
@@ -12,6 +13,6 @@ public class PlayerJoin implements Listener {
         Player player = e.getPlayer();
         new Member(player);
         player.setGameMode(GameMode.SURVIVAL);
-        Main.Normal.Join(player, false, true);
+        Normal.instance.Join(player, false, true);
     }
 }

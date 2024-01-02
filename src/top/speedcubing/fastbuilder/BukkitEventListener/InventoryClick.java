@@ -6,6 +6,9 @@ import org.bukkit.event.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.*;
 import top.speedcubing.fastbuilder.Core.*;
+import top.speedcubing.fastbuilder.Core.timed.*;
+import top.speedcubing.fastbuilder.Core.timed.Long;
+import top.speedcubing.fastbuilder.Core.timed.Short;
 import top.speedcubing.fastbuilder.List.*;
 import top.speedcubing.fastbuilder.*;
 import top.speedcubing.lib.bukkit.SideBar;
@@ -25,28 +28,28 @@ public class InventoryClick implements Listener {
                 e.setCancelled(true);
                 switch (RawSlot) {
                     case 10:
-                        if (!player.getWorld().getName().equals("world"))
-                            Main.Normal.Join(player, false, false);
+                        if (!player.getWorld().equals(Normal.instance.world))
+                            Normal.instance.Join(player, false, false);
                         break;
                     case 11:
-                        if (!player.getWorld().getName().equals("Short"))
-                            Main.Short.Join(player, false, false);
+                        if (!player.getWorld().equals(Short.instance.world))
+                            Short.instance.Join(player, false, false);
                         break;
                     case 12:
-                        if (!player.getWorld().getName().equals("long"))
-                            Main.Long.Join(player, false, false);
+                        if (!player.getWorld().equals(Long.instance.world))
+                            Long.instance.Join(player, false, false);
                         break;
                     case 13:
-                        if (!player.getWorld().getName().equals("Inclined"))
-                            Main.Inclined.Join(player, false, false);
+                        if (!player.getWorld().equals(Inclined.instance.world))
+                            Inclined.instance.Join(player, false, false);
                         break;
                     case 14:
-                        if (!player.getWorld().getName().equals("InclinedShort"))
-                            Main.InclinedShort.Join(player, false, false);
+                        if (!player.getWorld().equals(InclinedShort.instance.world))
+                            InclinedShort.instance.Join(player, false, false);
                         break;
                     case 15:
-                        if (!player.getWorld().getName().equals("Onestack"))
-                            Main.OneStack.Join(player, false, false);
+                        if (!player.getWorld().equals(OneStack.instance.world))
+                            OneStack.instance.Join(player, false, false);
                         break;
                     case 16:
                         if (!player.getWorld().getName().equals("Custom"))

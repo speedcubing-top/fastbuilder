@@ -11,7 +11,6 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkMeta;
-import top.speedcubing.fastbuilder.BukkitCommands.stats;
 import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.*;
@@ -83,6 +82,10 @@ public class Member {
         Blocks.clear();
     }
 
+    public boolean isInReplay() {
+        return user.bGetWorld().getName().startsWith("map_fb_replay");
+    }
+
     public void setLoc(World world, double x, double y, double z, float yaw, float pitch) {
         tped = new Location(world, x, y, z, yaw, pitch);
         user.bTeleport(tped);
@@ -129,7 +132,7 @@ public class Member {
         replay = null;
         waiting = true;
         int msrecord = time * 5;
-        String display = FastBuilderUtils.tickToTime(time);
+        String display = Core.tickToTime(time);
         int last = user.dbSelect("fb_" + currentMode.sqlId + "_pb").getInt();
         if ((last == 0 || last > msrecord) && qualified) {
             user.dbUpdate("fb_" + currentMode.sqlId + "_pb=" + msrecord);
@@ -140,9 +143,9 @@ public class Member {
                 fw(user.player);
             });
             if (last == 0)
-                user.sendLangMessage(StringList.firstScore, FastBuilderUtils.tickToTime(time));
+                user.sendLangMessage(StringList.firstScore, Core.tickToTime(time));
             else
-                user.sendLangMessage(StringList.pb, FastBuilderUtils.tickToTime(last / 5), FastBuilderUtils.tickToTime(time), FastBuilderUtils.tickToTime(last / 5 - time));
+                user.sendLangMessage(StringList.pb, Core.tickToTime(last / 5), Core.tickToTime(time), Core.tickToTime(last / 5 - time));
         }
         if (qualified)
             currentMode.a(this, time);
@@ -194,7 +197,7 @@ public class Member {
                 ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
-                SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][9] + FastBuilderUtils.tickToTime(replay.replayRecorder.NewTick - 1), 1);
+                SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][9] + Core.tickToTime(replay.replayRecorder.NewTick - 1), 1);
                 replay.replayRecorder.pause(false, false);
                 currentMode.lastAttempt.put(this, replay);
                 replay = null;
