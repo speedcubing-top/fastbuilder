@@ -1,11 +1,11 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
-import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.Core.Custom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import top.speedcubing.fastbuilder.Core.Core;
+import top.speedcubing.fastbuilder.Core.Custom;
 
 public class PlayerChangedWorld implements Listener {
     @EventHandler

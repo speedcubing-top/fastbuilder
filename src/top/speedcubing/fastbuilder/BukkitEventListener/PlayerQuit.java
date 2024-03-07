@@ -1,12 +1,13 @@
 package top.speedcubing.fastbuilder.BukkitEventListener;
 
 
-import org.bukkit.*;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import top.speedcubing.fastbuilder.*;
 import top.speedcubing.fastbuilder.Core.timed.Normal;
+import top.speedcubing.fastbuilder.Member;
 
 public class PlayerQuit implements Listener {
     @EventHandler

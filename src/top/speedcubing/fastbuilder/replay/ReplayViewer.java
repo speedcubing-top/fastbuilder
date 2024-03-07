@@ -1,6 +1,12 @@
 package top.speedcubing.fastbuilder.replay;
 
-import net.minecraft.server.v1_8_R3.*;
+import java.util.Timer;
+import java.util.TimerTask;
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutAbilities;
+import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
+import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,13 +19,9 @@ import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.entity.NPC;
 import top.speedcubing.lib.bukkit.inventory.ItemUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ReplayViewer {
     int task;
@@ -43,16 +45,16 @@ public class ReplayViewer {
         this.member = member;
         currentItem = replay.StartItem;
         npc = new NPC(replay.name, null, true, false, false).setSkin(replay.value, replay.signature).world(player.getWorld().getName())
-                .setClickEvent(((p, enumEntityUseAction) -> {
-                    if (enumEntityUseAction == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
-                        PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
+                .setClickEvent(((r) -> {
+                    if (r.getAction() == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
+                        PlayerConnection connection = ((CraftPlayer) r.getPlayer()).getHandle().playerConnection;
                         connection.sendPacket(new PacketPlayOutGameStateChange(3, 3));
                         connection.sendPacket(new PacketPlayOutCamera(npc.entityPlayer));
                         PacketPlayOutAbilities abilities = new PacketPlayOutAbilities();
                         abilities.b(true);
                         abilities.c(true);
                         connection.sendPacket(abilities);
-                        p.teleport(new Location(p.getWorld(), member.ReplayCoord, 90, 0, 0, 0));
+                        r.getPlayer().teleport(new Location(r.getPlayer().getWorld(), member.ReplayCoord, 90, 0, 0, 0));
                         isSpec = true;
                     }
                 }));

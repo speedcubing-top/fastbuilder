@@ -1,13 +1,12 @@
 package top.speedcubing.fastbuilder.replay;
 
 import com.mojang.authlib.properties.Property;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Replay {
     public final ReplayRecorder replayRecorder;

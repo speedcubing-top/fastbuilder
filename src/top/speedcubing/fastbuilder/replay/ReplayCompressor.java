@@ -1,5 +1,9 @@
 package top.speedcubing.fastbuilder.replay;
 
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,11 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.server.database.Database;
-
-import java.sql.Blob;
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.UUID;
 
 public class ReplayCompressor {
 

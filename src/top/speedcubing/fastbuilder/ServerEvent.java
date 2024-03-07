@@ -1,24 +1,41 @@
 package top.speedcubing.fastbuilder;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.EnumDirection;
+import net.minecraft.server.v1_8_R3.PacketPlayInBlockPlace;
+import net.minecraft.server.v1_8_R3.PacketPlayInChat;
+import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
+import net.minecraft.server.v1_8_R3.PacketPlayInHeldItemSlot;
+import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSetSlot;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.speedcubing.fastbuilder.Core.*;
+import top.speedcubing.fastbuilder.Core.Core;
+import top.speedcubing.fastbuilder.Core.Custom;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.bukkit.event.PlayInEvent;
 import top.speedcubing.lib.eventbus.CubingEventHandler;
-import top.speedcubing.lib.minecraft.text.*;
+import top.speedcubing.lib.events.packet.PlayInEvent;
+import top.speedcubing.lib.minecraft.text.TextBuilder;
+import top.speedcubing.lib.minecraft.text.TextClickEvent;
+import top.speedcubing.lib.minecraft.text.TextHoverEvent;
 import top.speedcubing.lib.utils.Console;
-import top.speedcubing.server.events.player.*;
-import top.speedcubing.server.lang.*;
+import top.speedcubing.server.events.player.NickEvent;
+import top.speedcubing.server.events.player.SkinEvent;
+import top.speedcubing.server.events.player.ToggleFlyEvent;
+import top.speedcubing.server.lang.GlobalString;
+import top.speedcubing.server.lang.LangMessage;
 import top.speedcubing.server.player.User;
 import top.speedcubing.server.share.Chat;
 
@@ -171,8 +188,8 @@ public class ServerEvent {
                 for (int i = 0; i < text.length; i++) {
                     text[i] = new TextBuilder()
                             .both(formats[0] + playerName,
-                                    ClickEvent.runCommand("/stats " + playerName),
-                                    HoverEvent.showText(StringList.hover.get(i).replace("%1%", formats[1] + playerName)))
+                                    TextClickEvent.runCommand("/stats " + playerName),
+                                    TextHoverEvent.showText(StringList.hover.get(i).replace("%1%", formats[1] + playerName)))
                             .str(format.get(i).replace("%1%", "").replace("%2%", formats[2]));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);

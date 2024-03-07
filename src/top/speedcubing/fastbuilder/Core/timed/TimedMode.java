@@ -1,19 +1,31 @@
 package top.speedcubing.fastbuilder.Core.timed;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.List.*;
+import top.speedcubing.fastbuilder.List.ItemStackList;
+import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.Replay;
-import top.speedcubing.fastbuilder.replay.gui.FastBuilderUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 import top.speedcubing.server.utils.MapManager;
-
-import java.util.*;
 
 public class TimedMode {
     public static final int FALL = 4;
