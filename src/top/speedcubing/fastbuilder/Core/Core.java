@@ -38,7 +38,7 @@ public class Core {
                 if (sc == 0)
                     result.add("§7-,---");
                 else
-                    result.add(ses.user.getFormatName(false) + "§8: §e" + tickToTime(sc));
+                    result.add(ses.user.getColorName(false) + "§8: §e" + tickToTime(sc));
             }
         }
         return result;

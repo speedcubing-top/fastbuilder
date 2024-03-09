@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.server.database.Database;
+import top.speedcubing.common.database.Database;
 
 public class InventoryClick implements Listener {
     @EventHandler

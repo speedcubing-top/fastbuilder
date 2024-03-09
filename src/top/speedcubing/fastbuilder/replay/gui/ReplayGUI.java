@@ -11,12 +11,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.server.database.Database;
 
 public class ReplayGUI {
     public static List<InventoryHolder> fb = new ArrayList<>();

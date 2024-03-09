@@ -112,7 +112,7 @@ public class TimedMode {
                 if (sc == 0)
                     result = "§7-,---";
                 else
-                    result = ses.user.getFormatName(false) + "§8: §e" + Core.tickToTime(sc);
+                    result = ses.user.getColorName(false) + "§8: §e" + Core.tickToTime(sc);
             }
             sideBar.changeableLine(result, 6 - j);
         }

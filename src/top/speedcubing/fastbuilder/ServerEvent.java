@@ -19,6 +19,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.common.rank.RankFormat;
 import top.speedcubing.fastbuilder.Core.Core;
 import top.speedcubing.fastbuilder.Core.Custom;
 import top.speedcubing.fastbuilder.Core.timed.TimedMode;
@@ -30,7 +31,6 @@ import top.speedcubing.lib.events.packet.PlayInEvent;
 import top.speedcubing.lib.minecraft.text.TextBuilder;
 import top.speedcubing.lib.minecraft.text.TextClickEvent;
 import top.speedcubing.lib.minecraft.text.TextHoverEvent;
-import top.speedcubing.lib.utils.Console;
 import top.speedcubing.server.events.player.NickEvent;
 import top.speedcubing.server.events.player.SkinEvent;
 import top.speedcubing.server.events.player.ToggleFlyEvent;
@@ -103,23 +103,25 @@ public class ServerEvent {
                             }
                     }
                 } else if (member.isInReplay()) {
-                    if (member.currentMode.inclined) {
-                        if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
-                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
-                    } else {
-                        if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > member.currentMode.distance + 10.5 || loc.getY() < 0)
-                            member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
-                    }
+                    if (member.currentMode != null)
+                        if (member.currentMode.inclined) {
+                            if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
+                                member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
+                        } else {
+                            if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > member.currentMode.distance + 10.5 || loc.getY() < 0)
+                                member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                        }
                 } else {
-                    if (member.currentMode.inclined) {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                            member.Fell(fell);
-                    } else {
-                        boolean fell = loc.getY() <= 100 - TimedMode.FALL;
-                        if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                            member.Fell(fell);
-                    }
+                    if (member.currentMode != null)
+                        if (member.currentMode.inclined) {
+                            boolean fell = loc.getY() <= 100 - TimedMode.FALL;
+                            if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
+                                member.Fell(fell);
+                        } else {
+                            boolean fell = loc.getY() <= 100 - TimedMode.FALL;
+                            if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
+                                member.Fell(fell);
+                        }
                 }
             }
         } else if (e.packet instanceof PacketPlayInBlockPlace) {
@@ -181,19 +183,20 @@ public class ServerEvent {
             if (message.charAt(0) != '/') {
                 e.isCancelled = true;
                 Player player = e.player;
-                String[] formats = User.getUser(player).getFormat();
+                User user = User.getUser(player);
+                RankFormat rankFormat = user.getFormat(false);
                 String playerName = player.getName();
                 LangMessage format = GlobalString.MessageFormat;
                 TextBuilder[] text = new TextBuilder[4];
                 for (int i = 0; i < text.length; i++) {
                     text[i] = new TextBuilder()
-                            .both(formats[0] + playerName,
+                            .both(rankFormat.getPrefix() + playerName,
                                     TextClickEvent.runCommand("/stats " + playerName),
-                                    TextHoverEvent.showText(StringList.hover.get(i).replace("%1%", formats[1] + playerName)))
-                            .str(format.get(i).replace("%1%", "").replace("%2%", formats[2]));
+                                    TextHoverEvent.showText(StringList.hover.get(i).replace("%1%", user.getColorName(false))))
+                            .str(format.get(i).replace("%1%", "").replace("%2%", rankFormat.getChatColor()));
                 }
                 Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
-                Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + formats[0] + playerName + format.get(1).replace("%text%", "").replace("%text2%", formats[2] + message));
+                //Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + user.getPrefixName(false) + format.get(1).replace("%text%", "").replace("%text2%", user.getColorName(false)));
             }
         }
     }

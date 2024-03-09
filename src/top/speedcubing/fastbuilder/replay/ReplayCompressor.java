@@ -9,8 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.server.database.Database;
 
 public class ReplayCompressor {
 
