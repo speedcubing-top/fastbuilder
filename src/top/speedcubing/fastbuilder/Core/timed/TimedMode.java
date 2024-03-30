@@ -27,7 +27,7 @@ import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 import top.speedcubing.server.utils.MapManager;
 
-public class TimedMode {
+public abstract class TimedMode {
     public static final int FALL = 4;
     public final int size = 31;
     public final boolean[] rooms = new boolean[size];
