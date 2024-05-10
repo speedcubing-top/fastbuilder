@@ -26,8 +26,8 @@ import top.speedcubing.fastbuilder.Core.timed.TimedMode;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;
+import top.speedcubing.lib.bukkit.events.packet.PlayInEvent;
 import top.speedcubing.lib.eventbus.CubingEventHandler;
-import top.speedcubing.lib.events.packet.PlayInEvent;
 import top.speedcubing.lib.minecraft.text.TextBuilder;
 import top.speedcubing.lib.minecraft.text.TextClickEvent;
 import top.speedcubing.lib.minecraft.text.TextHoverEvent;
@@ -43,9 +43,9 @@ public class ServerEvent {
 
     @CubingEventHandler
     public void ddwdw(PlayInEvent e) {
-        Member member = Member.getMember(e.player);
-        if (e.packet instanceof PacketPlayInFlying) {
-            PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.packet;
+        Member member = Member.getMember(e.getPlayer());
+        if (e.getPacket() instanceof PacketPlayInFlying) {
+            PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.getPacket();
             member.didntevenfuckingstart = member.asyncLoc.clone();
             Location loc = member.asyncLoc;
             if (packetplayinflying.g() && !(packetplayinflying.g() && packetplayinflying.b() == -999.0D)) {
@@ -65,7 +65,7 @@ public class ServerEvent {
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
                 member.replay.replayRecorder.PlayerMoveEvent(loc);
                 if (!member.finishNext)
-                    SideBar.getSidebar(e.player).setLineByScore(StringList.SideBar[member.user.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 1);
+                    SideBar.getSidebar(e.getPlayer()).setLineByScore(StringList.SideBar[member.user.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick > 2400) {
                     member.Fell(false);
                     member.user.sendLangMessage(StringList.cancelled);
@@ -85,19 +85,19 @@ public class ServerEvent {
                 }
             }
 
-            if (e.player.getGameMode() != GameMode.CREATIVE) {
+            if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
                 if (member.currentMode == null && member.user.bGetWorld().getName().equals("Custom")) {
                     if (loc.getY() <= member.Center[1] + 99 - member.LengthSettings[1] - TimedMode.FALL || Math.abs(loc.getZ() - member.PlayerCoord - 0.5) > 149.5)
-                        Custom.Fell(e.player);
+                        Custom.Fell(e.getPlayer());
                     else {
                         if (loc.getX() >= 4 && member.MainTimer == -1) {
-                            e.player.getInventory().setItem(5, new ItemStack(Material.AIR));
-                            e.player.getInventory().setItem(6, new ItemStack(Material.AIR));
+                            e.getPlayer().getInventory().setItem(5, new ItemStack(Material.AIR));
+                            e.getPlayer().getInventory().setItem(6, new ItemStack(Material.AIR));
                         }
                         if (!member.hits.isEmpty())
                             for (AxisAlignedBB b : member.hits) {
-                                if (((CraftPlayer) e.player).getHandle().getBoundingBox().b(b)) {
-                                    Custom.Finish(e.player, false);
+                                if (((CraftPlayer) e.getPlayer()).getHandle().getBoundingBox().b(b)) {
+                                    Custom.Finish(e.getPlayer(), false);
                                     break;
                                 }
                             }
@@ -124,9 +124,9 @@ public class ServerEvent {
                         }
                 }
             }
-        } else if (e.packet instanceof PacketPlayInBlockPlace) {
-            PacketPlayInBlockPlace p = (PacketPlayInBlockPlace) e.packet;
-            if (p.getFace() != 255 && e.player.getGameMode() == GameMode.SURVIVAL) {
+        } else if (e.getPacket() instanceof PacketPlayInBlockPlace) {
+            PacketPlayInBlockPlace p = (PacketPlayInBlockPlace) e.getPacket();
+            if (p.getFace() != 255 && e.getPlayer().getGameMode() == GameMode.SURVIVAL) {
                 ItemStack stack = p.getItemStack() == null ? null : CraftItemStack.asBukkitCopy(p.getItemStack());
                 if (stack == null)
                     return;
@@ -138,51 +138,51 @@ public class ServerEvent {
                     return;
                 BlockPosition pos = p.a();
                 BlockPosition shifted = p.a().shift(EnumDirection.fromType1(p.getFace()));
-                Block block = e.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+                Block block = e.getPlayer().getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
                 if (!(block.getType() == Material.SNOW && block.getData() == 0))
                     pos = shifted;
 
                 if (member.waiting)
-                    e.isCancelled = true;
+                    e.setCancelled(true);
                 else {
                     int x = pos.getX();
                     int y = pos.getY();
                     int z = pos.getZ();
                     if (member.currentMode == null && member.user.bGetWorld().getName().equals("Custom")) {
                         if (Math.abs(z - member.PlayerCoord) > 6 || y < 92)
-                            e.isCancelled = true;
-                        else Custom.validPlaceBlock(e.player, e.player.getWorld().getBlockAt(x, y, z));
+                            e.setCancelled(true);
+                        else Custom.validPlaceBlock(e.getPlayer(), e.getPlayer().getWorld().getBlockAt(x, y, z));
                     } else if (member.currentMode.inclined) {
                         if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
-                            e.isCancelled = true;
+                            e.setCancelled(true);
                         else member.validPlaceBlock(x, y, z);
                     } else {
                         if ((z < -1 || z > member.currentMode.distance + 2 || Math.abs(x - member.PlayerCoord) > 5 || y < 92) || (member.replay == null && y > 100))
-                            e.isCancelled = true;
+                            e.setCancelled(true);
                         else member.validPlaceBlock(x, y, z);
                     }
                 }
-                if (e.isCancelled) {
-                    EntityPlayer nmsPlayer = ((CraftPlayer) e.player).getHandle();
+                if (e.isCancelled()) {
+                    EntityPlayer nmsPlayer = ((CraftPlayer) e.getPlayer()).getHandle();
                     member.user.sendPacket(new PacketPlayOutBlockChange(nmsPlayer.world, p.a()), new PacketPlayOutBlockChange(nmsPlayer.world, shifted), new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, nmsPlayer.activeContainer.getSlot(nmsPlayer.inventory, nmsPlayer.inventory.itemInHandIndex).rawSlotIndex, nmsPlayer.inventory.getItemInHand()));
                 }
             }
-        } else if (e.packet instanceof PacketPlayInHeldItemSlot) {
-            int i = ((PacketPlayInHeldItemSlot) e.packet).a();
+        } else if (e.getPacket() instanceof PacketPlayInHeldItemSlot) {
+            int i = ((PacketPlayInHeldItemSlot) e.getPacket()).a();
             member.asyncHeldItemSlot = i;
-            Replay replay = Member.getMember(e.player).replay;
+            Replay replay = Member.getMember(e.getPlayer()).replay;
             if (replay != null)
-                replay.replayRecorder.PlayerItemHeldEvent(e.player.getInventory().getItem(i));
+                replay.replayRecorder.PlayerItemHeldEvent(e.getPlayer().getInventory().getItem(i));
         }
     }
 
     @CubingEventHandler
     public void PlayInEvent(PlayInEvent e) {
-        if (e.packet instanceof PacketPlayInChat) {
-            String message = ((PacketPlayInChat) e.packet).a();
+        if (e.getPacket() instanceof PacketPlayInChat) {
+            String message = ((PacketPlayInChat) e.getPacket()).a();
             if (message.charAt(0) != '/') {
-                e.isCancelled = true;
-                Player player = e.player;
+                e.setCancelled(true);
+                Player player = e.getPlayer();
                 User user = User.getUser(player);
                 RankFormat rankFormat = user.getFormat(false);
                 String playerName = player.getName();
@@ -203,19 +203,19 @@ public class ServerEvent {
 
     @CubingEventHandler
     public void ToggleFlyEvent(ToggleFlyEvent e) {
-        e.isCancelled = true;
-        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
+        e.setCancelled(true);
+        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @CubingEventHandler
     public void NickEvent(NickEvent e) {
-        e.isCancelled = true;
-        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
+        e.setCancelled(true);
+        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @CubingEventHandler
     public void SkinEvent(SkinEvent e) {
-        e.isCancelled = true;
-        Member.getMember(e.player).user.sendLangMessage(GlobalString.OnlyInHub);
+        e.setCancelled(true);
+        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 }
