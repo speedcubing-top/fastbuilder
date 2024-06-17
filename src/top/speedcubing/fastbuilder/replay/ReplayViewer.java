@@ -245,7 +245,7 @@ public class ReplayViewer {
     public void unwatch() {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
-        member.replayPlayer = null;
+        member.replayViewer = null;
         if (lastAttempt)
             serial(-member.PlayerCoord);
     }

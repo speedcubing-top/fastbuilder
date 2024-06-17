@@ -18,7 +18,7 @@ public class PlayerQuit implements Listener {
             Normal.instance.Quit(player);
         else {
             if (member.isInReplay()) {
-                member.replayPlayer.unwatch();
+                member.replayViewer.unwatch();
             }
             player.teleport(new Location(Normal.instance.world, 0.5, 1000, 0.5, 0, 0));
         }

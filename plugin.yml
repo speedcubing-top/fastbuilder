@@ -4,6 +4,8 @@ version: 1.0
 commands:
   stats:
     usage: /stats
+  replay:
+    usage: /replay
 depend:
   - speedcubingServer
   - speedcubingLib

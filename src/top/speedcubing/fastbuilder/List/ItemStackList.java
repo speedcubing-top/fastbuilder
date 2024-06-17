@@ -5,8 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.lang.GlobalString;
+import top.speedcubing.server.lang.LangInventory;
+import top.speedcubing.server.lang.LangItemStack;
 
 public class ItemStackList {
     public static final InventoryHolder menu = () -> null;
@@ -26,6 +30,7 @@ public class ItemStackList {
     public static ItemStack[] PAUSE = new ItemStack[4];
     public static ItemStack[] RESTART = new ItemStack[4];
     public static ItemStack[] LASTATTEMPT = new ItemStack[4];
+    public static ItemStack[] COPYID = new ItemStack[4];
 
     public static ItemStack[][] Blocks = new ItemStack[72][4];
 
@@ -40,7 +45,7 @@ public class ItemStackList {
     public static ItemStack[][] woodeditor = new ItemStack[12][4];
     public static ItemStack[][] clayeditor = new ItemStack[17][4];
 
-
+    public static LangInventory replayBook;
     public static final String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
     public static final String[] sandstoneedit = {"§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone"};
     public static final String[] wooledit = {"§bCategory: Wool", "§bCategory: Wool", "§bCategory: Wool", "§bCategory: Wool"};
@@ -53,6 +58,18 @@ public class ItemStackList {
     public static final Inventory[] ResetConfirm = new Inventory[4];
 
     public void Load() {
+        replayBook = new LangInventory(27, "fb_replaybook_title")
+                .setItem(new LangItemStack(Material.LEATHER, "fb_lastattempt_leather"), (e) -> {
+                    Member.getMember(e.getPlayer()).joinReplayLastAttempt();
+                    e.getPlayer().closeInventory();
+                }, 11)
+                .setItem(new LangItemStack(Material.PAPER, "fb_replay_fav"), (e) -> {
+                    ReplayGUI.openReplayPage(e.getPlayer(), Member.getMember(e.getPlayer()).currentMode.sqlId, true,0);
+                }, 13)
+                .setItem(new LangItemStack(Material.PAPER, "fb_replay_non_fav"), (e) -> {
+                    ReplayGUI.openReplayPage(e.getPlayer(), Member.getMember(e.getPlayer()).currentMode.sqlId, false,0);
+                }, 15);
+
         String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
         String[][] block = {
                 {"§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks"},
@@ -77,9 +94,9 @@ public class ItemStackList {
             QUITREPLAY[i] = new ItemBuilder(Material.BARRIER).name(new String[]{"§cExit Replay", "§cExit Replay", "§cExit Replay", "§cExit Replay"}[i]).build();
             START[i] = new ItemBuilder(Material.INK_SACK).durability(10).name(new String[]{"§aStart", "§aStart", "§aStart", "§aStart"}[i]).build();
             PAUSE[i] = new ItemBuilder(Material.INK_SACK).durability(1).name(new String[]{"§cPause", "§cPause", "§cPause", "§cPause"}[i]).build();
-            LASTATTEMPT[i] = new ItemBuilder(Material.LEATHER).name(new String[]{"§bLast Attempt", "§bLast Attempt", "§bLast Attempt", "§bLast Attempt"}[i]).build();
             RESTART[i] = new ItemBuilder(Material.INK_SACK).durability(14).name(new String[]{"§6Reset", "§6Reset", "§6Reset", "§6Reset"}[i]).build();
             openkit[i] = new ItemBuilder(Material.SANDSTONE).durability(2).name(blockedit[i]).build();
+            COPYID[i] = new ItemBuilder(Material.NAME_TAG).name("Copy Replay ID").build();
             ResetConfirm[i] = Bukkit.createInventory(confirm, 27, new String[]{"§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?", "§cAre you sure you want to reset?"}[i]);
             ResetConfirm[i].setItem(11, new ItemBuilder(Material.STAINED_CLAY).durability(13).name(yes[i]).build());
             ResetConfirm[i].setItem(15, new ItemBuilder(Material.STAINED_CLAY).durability(14).name(no[i]).build());

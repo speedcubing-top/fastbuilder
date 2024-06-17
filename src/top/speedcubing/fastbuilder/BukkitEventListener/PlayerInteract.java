@@ -17,9 +17,11 @@ import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
+import top.speedcubing.lib.minecraft.text.TextBuilder;
+import top.speedcubing.lib.minecraft.text.TextClickEvent;
+import top.speedcubing.lib.minecraft.text.TextHoverEvent;
 
 public class PlayerInteract implements Listener {
     @EventHandler
@@ -41,7 +43,7 @@ public class PlayerInteract implements Listener {
                 Action action = e.getAction();
                 switch (player.getItemInHand().getType()) {
                     case BOOK:
-                        ReplayGUI.openFastBuilderReplay(member, member.currentMode.sqlId);
+                        member.user.openLangInventory(ItemStackList.replayBook);
                         break;
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
@@ -96,25 +98,33 @@ public class PlayerInteract implements Listener {
             if (e.getAction() == Action.PHYSICAL) {
                 e.setCancelled(true);
             } else {
+                //REPLAY
                 switch (player.getItemInHand().getType()) {
                     case BLAZE_ROD:
                         switch (e.getAction()) {
                             case LEFT_CLICK_BLOCK:
                             case LEFT_CLICK_AIR:
-                                member.replayPlayer.minusTick();
+                                member.replayViewer.minusTick();
                                 break;
                             case RIGHT_CLICK_AIR:
                             case RIGHT_CLICK_BLOCK:
-                                member.replayPlayer.addoneTick();
+                                member.replayViewer.addoneTick();
                                 break;
                         }
                         return;
                     case INK_SACK:
-                        member.replayPlayer.start();
+                        member.replayViewer.start();
                         break;
                     case BARRIER:
-                        member.replayPlayer.unwatch();
+                        member.replayViewer.unwatch();
                         member.currentMode.Join(player, true, false);
+                        break;
+                    case NAME_TAG:
+                        member.user.sendComponent(new TextBuilder()
+                                .both("§6" + member.replayViewer.replay.replayID,
+                                        TextClickEvent.suggestCommand(member.replayViewer.replay.replayID),
+                                        TextHoverEvent.showText("§eClick to put it in chat so you can copy!"))
+                                .toBungee());
                         break;
                 }
             }

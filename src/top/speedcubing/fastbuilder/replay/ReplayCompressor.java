@@ -1,7 +1,9 @@
 package top.speedcubing.fastbuilder.replay;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Blob;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -11,11 +13,14 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.lib.utils.CryptoUtils;
+import top.speedcubing.lib.utils.UUIDUtils;
+import top.speedcubing.lib.utils.bytes.DataConversion;
 
 public class ReplayCompressor {
 
     //upload replay object to db
-    public static void write(Replay replay, UUID owner, boolean TAS) {
+    public static void write(Replay replay, UUID uuid, boolean TAS) {
         StringBuilder s = new StringBuilder();
         s.append(intToString(replay.StartSneaking ? 0 : 1, 2))
                 .append(doubleToString(replay.StartLocation.getX()))
@@ -60,35 +65,70 @@ public class ReplayCompressor {
                         append(intToString(replayTick.handDatas, 2));
             }
         }
-        Database.systemConnection.insert("fbreplay", "id,owner,time,datas,name,value,signature,score,mode,tas", "'" + UUID.randomUUID() + "','" + owner + "'," + (System.currentTimeMillis() / 1000L) + ",0x" + s + ",'" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + ",tas=" + (TAS ? 0 : 1));
+        String hex = s.toString();
+
+        //not sure if the hex is the proper size.
+        if (hex.length() % 2 == 1) {
+            hex = "0" + hex;
+        }
+
+        //hash
+        String hash;
+        try {
+            hash = CryptoUtils.toMD5(DataConversion.hexStringToByteArray(hex));
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+            return;
+        }
+
+        String uuidHex = UUIDUtils.undash(uuid);
+        Database.systemConnection.insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "X'" + hash + "',X'" + uuidHex + "'," + (System.currentTimeMillis() / 1000L) + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
     }
 
-    //read replay from db
     public static Replay read(Member member, int slot) {
-        ResultSet resultSet = Database.systemConnection.select("datas,name,value,signature,score").from("fbreplay").where("owner='" + member.user.bGetUniqueId() + "' AND mode=" + member.currentMode.sqlId).orderBy("fav DESC, time DESC").limit(slot, 1).executeQuery();
+        String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
+        ResultSet resultSet = Database.systemConnection.select("id,datas,name,value,signature,mode").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + member.currentMode.sqlId).orderBy("time DESC").limit(slot, 1).executeQuery();
+        return read(resultSet);
+    }
+
+    public static Replay read(String replayID) {
+        ResultSet resultSet = Database.systemConnection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeQuery();
+        return read(resultSet);
+    }
+
+    private static Replay read(ResultSet r) {
         StringBuilder s = new StringBuilder();
-        String temp;
+        Blob datas;
+        String id;
         String name;
         String value;
         String signature;
+        int mode;
         try {
-            resultSet.next();
-            Blob result = resultSet.getBlob(1);
-            name = resultSet.getString(2);
-            value = resultSet.getString(3);
-            signature = resultSet.getString(4);
-            for (int i = 1; i <= result.length(); i++) {
-                temp = String.format("%x", result.getBytes(i, 1)[0]);
+            if (!r.next()) {
+                return null;
+            }
+            id = DataConversion.byteArrayToHexString(r.getBytes("id"));
+            datas = r.getBlob("datas");
+            name = r.getString("name");
+            value = r.getString("value");
+            signature = r.getString("signature");
+            mode = r.getInt("mode");
+
+            String temp;
+            for (int i = 1; i <= datas.length(); i++) {
+                temp = String.format("%x", datas.getBytes(i, 1)[0]);
                 if (temp.length() == 1)
                     temp = "0" + temp;
                 s.append(temp);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
+
         World world = Bukkit.getWorld("world");
-        Replay replay = new Replay();
+        Replay replay = new Replay(id,mode);
         replay.name = name;
         replay.value = value;
         replay.signature = signature;

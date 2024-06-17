@@ -1,6 +1,7 @@
 package top.speedcubing.fastbuilder;
 
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -13,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.speedcubing.common.database.Database;
+import top.speedcubing.fastbuilder.BukkitCommands.replay;
 import top.speedcubing.fastbuilder.BukkitCommands.stats;
 import top.speedcubing.fastbuilder.BukkitEventListener.BlockBreak;
 import top.speedcubing.fastbuilder.BukkitEventListener.BlockPlace;
@@ -39,7 +42,8 @@ import top.speedcubing.fastbuilder.replay.ReplayRecorder;
 import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
-import top.speedcubing.lib.utils.Console;
+import top.speedcubing.lib.utils.CryptoUtils;
+import top.speedcubing.lib.utils.bytes.DataConversion;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -67,6 +71,8 @@ public class Main extends JavaPlugin implements Listener {
 
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
+        Bukkit.getPluginCommand("replay").setExecutor(new replay());
+        Bukkit.getPluginCommand("replay").setTabCompleter(new replay());
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
         Bukkit.getPluginManager().registerEvents(new top.speedcubing.fastbuilder.replay.gui.InventoryClick(), this);
         new ReplayGUI().init();
@@ -81,6 +87,27 @@ public class Main extends JavaPlugin implements Listener {
         new Custom().Load();
         CubingEventManager.registerListeners(new ServerEvent());
         Bukkit.getPluginManager().registerEvents(this, this);
+//
+//        try {
+//            int i = 0;
+//            ResultSet resultSet = Database.systemConnection.select("id,datas").from("fbreplay").executeQuery();
+//            while (resultSet.next()) {
+//                System.out.print(i++ + " ");
+//                String id = DataConversion.byteArrayToHexString(resultSet.getBytes("id"));
+//                if (id.length() != 32) {
+//                    System.out.print(id);
+//                }
+//                String hash = CryptoUtils.toMD5(resultSet.getBytes("datas"));
+//                if (id.length() != 32) {
+//                    System.out.print("WRONG");
+//                }
+//                if (!id.equals(hash))
+//                    Database.systemConnection.update("fbreplay").set("id=X'" + hash + "'").where("id=X'" + id + "'");
+//                System.out.println();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
 

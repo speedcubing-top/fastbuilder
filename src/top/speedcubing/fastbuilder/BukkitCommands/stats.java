@@ -1,6 +1,7 @@
 package top.speedcubing.fastbuilder.BukkitCommands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,10 +15,10 @@ public class stats implements CommandExecutor, TabCompleter {
         commandSender.sendMessage("currently unavailable to use.");
 //        if (strings.length == 0) {
 //            Replay replay = Member.getMember(commandSender).replays.get(Member.getMember(commandSender).replays.size() - 1);
-//            Member.getMember(commandSender).replayPlayer = new ReplayViewer(replay, (Player) commandSender);
+//            Member.getMember(commandSender).replayViewer = new ReplayViewer(replay, (Player) commandSender);
 //        }
 //        if (strings.length == 1)
-//            Member.getMember(commandSender).replayPlayer.start();
+//            Member.getMember(commandSender).replayViewer.start();
 //        if (strings.length == 2) {
 //            Member.getMember(commandSender).replays.add(ReplayCompressor.read(strings[0]));
 //        }
@@ -181,7 +182,7 @@ public class stats implements CommandExecutor, TabCompleter {
     }
 
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 }
 

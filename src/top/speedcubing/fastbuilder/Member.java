@@ -1,6 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,8 +53,11 @@ public class Member {
 
     public final User user;
 
-    public int times;
+    //replay page
+    public Map<Integer, String> replayPageList = new HashMap<>();
+    public boolean isFavoritePage;
 
+    public int times;
     public boolean waiting;
     public int blockskin;
     public int MainTimer;
@@ -63,26 +65,32 @@ public class Member {
     public Set<Block> Blocks = new HashSet<>();
     public int PlayerCoord;
     public int ReplayCoord;
+
+    //Replay
+
     public Replay replay;
-    public ReplayViewer replayPlayer;
+    public ReplayViewer replayViewer;
     public int lasttime;
 
     public TimedMode currentMode;
 
+    //async things
+
+    public Location didntevenfuckingstart;
+    public final Location asyncLoc;
+    public int asyncHeldItemSlot;
+    //plate
+    public Set<AxisAlignedBB> hits = new HashSet<>();
+
+    //other
     public int[] LengthSettings;
     public int[] Center;
     public int Blockplaced;
     public boolean finishedOnce;
-    public Set<AxisAlignedBB> hits = new HashSet<>();
-    public List<String> replays = new ArrayList<>();
-
-    public Location didntevenfuckingstart;
-    public final Location asyncLoc;
     public boolean finishNext;
     public Location tped = new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0, 0);
     public boolean locationLock;
-    public boolean openlingBook;
-    public int asyncHeldItemSlot;
+    public boolean openingBook;
     public int placedBlock;
 
     public Member(Player player) {
@@ -111,30 +119,42 @@ public class Member {
         locationLock = true;
     }
 
-    public void joinReplay(int slot) {
-        boolean lastAttempt = slot == 0;
-        Replay replay = lastAttempt ? currentMode.lastAttempt.get(this) : ReplayCompressor.read(this, slot - 1);
+    public void joinReplayLastAttempt() {
+        joinReplay(currentMode.lastAttempt.get(this), true);
+    }
+
+    public void joinReplayByReplayID(String replayID) {
+        joinReplay(ReplayCompressor.read(replayID), false);
+    }
+
+    private void joinReplay(Replay replay, boolean lastAttempt) {
+        if (replayViewer != null)
+            replayViewer.unwatch();
         if (replay != null) {
             int room = 1;
-            while (currentMode.replayRoom.contains(room))
+            TimedMode replayMode = Main.modes.get(replay.replayModeID);
+            while (replayMode.replayRoom.contains(room))
                 room++;
-            currentMode.replayRoom.add(room);
-            ReplayCoord = currentMode.roomToCoord(room) / 8 * 500;
+            replayMode.replayRoom.add(room);
+            ReplayCoord = replayMode.roomToCoord(room) / 8 * 500;
             user.bSetGameMode(GameMode.ADVENTURE);
             user.bSetAllowFlight(true);
             user.bSetFlying(true);
-            setLoc(currentMode.replayWorld, ReplayCoord + 0.5, 100, currentMode.inclined ? ReplayCoord + 0.5 : -4.5, currentMode.inclined ? 225 : 0, 0);
+            setLoc(replayMode.replayWorld, ReplayCoord + 0.5, 100, replayMode.inclined ? ReplayCoord + 0.5 : -4.5, replayMode.inclined ? 225 : 0, 0);
             if (lastAttempt)
                 replay.tickSize = replay.ticks.size();
-            replayPlayer = new ReplayViewer(this, replay, lastAttempt);
-            if (currentMode.inclined)
-                WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, currentMode.replayWorld);
+            replayViewer = new ReplayViewer(this, replay, lastAttempt);
+            if (replayMode.inclined)
+                WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, replayMode.replayWorld);
             else
-                WorldUtils.cloneArea(-4, 83, -9, 5, 132, 100, -4 + ReplayCoord, 83, -9, currentMode.replayWorld);
+                WorldUtils.cloneArea(-4, 83, -9, 5, 132, 100, -4 + ReplayCoord, 83, -9, replayMode.replayWorld);
+
             user.bGetInventory().clear();
             user.bGetInventory().setItem(2, ItemStackList.START[user.lang]);
             user.bGetInventory().setItem(4, ItemStackList.TICK[user.lang]);
             user.bGetInventory().setItem(6, ItemStackList.QUITREPLAY[user.lang]);
+            if (!lastAttempt)
+                user.bGetInventory().setItem(8, ItemStackList.COPYID[user.lang]);
         } else
             user.sendLangMessage(StringList.replayNotFound);
     }

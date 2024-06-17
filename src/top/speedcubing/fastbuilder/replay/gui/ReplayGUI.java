@@ -9,16 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
+import top.speedcubing.lib.utils.UUIDUtils;
+import top.speedcubing.lib.utils.bytes.DataConversion;
+import top.speedcubing.server.lang.LangInventory;
+import top.speedcubing.server.lang.LangItemStack;
+import top.speedcubing.server.lang.LangMessage;
 
 public class ReplayGUI {
+    public static int pageSize = 54;
+    public static int replaySize = 42;
     public static List<InventoryHolder> fb = new ArrayList<>();
 
     public void init() {
@@ -27,43 +33,81 @@ public class ReplayGUI {
         }
     }
 
-    public static void openFastBuilderReplay(Member user, int mode) {
-        if (!user.openlingBook) {
+    public static void openReplayPage(Player player, int mode, boolean fav, int page) {
+        Member member = Member.getMember(player);
+        if (!member.openingBook) {
+            member.openingBook = true;
+            member.isFavoritePage = fav;
             new Thread(() -> {
-                user.openlingBook = true;
-                String[][] modeName = {
-                        {"Normal", "Normal", "Normal", "Normal"},
-                        {"Short", "Short", "Short", "Short"},
-                        {"Onestack", "Onestack", "Onestack", "Onestack"},
-                        {"Inclined", "Inclined", "Inclined", "Inclined"},
-                        {"InclinedShort", "InclinedShort", "InclinedShort", "InclinedShort"}
-                };
+                String[] modeName = {"fb_long_name", "fb_short_name", "fb_onestack_name", "fb_inclined_name", "fb_inclinedshort_name"};
                 try {
-                    ResultSet resultSet = Database.systemConnection.select("score,time,fav,id").from("fbreplay").where("owner='" + user.user.bGetUniqueId() + "' AND mode=" + mode).orderBy("fav DESC,time DESC").executeQuery();
-                    Inventory inventory = Bukkit.createInventory(fb.get(mode), 63, "§bReplay-FastBuilder-" + modeName[mode][user.user.lang]);
-                    inventory.setItem(0, ItemStackList.LASTATTEMPT[user.user.lang]);
-                    int i = 1;
-                    user.replays.clear();
-                    while (resultSet.next()) {
-                        if (i < 63) {
-                            user.replays.add(resultSet.getString(4));
-                            inventory.setItem(i, new ItemBuilder(resultSet.getBoolean(3) ? Material.EMPTY_MAP : Material.PAPER).name("§aFastBuilder").lore(
-                                    "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(resultSet.getInt(2)), ZoneId.systemDefault())),
-                                    "",
-                                    "§bTime: §e" + Core.tickToTime(resultSet.getInt(1)),
-                                    "",
-                                    "§aLeft click to watch",
-                                    "§dRight click to add/remove from favorite"
-                            ).build());
+                    String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
+                    ResultSet r = Database.systemConnection.select("id,score,time").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + mode + " AND fav=" + (fav ? 1 : 0)).orderBy("time DESC").limit(page * replaySize, replaySize + 1).executeQuery();
+
+                    LangInventory inventory = new LangInventory(pageSize, LangMessage.load("replay-fastbuilder", modeName[mode]));
+                    inventory.deleteOnClose(true);
+
+                    if (page != 0)
+                        inventory.setItem(new LangItemStack(Material.STONE_BUTTON, "replay_button_prevpage"), (e) -> {
+                            ReplayGUI.openReplayPage(player, member.currentMode.sqlId, fav, page - 1);
+                        }, 8);
+
+                    for (int i = 0; i < pageSize; i++) {
+                        if (i % 9 == 7) {
+                            inventory.setItem(new LangItemStack(new ItemBuilder(Material.STAINED_GLASS_PANE).durability(7).name("§a")), i);
                         }
+                    }
+
+                    int i = 0;
+                    member.replayPageList.clear();
+                    int preserveSide = 2;
+                    while (r.next()) {
+                        //found next page
+                        if (i == replaySize) {
+                            break;
+                        }
+                        String replayID = DataConversion.byteArrayToHexString(r.getBytes(1));
+                        int score = r.getInt(2);
+                        int time = r.getInt(3);
+                        int slot = i + ((i / (9 - preserveSide)) * preserveSide);
+                        member.replayPageList.put(slot, replayID);
+                        System.out.println(slot + " " + Core.tickToTime(score));
+                        inventory.setItem(new LangItemStack(new ItemBuilder(Material.PAPER).name("§aFastBuilder").lore(
+                                "§8" + DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(time), ZoneId.systemDefault())),
+                                "",
+                                "§bTime: §e" + Core.tickToTime(score),
+                                "",
+                                "§bID: §6" + replayID,
+                                "",
+                                "§aLeft click to watch",
+                                "§dRight click to add/remove from favorite")
+                        ), (e) -> {
+                            switch (e.getEvent().getAction()) {
+                                case PICKUP_ALL:
+                                    System.out.println(member.replayPageList.get(e.getEvent().getRawSlot()));
+                                    member.joinReplayByReplayID(member.replayPageList.get(e.getEvent().getRawSlot()));
+                                    break;
+                                case PICKUP_HALF:
+                                    Database.systemConnection.update("fbreplay", "fav=" + (fav ? 0 : 1), "id=X'" + member.replayPageList.get(e.getEvent().getRawSlot()) + "'");
+                                    ReplayGUI.openReplayPage(player, member.currentMode.sqlId, fav, page);
+                                    break;
+                            }
+                        }, slot);
                         i++;
                     }
                     Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                        user.openlingBook = false;
-                        user.user.bOpenInventory(inventory);
+                        member.openingBook = false;
+                        member.user.openLangInventory(inventory);
                     });
+
+                    //found next page
+                    if (i == replaySize) {
+                        inventory.setItem(new LangItemStack(Material.STONE_BUTTON, "replay_button_nextpage"), (e) -> {
+                            ReplayGUI.openReplayPage(player, member.currentMode.sqlId, fav, page + 1);
+                        }, pageSize - 1);
+                    }
                 } catch (Exception e) {
-                    user.openlingBook = false;
+                    member.openingBook = false;
                     e.printStackTrace();
                 }
             }).start();

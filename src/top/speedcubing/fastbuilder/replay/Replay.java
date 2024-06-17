@@ -10,8 +10,9 @@ import top.speedcubing.fastbuilder.Member;
 
 public class Replay {
     public final ReplayRecorder replayRecorder;
+    public final int replayModeID;
     public final List<ReplayTick> ticks = new ArrayList<>();
-
+    public String replayID;
     public Location StartLocation;
     public boolean StartSneaking;
     public ItemStack StartItem;
@@ -21,7 +22,7 @@ public class Replay {
     public int tickSize;
 
     public Replay(Member member, Location startLocation) {
-        replayRecorder = new ReplayRecorder(this, member);
+        this.replayRecorder = new ReplayRecorder(this, member);
         this.StartSneaking = member.user.bIsSneaking();
         this.StartLocation = startLocation.subtract(member.PlayerCoord, 0, 0);
         this.StartItem = member.user.bGetInventory().getItem(member.asyncHeldItemSlot);
@@ -29,9 +30,12 @@ public class Replay {
         Property profile = ((CraftPlayer) member.user.player).getProfile().getProperties().get("textures").iterator().next();
         this.value = profile.getValue();
         this.signature = profile.getSignature();
+        this.replayModeID = member.currentMode.sqlId;
     }
 
-    public Replay() {
+    public Replay(String replayID, int replayModeID) {
         this.replayRecorder = null;
+        this.replayModeID = replayModeID;
+        this.replayID = replayID;
     }
 }
