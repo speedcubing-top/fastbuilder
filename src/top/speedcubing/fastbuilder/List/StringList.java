@@ -1,7 +1,6 @@
 package top.speedcubing.fastbuilder.List;
 
 import top.speedcubing.server.lang.LangMessage;
-import top.speedcubing.server.utils.config;
 
 public class StringList {
     public static final LangMessage[] typename = {
@@ -11,6 +10,7 @@ public class StringList {
             new LangMessage("§bInclined", "§bInclined", "§bInclined", "§bInclined"),
             new LangMessage("§bInclined Short", "§bInclined Short", "§bInclined Short", "§bInclined Short"),
             new LangMessage("§bOneStack", "§bOneStack", "§bOneStack", "§bOneStack"),
+            new LangMessage("§bExtraShort", "§bExtraShort", "§bExtraShort", "§bExtraShort"),
             new LangMessage("§bCustom", "§bCustom", "§bCustom", "§bCustom")
     };
     public static final LangMessage MenuTitle = new LangMessage("§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu", "§bFastBuilder Menu");

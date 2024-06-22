@@ -39,13 +39,12 @@ public class ReplayGUI {
     static Executor executor = Executors.newFixedThreadPool(5);
 
     public static void openReplayPage(Player player, int mode, boolean fav, int page) {
-        System.out.println("open " + page);
         Member member = Member.getMember(player);
         if (!member.openingBook) {
             member.openingBook = true;
             member.isFavoritePage = fav;
             executor.execute(() -> {
-                String[] modeName = {"fb_normal_name", "fb_short_name", "fb_long_name", "fb_onestack_name", "fb_inclined_name", "fb_inclinedshort_name"};
+                String[] modeName = {"fb_normal_name", "fb_short_name", "fb_long_name", "fb_onestack_name", "fb_inclined_name", "fb_inclinedshort_name", "fb_extrashort_name"};
                 try {
                     String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
                     ResultSet r = Database.systemConnection.select("id,score,time").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + mode + " AND fav=" + (fav ? 1 : 0)).orderBy("time DESC").limit(page * replaySize, replaySize + 1).executeQuery();

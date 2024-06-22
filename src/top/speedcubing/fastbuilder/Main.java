@@ -31,6 +31,7 @@ import top.speedcubing.fastbuilder.BukkitEventListener.PlayerQuit;
 import top.speedcubing.fastbuilder.BukkitEventListener.PlayerToggleSneak;
 import top.speedcubing.fastbuilder.Core.BlockEditor;
 import top.speedcubing.fastbuilder.Core.Custom;
+import top.speedcubing.fastbuilder.Core.timed.ExtraShort;
 import top.speedcubing.fastbuilder.Core.timed.Inclined;
 import top.speedcubing.fastbuilder.Core.timed.InclinedShort;
 import top.speedcubing.fastbuilder.Core.timed.Long;
@@ -81,6 +82,7 @@ public class Main extends JavaPlugin implements Listener {
         modes.add(new Inclined());
         modes.add(new OneStack());
         modes.add(new InclinedShort());
+        modes.add(new ExtraShort());
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();

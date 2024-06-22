@@ -11,13 +11,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import top.speedcubing.fastbuilder.Core.Custom;
+import top.speedcubing.fastbuilder.Core.timed.ExtraShort;
+import top.speedcubing.fastbuilder.Core.timed.Inclined;
+import top.speedcubing.fastbuilder.Core.timed.InclinedShort;
+import top.speedcubing.fastbuilder.Core.timed.Long;
+import top.speedcubing.fastbuilder.Core.timed.Normal;
+import top.speedcubing.fastbuilder.Core.timed.OneStack;
+import top.speedcubing.fastbuilder.Core.timed.Short;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.SideBar;
+import top.speedcubing.lib.bukkit.inventory.InventoryBuilder;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.lib.minecraft.text.TextBuilder;
 import top.speedcubing.lib.minecraft.text.TextClickEvent;
@@ -61,27 +68,62 @@ public class PlayerInteract implements Listener {
                         member.openSettings();
                         break;
                     case COMPASS: {
+
                         int lang = Member.getMember(player).user.lang;
-                        Inventory inventory = Bukkit.createInventory(ItemStackList.menu, 27, StringList.MenuTitle.get(lang));
+
                         ItemBuilder[] builders = {
-                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(1).name(StringList.typename[0].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[2].get(lang)),
-                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[3].get(lang)),
-                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[5].get(lang)),
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[6].get(lang))
+                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(1).name(StringList.typename[0].get(lang)), //normal 0
+                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1].get(lang)), //short 1
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[2].get(lang)), //long 2
+                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[3].get(lang)), //inc 3
+                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4].get(lang)), //incs 4
+                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[5].get(lang)), //onestack 5
+                                new ItemBuilder(Material.SANDSTONE).amount(16).durability(1).name(StringList.typename[6].get(lang)), //extrash 6
+                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[7].get(lang)) //custom
                         };
                         if (!player.getWorld().getName().equals("Custom"))
                             builders[member.currentMode.sqlId].glow();
-                        inventory.setItem(10, builders[0].build());
-                        inventory.setItem(11, builders[1].build());
-                        inventory.setItem(12, builders[2].build());
-                        inventory.setItem(13, builders[3].build());
-                        inventory.setItem(14, builders[4].build());
-                        inventory.setItem(15, builders[5].build());
-                        inventory.setItem(16, builders[6].build());
-                        player.openInventory(inventory);
+                        else builders[builders.length - 1].glow();
+
+                        InventoryBuilder inventory = new InventoryBuilder(36, StringList.MenuTitle.get(lang));
+                        inventory.setItem(builders[2].build(), (event) -> {
+                            if (!player.getWorld().equals(Long.instance.world))
+                                Long.instance.Join(player, false, false);
+                        }, 10);
+                        inventory.setItem(builders[0].build(), (event) -> {
+                            if (!player.getWorld().equals(Normal.instance.world))
+                                Normal.instance.Join(player, false, false);
+                        }, 11);
+                        inventory.setItem(builders[1].build(), (event) -> {
+                            if (!player.getWorld().equals(Short.instance.world))
+                                Short.instance.Join(player, false, false);
+                        }, 12);
+                        inventory.setItem(builders[6].build(), (event) -> {
+                            if (!player.getWorld().equals(ExtraShort.instance.world))
+                                ExtraShort.instance.Join(player, false, false);
+                        }, 13);
+                        //onestack
+                        inventory.setItem(builders[5].build(), (event) -> {
+                            if (!player.getWorld().equals(OneStack.instance.world))
+                                OneStack.instance.Join(player, false, false);
+                        }, 15);
+                        //custom
+                        inventory.setItem(builders[7].build(), (event) -> {
+                            if (!player.getWorld().getName().equals("Custom"))
+                                Custom.Join(player);
+                        }, 16);
+
+                        //inc
+                        inventory.setItem(builders[3].build(), (event) -> {
+                            if (!player.getWorld().equals(Inclined.instance.world))
+                                Inclined.instance.Join(player, false, false);
+                        }, 19);
+                        inventory.setItem(builders[4].build(), (event) -> {
+                            if (!player.getWorld().equals(InclinedShort.instance.world))
+                                InclinedShort.instance.Join(player, false, false);
+                        }, 20);
+
+                        player.openInventory(inventory.getInventory());
                     }
                     break;
                     case IRON_INGOT:

@@ -13,7 +13,6 @@ import top.speedcubing.server.lang.LangInventory;
 import top.speedcubing.server.lang.LangItemStack;
 
 public class ItemStackList {
-    public static final InventoryHolder menu = () -> null;
     public static final InventoryHolder settings = () -> null;
     public static final InventoryHolder confirm = () -> null;
     public static ItemStack[] openkit = new ItemStack[4];
@@ -29,7 +28,6 @@ public class ItemStackList {
     public static ItemStack[] START = new ItemStack[4];
     public static ItemStack[] PAUSE = new ItemStack[4];
     public static ItemStack[] RESTART = new ItemStack[4];
-    public static ItemStack[] LASTATTEMPT = new ItemStack[4];
     public static ItemStack[] COPYID = new ItemStack[4];
 
     public static ItemStack[][] Blocks = new ItemStack[72][4];

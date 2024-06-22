@@ -10,12 +10,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import top.speedcubing.fastbuilder.Core.BlockEditor;
 import top.speedcubing.fastbuilder.Core.Custom;
-import top.speedcubing.fastbuilder.Core.timed.Inclined;
-import top.speedcubing.fastbuilder.Core.timed.InclinedShort;
-import top.speedcubing.fastbuilder.Core.timed.Long;
-import top.speedcubing.fastbuilder.Core.timed.Normal;
-import top.speedcubing.fastbuilder.Core.timed.OneStack;
-import top.speedcubing.fastbuilder.Core.timed.Short;
 import top.speedcubing.fastbuilder.List.ItemStackList;
 import top.speedcubing.fastbuilder.List.StringList;
 import top.speedcubing.fastbuilder.Main;
@@ -33,38 +27,6 @@ public class InventoryClick implements Listener {
             if (inventory.getName().equals("container.crafting")) {
                 if (player.getGameMode() == GameMode.SURVIVAL)
                     e.setCancelled(true);
-            } else if (holder == ItemStackList.menu) {
-                e.setCancelled(true);
-                switch (RawSlot) {
-                    case 10:
-                        if (!player.getWorld().equals(Normal.instance.world))
-                            Normal.instance.Join(player, false, false);
-                        break;
-                    case 11:
-                        if (!player.getWorld().equals(Short.instance.world))
-                            Short.instance.Join(player, false, false);
-                        break;
-                    case 12:
-                        if (!player.getWorld().equals(Long.instance.world))
-                            Long.instance.Join(player, false, false);
-                        break;
-                    case 13:
-                        if (!player.getWorld().equals(Inclined.instance.world))
-                            Inclined.instance.Join(player, false, false);
-                        break;
-                    case 14:
-                        if (!player.getWorld().equals(InclinedShort.instance.world))
-                            InclinedShort.instance.Join(player, false, false);
-                        break;
-                    case 15:
-                        if (!player.getWorld().equals(OneStack.instance.world))
-                            OneStack.instance.Join(player, false, false);
-                        break;
-                    case 16:
-                        if (!player.getWorld().getName().equals("Custom"))
-                            Custom.Join(player);
-                        break;
-                }
             } else if (holder == ItemStackList.settings) {
                 e.setCancelled(true);
                 switch (RawSlot) {
