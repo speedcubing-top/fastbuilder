@@ -85,12 +85,6 @@ public class ReplayCompressor {
         Database.systemConnection.insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "X'" + hash + "',X'" + uuidHex + "'," + (System.currentTimeMillis() / 1000L) + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
     }
 
-    public static Replay read(Member member, int slot) {
-        String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
-        ResultSet resultSet = Database.systemConnection.select("id,datas,name,value,signature,mode").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + member.currentMode.sqlId).orderBy("time DESC").limit(slot, 1).executeQuery();
-        return read(resultSet);
-    }
-
     public static Replay read(String replayID) {
         ResultSet resultSet = Database.systemConnection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeQuery();
         return read(resultSet);
@@ -123,12 +117,11 @@ public class ReplayCompressor {
                 s.append(temp);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return null;
         }
 
         World world = Bukkit.getWorld("world");
-        Replay replay = new Replay(id,mode);
+        Replay replay = new Replay(id, mode);
         replay.name = name;
         replay.value = value;
         replay.signature = signature;

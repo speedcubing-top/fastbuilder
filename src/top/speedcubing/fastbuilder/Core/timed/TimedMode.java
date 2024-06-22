@@ -41,7 +41,7 @@ public abstract class TimedMode {
     public World replayWorld;
     public World world;
     public int used = 0;
-    public final Set<Integer> replayRoom = new HashSet<>();
+    public int replayRoom = 1;
     public final Map<Member, Replay> lastAttempt = new HashMap<>();
 
     public TimedMode(String world, String replayWorld, String worldName, int sqlId, int limit, boolean inclined, int distance, int height) {

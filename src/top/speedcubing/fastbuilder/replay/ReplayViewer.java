@@ -251,7 +251,7 @@ public class ReplayViewer {
     }
 
     void serial(int coord) {
-        boolean inclined = member.currentMode.inclined;
+        boolean inclined = member.replayMode.inclined;
         World world = replay.StartLocation.getWorld();
         replay.StartLocation.setX(replay.StartLocation.getX() + coord);
         if (inclined)

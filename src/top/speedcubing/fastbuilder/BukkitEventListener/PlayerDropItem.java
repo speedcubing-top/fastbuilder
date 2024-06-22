@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 public class PlayerDropItem implements Listener {
     @EventHandler
     public void PlayerDropItemEvent(PlayerDropItemEvent e) {
-        if (e.getPlayer().getGameMode() == GameMode.SURVIVAL)
+        if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
             e.setCancelled(true);
     }
 }

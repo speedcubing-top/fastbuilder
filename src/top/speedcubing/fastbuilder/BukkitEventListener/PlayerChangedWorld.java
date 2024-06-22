@@ -13,7 +13,7 @@ public class PlayerChangedWorld implements Listener {
         Player player = e.getPlayer();
         if (e.getFrom().getName().equals("Custom"))
             Custom.Quit(player);
-        else if (!e.getFrom().getName().startsWith("map_fb_replay"))
+        else if (!e.getFrom().getName().startsWith("map_fb_replay") && !e.getFrom().getName().equals("world"))
             Core.getInstance(e.getFrom().getName()).Quit(player);
     }
 }

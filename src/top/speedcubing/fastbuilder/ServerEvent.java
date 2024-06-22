@@ -102,16 +102,18 @@ public class ServerEvent {
                                 }
                             }
                     }
+                    //replay border
                 } else if (member.isInReplay()) {
-                    if (member.currentMode != null)
-                        if (member.currentMode.inclined) {
+                    if (member.replayMode != null)
+                        if (member.replayMode.inclined) {
                             if (Math.abs(loc.getX() + loc.getZ() - 2 * member.ReplayCoord - 1) > 75.5)
-                                member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
+                                member.user.bTeleport(new Location(member.replayMode.replayWorld, member.ReplayCoord + 0.5, 100, member.ReplayCoord + 0.5, 0, 0));
                         } else {
-                            if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > member.currentMode.distance + 10.5 || loc.getY() < 0)
-                                member.user.bTeleport(new Location(member.currentMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
+                            if (Math.abs(loc.getX() - member.ReplayCoord - 0.5) > 75.5 || Math.abs(loc.getZ() - 0.5) > member.replayMode.distance + 10.5 || loc.getY() < 0)
+                                member.user.bTeleport(new Location(member.replayMode.replayWorld, member.ReplayCoord + 0.5, 100, -4.5, 0, 0));
                         }
                 } else {
+                    //normal border
                     if (member.currentMode != null)
                         if (member.currentMode.inclined) {
                             boolean fell = loc.getY() <= 100 - TimedMode.FALL;

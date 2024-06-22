@@ -66,13 +66,14 @@ public class Member {
     public int PlayerCoord;
     public int ReplayCoord;
 
+    public TimedMode currentMode;
+
     //Replay
 
     public Replay replay;
     public ReplayViewer replayViewer;
     public int lasttime;
-
-    public TimedMode currentMode;
+    public TimedMode replayMode;
 
     //async things
 
@@ -131,12 +132,12 @@ public class Member {
         if (replayViewer != null)
             replayViewer.unwatch();
         if (replay != null) {
-            int room = 1;
-            TimedMode replayMode = Main.modes.get(replay.replayModeID);
-            while (replayMode.replayRoom.contains(room))
-                room++;
-            replayMode.replayRoom.add(room);
+            TimedMode replayMode = Core.getInstanceByID(replay.replayModeID);
+            this.replayMode = replayMode;
+
+            int room = (++replayMode.replayRoom);
             ReplayCoord = replayMode.roomToCoord(room) / 8 * 500;
+
             user.bSetGameMode(GameMode.ADVENTURE);
             user.bSetAllowFlight(true);
             user.bSetFlying(true);
