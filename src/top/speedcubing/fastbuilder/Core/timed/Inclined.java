@@ -4,7 +4,7 @@ package top.speedcubing.fastbuilder.Core.timed;
 public class Inclined extends TimedMode {
     public static TimedMode instance;
     public Inclined() {
-        super("map_fb_inclined", "map_fb_replay_inclined","fb_inclined_yours", 3, 100, true, 29, 106);
+        super("map_fb_inclined", "map_fb_replay_inclined","fb_inclined_yours", 3, 103, true, 29, 106);
         instance = this;
     }
 
