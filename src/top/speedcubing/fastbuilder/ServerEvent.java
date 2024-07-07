@@ -42,7 +42,7 @@ import top.speedcubing.server.share.Chat;
 public class ServerEvent {
 
     @CubingEventHandler
-    public void ddwdw(PlayInEvent e) {
+    public void playInEvent(PlayInEvent e) {
         Member member = Member.getMember(e.getPlayer());
         if (e.getPacket() instanceof PacketPlayInFlying) {
             PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.getPacket();
@@ -175,12 +175,7 @@ public class ServerEvent {
             Replay replay = Member.getMember(e.getPlayer()).replay;
             if (replay != null)
                 replay.replayRecorder.PlayerItemHeldEvent(e.getPlayer().getInventory().getItem(i));
-        }
-    }
-
-    @CubingEventHandler
-    public void PlayInEvent(PlayInEvent e) {
-        if (e.getPacket() instanceof PacketPlayInChat) {
+        } else if (e.getPacket() instanceof PacketPlayInChat) {
             String message = ((PacketPlayInChat) e.getPacket()).a();
             if (message.charAt(0) != '/') {
                 e.setCancelled(true);
@@ -204,19 +199,19 @@ public class ServerEvent {
     }
 
     @CubingEventHandler
-    public void ToggleFlyEvent(ToggleFlyEvent e) {
+    public void toggleFlyEvent(ToggleFlyEvent e) {
         e.setCancelled(true);
         Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @CubingEventHandler
-    public void NickEvent(NickEvent e) {
+    public void nickEvent(NickEvent e) {
         e.setCancelled(true);
         Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
 
     @CubingEventHandler
-    public void SkinEvent(SkinEvent e) {
+    public void skinEvent(SkinEvent e) {
         e.setCancelled(true);
         Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
