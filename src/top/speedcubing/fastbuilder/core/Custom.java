@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.Core;
+package top.speedcubing.fastbuilder.core;
 
 
 import java.util.Set;
@@ -14,8 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.list.ItemStackList;
+import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.PlayerUtils;

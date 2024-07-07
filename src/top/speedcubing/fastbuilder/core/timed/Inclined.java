@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.Core.timed;
+package top.speedcubing.fastbuilder.core.timed;
 
 
 public class Inclined extends TimedMode {

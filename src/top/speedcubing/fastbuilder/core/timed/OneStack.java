@@ -1,14 +1,11 @@
-package top.speedcubing.fastbuilder.Core.timed;
+package top.speedcubing.fastbuilder.core.timed;
 
-
-public class Short extends TimedMode {
+public class OneStack extends TimedMode {
     public static TimedMode instance;
-
-    public Short() {
-        super("map_fb_short", "map_fb_replay_short", "fb_short_yours", 1, 74, false, 29, 103);
+    public OneStack() {
+        super("map_fb_onestack", "map_fb_replay_onestack","fb_onestack_yours",5, 220, false, 29, 128);
         instance = this;
     }
-
 
     @Override
     public int roomToCoord(int room) {

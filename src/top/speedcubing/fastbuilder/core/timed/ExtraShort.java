@@ -1,10 +1,10 @@
-package top.speedcubing.fastbuilder.Core.timed;
+package top.speedcubing.fastbuilder.core.timed;
 
-public class Long extends TimedMode {
+public class ExtraShort extends TimedMode {
     public static TimedMode instance;
 
-    public Long() {
-        super("map_fb_long", "map_fb_replay_long", "fb_long_yours", 2, 230, false, 84, 110);
+    public ExtraShort() {
+        super("map_fb_extrashort", "map_fb_replay_extrashort", "fb_extrashort", 6, 39, false, 17, 101);
         instance = this;
     }
 
@@ -18,3 +18,4 @@ public class Long extends TimedMode {
         return z == 0 ? 0 : Math.abs(z / 6) - (Math.abs(z / 12) + z / 12) / (z / 6);
     }
 }
+

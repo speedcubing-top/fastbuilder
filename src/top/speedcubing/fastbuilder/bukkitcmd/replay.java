@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.BukkitCommands;
+package top.speedcubing.fastbuilder.bukkitcmd;
 
 import java.util.Collections;
 import java.util.List;

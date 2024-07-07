@@ -1,9 +1,9 @@
-package top.speedcubing.fastbuilder.Core;
+package top.speedcubing.fastbuilder.core;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import top.speedcubing.fastbuilder.Core.timed.TimedMode;
+import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 

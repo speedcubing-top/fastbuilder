@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.List;
+package top.speedcubing.fastbuilder.list;
 
 import top.speedcubing.server.lang.LangMessage;
 

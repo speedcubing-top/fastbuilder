@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.BukkitEventListener;
+package top.speedcubing.fastbuilder.bukkitlistener;
 
 import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
 import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;

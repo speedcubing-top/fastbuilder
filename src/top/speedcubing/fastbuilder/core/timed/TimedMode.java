@@ -1,12 +1,10 @@
-package top.speedcubing.fastbuilder.Core.timed;
+package top.speedcubing.fastbuilder.core.timed;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
@@ -18,9 +16,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import top.speedcubing.fastbuilder.Core.Core;
-import top.speedcubing.fastbuilder.List.ItemStackList;
-import top.speedcubing.fastbuilder.List.StringList;
+import top.speedcubing.fastbuilder.core.Core;
+import top.speedcubing.fastbuilder.list.ItemStackList;
+import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;

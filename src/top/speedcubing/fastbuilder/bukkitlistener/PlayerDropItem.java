@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.BukkitEventListener;
+package top.speedcubing.fastbuilder.bukkitlistener;
 
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;

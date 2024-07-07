@@ -1,6 +1,5 @@
-package top.speedcubing.fastbuilder.BukkitCommands;
+package top.speedcubing.fastbuilder.bukkitcmd;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.Command;

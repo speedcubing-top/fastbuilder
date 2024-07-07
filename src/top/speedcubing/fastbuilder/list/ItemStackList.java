@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.List;
+package top.speedcubing.fastbuilder.list;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
