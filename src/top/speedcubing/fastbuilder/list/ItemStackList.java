@@ -6,7 +6,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
+import top.speedcubing.fastbuilder.replay.ReplayGUI;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.lang.GlobalString;
 import top.speedcubing.server.lang.LangInventory;

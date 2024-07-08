@@ -1,4 +1,4 @@
-package top.speedcubing.fastbuilder.replay.gui;
+package top.speedcubing.fastbuilder.replay;
 
 import java.sql.ResultSet;
 import java.time.Instant;

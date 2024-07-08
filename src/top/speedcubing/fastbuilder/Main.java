@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.speedcubing.common.events.ConfigReloadEvent;
 import top.speedcubing.fastbuilder.bukkitcmd.replay;
 import top.speedcubing.fastbuilder.bukkitcmd.stats;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockBreak;
@@ -37,10 +38,11 @@ import top.speedcubing.fastbuilder.core.timed.OneStack;
 import top.speedcubing.fastbuilder.core.timed.Short;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
+import top.speedcubing.fastbuilder.replay.ReplayGUI;
 import top.speedcubing.fastbuilder.replay.ReplayRecorder;
-import top.speedcubing.fastbuilder.replay.gui.ReplayGUI;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
+import top.speedcubing.server.speedcubingServer;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -48,30 +50,16 @@ public class Main extends JavaPlugin implements Listener {
 
     public void onEnable() {
         MinecraftServer.getServer().getPropertyManager().setProperty("server-name", "fastbuilder");
-        Bukkit.getPluginManager().registerEvents(new FoodLevelChange(), this);
-        Bukkit.getPluginManager().registerEvents(new BlockBreak(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerChangedWorld(), this);
-        Bukkit.getPluginManager().registerEvents(new EntityDamage(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
-        Bukkit.getPluginManager().registerEvents(new BlockPlace(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerToggleSneak(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerDropItem(), this);
-        Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
-        Bukkit.getPluginManager().registerEvents(new ReplayRecorder(null, null), this);
+        CubingEventManager.registerListeners(new ServerEvent());
+        new ConfigReloadEvent().call();
+        registerCommands();
+        registerListeners();
 
         getServer().createWorld(new WorldCreator("Custom"));
         Bukkit.getWorld("Custom").setDifficulty(Difficulty.PEACEFUL);
         Bukkit.getWorld("Custom").setTime(6000);
         Bukkit.getWorld("Custom").setAutoSave(false);
 
-        Bukkit.getPluginCommand("stats").setExecutor(new stats());
-        Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
-        Bukkit.getPluginCommand("replay").setExecutor(new replay());
-        Bukkit.getPluginCommand("replay").setTabCompleter(new replay());
-        Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
-        Bukkit.getPluginManager().registerEvents(new top.speedcubing.fastbuilder.replay.gui.InventoryClick(), this);
         new ReplayGUI().init();
         modes.add(new Normal());
         modes.add(new Short());
@@ -83,8 +71,6 @@ public class Main extends JavaPlugin implements Listener {
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();
-        CubingEventManager.registerListeners(new ServerEvent());
-        Bukkit.getPluginManager().registerEvents(this, this);
 //
 //        try {
 //            int i = 0;
@@ -108,6 +94,30 @@ public class Main extends JavaPlugin implements Listener {
 //        }
     }
 
+
+    private void registerCommands() {
+        Bukkit.getPluginCommand("stats").setExecutor(new stats());
+        Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
+        Bukkit.getPluginCommand("replay").setExecutor(new replay());
+        Bukkit.getPluginCommand("replay").setTabCompleter(new replay());
+    }
+
+    private void registerListeners() {
+        speedcubingServer.registerListeners(
+                new BlockBreak(),
+                new BlockPlace(),
+                new FoodLevelChange(),
+                new EntityDamage(),
+                new InventoryClick(),
+                new PlayerChangedWorld(),
+                new PlayerDropItem(),
+                new PlayerInteract(),
+                new PlayerJoin(),
+                new PlayerQuit(),
+                new PlayerToggleSneak(),
+                new ReplayRecorder(null, null),
+                this);
+    }
 
     @EventHandler
     public void dwwa(PlayerTeleportEvent e) {

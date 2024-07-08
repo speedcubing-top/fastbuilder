@@ -199,12 +199,6 @@ public class ServerEvent {
     }
 
     @CubingEventHandler
-    public void toggleFlyEvent(ToggleFlyEvent e) {
-        e.setCancelled(true);
-        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
-    }
-
-    @CubingEventHandler
     public void nickEvent(NickEvent e) {
         e.setCancelled(true);
         Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
@@ -212,6 +206,12 @@ public class ServerEvent {
 
     @CubingEventHandler
     public void skinEvent(SkinEvent e) {
+        e.setCancelled(true);
+        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
+    }
+
+    @CubingEventHandler
+    public void toggleFlyEvent(ToggleFlyEvent e) {
         e.setCancelled(true);
         Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
     }
