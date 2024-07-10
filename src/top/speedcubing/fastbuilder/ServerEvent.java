@@ -43,7 +43,12 @@ public class ServerEvent {
 
     @CubingEventHandler
     public void playInEvent(PlayInEvent e) {
-        Member member = Member.getMember(e.getPlayer());
+        Member member;
+        try {
+            member = Member.getMember(e.getPlayer());
+        } catch (Exception ex) {
+            return;
+        }
         if (e.getPacket() instanceof PacketPlayInFlying) {
             PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.getPacket();
             member.didntevenfuckingstart = member.asyncLoc.clone();
