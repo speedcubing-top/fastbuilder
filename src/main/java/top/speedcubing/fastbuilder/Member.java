@@ -1,11 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -26,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import top.speedcubing.fastbuilder.core.Core;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
@@ -39,6 +34,18 @@ import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.WorldUtils;
 import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
 import top.speedcubing.server.player.User;
+import top.speedcubing.server.speedcubingServer;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Member {
     public static Map<Integer, Member> users = new HashMap<>();
@@ -62,7 +69,7 @@ public class Member {
     public int blockskin;
     public int MainTimer;
     public int finishedtask;
-    public Set<Block> Blocks = new HashSet<>();
+    public List<Block> placedBlockList = new ArrayList<>();
     public int PlayerCoord;
     public int ReplayCoord;
 
@@ -102,13 +109,51 @@ public class Member {
         blockskin = user.dbSelect("fastbuild_blockskin").getInt();
     }
 
-    public void clear(World world) {
-        for (Block b : Blocks) {
-            Main.setTypeCheck(world.getBlockAt(b.getX(), b.getY(), b.getZ()), Material.AIR, 23);
-//            world.getBlockAt(b.getX(), b.getY(), b.getZ()).setType(Material.AIR);
+    public void clear(World world, boolean animation) {
+        if (animation && !currentMode.inclined) {
+            TreeMap<Integer, Set<Block>> blockToAnimate = new TreeMap<>(Comparator.comparingInt(o -> o));
+
+            Iterator<Block> blockIterator = placedBlockList.iterator();
+            while (blockIterator.hasNext()) {
+                Block b = blockIterator.next();
+                if (b.getZ() < 0) {
+                    Main.setTypeCheck(world.getBlockAt(b.getX(), b.getY(), b.getZ()), Material.AIR, 23);
+                    blockIterator.remove();
+                } else {
+                    if (!blockToAnimate.containsKey(b.getZ())) {
+                        blockToAnimate.put(b.getZ(), new HashSet<>());
+                    }
+                    blockToAnimate.get(b.getZ()).add(b);
+                }
+            }
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    if (!blockToAnimate.isEmpty()) {
+                        for (Block b : blockToAnimate.firstEntry().getValue()) {
+                            toFallingBlock(b);
+                        }
+                        blockToAnimate.pollFirstEntry();
+                    } else {
+                        cancel();
+                    }
+                }
+            }.runTaskTimer(speedcubingServer.getInstance(), 0, 1);
+        } else {
+            for (Block b : placedBlockList) {
+                Main.setTypeCheck(world.getBlockAt(b.getX(), b.getY(), b.getZ()), Material.AIR, 23);
+            }
         }
-        Blocks.clear();
+
+        placedBlockList.clear();
     }
+
+    public void toFallingBlock(Block b) {
+        b.getWorld().spawnFallingBlock(b.getLocation().add(0.5, 0, 0.5), b.getType(), b.getData());
+        b.setType(Material.AIR);
+    }
+
 
     public boolean isInReplay() {
         return user.bGetWorld().getName().startsWith("map_fb_replay");
@@ -193,7 +238,7 @@ public class Member {
         PlayerUtils.sendTitle(user.player, TitleType.TITLE, StringList.timedisplay.get(user.lang).replace("%1%", display));
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
-                clear(currentMode.world);
+                clear(currentMode.world, true);
                 setLoc(user.bGetWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0);
                 waiting = false;
                 Inventory inventory = user.bGetInventory();
@@ -258,15 +303,16 @@ public class Member {
             user.bCloseInventory();
         }
         setLoc(user.bGetWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0);
-        if (reset)
-            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> clear(user.bGetWorld()));
+        if (reset) { //這是他媽的清除方塊
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> clear(user.bGetWorld(), true));
+        }
     }
 
     public void updateSidebar(String name, TimedMode mode, boolean quit) {
         int i = mode.session.indexOf(this);
         if (quit) {
-            clear(mode.world);
-            Blocks.clear();
+            clear(mode.world, false);
+            placedBlockList.clear();
             waiting = false;
             mode.session.remove(this);
             mode.score.remove(this);

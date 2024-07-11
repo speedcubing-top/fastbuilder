@@ -51,7 +51,7 @@ public class Custom {
             member.waiting = true;
             member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
                 if (Member.getMember(player) != null) {
-                    member.clear(world);
+                    member.clear(world,false);
                     player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
                     member.waiting = false;
                     Inventory inventory = player.getInventory();
@@ -61,7 +61,7 @@ public class Custom {
             }, 40);
         } else {
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                member.clear(world);
+                member.clear(world,false);
                 member.finishedOnce = true;
                 int[] center = member.Center;
                 int[] Settings = member.LengthSettings;
@@ -171,7 +171,7 @@ public class Custom {
         if (member.MainTimer != -1)
             Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
-        member.clear(world);
+        member.clear(world,false);
         int[] center = member.Center;
         int[] Settings = member.LengthSettings;
         boolean f = member.finishedOnce;
@@ -220,7 +220,7 @@ public class Custom {
             inventory.setItem(5, new ItemStack(Material.AIR));
             inventory.setItem(6, new ItemStack(Material.AIR));
         }
-        member.Blocks.add(b);
+        member.placedBlockList.add(b);
         member.Blockplaced++;
         if (member.Blockplaced > 32) {
             member.Blockplaced = 0;
@@ -231,7 +231,7 @@ public class Custom {
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
         World world = player.getWorld();
-        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world));
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world,false));
         Inventory inventory = player.getInventory();
         inventory.setItem(5, ItemStackList.Length[member.user.lang]);
         inventory.setItem(6, ItemStackList.Height[member.user.lang]);

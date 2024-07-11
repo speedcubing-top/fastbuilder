@@ -7,8 +7,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.lib.bukkit.inventory.ItemUtils;
 import top.speedcubing.server.lang.GlobalString;
 
@@ -22,12 +22,14 @@ public class BlockEditor {
     public static final InventoryHolder quartzeditor = () -> null;
     public static final InventoryHolder woodeditor = () -> null;
     public static final InventoryHolder clayeditor = () -> null;
+    public static final InventoryHolder specialeditor = () -> null;
 
 
     static int length;
 
     public void Load() {
-        length = ItemStackList.wooleditor.length + ItemStackList.sandstoneeditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length + ItemStackList.clayeditor.length;
+        length = ItemStackList.wooleditor.length + ItemStackList.sandstoneeditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length +
+                ItemStackList.clayeditor.length + ItemStackList.specialeditor.length;
     }
 
     public static void createMainPage(Player player) {
@@ -165,6 +167,19 @@ public class BlockEditor {
                         player.openInventory(inv);
                     }
                     break;
+                    case 8: {
+                        Member member = Member.getMember(player);
+                        member.user.sound(Sound.NOTE_PLING);
+                        Inventory inv = Bukkit.createInventory(specialeditor, 27, ItemStackList.specialedit[member.user.lang]);
+                        for (int i = 0; i < ItemStackList.specialeditor.length; i++) {
+                            inv.setItem(i, ItemStackList.specialeditor[i][member.user.lang]);
+                        }
+                        int index = member.blockskin - (ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length + ItemStackList.clayeditor.length);
+                        if (index < ItemStackList.specialeditor.length && index >= 0)
+                            inv.setItem(index, ItemUtils.glow(ItemUtils.setLore(ItemStackList.specialeditor[index][member.user.lang].clone(), GlobalString.selected.get(member.user.lang))));
+                        player.openInventory(inv);
+                    }
+                    break;
                 }
             }
         } else if (holder == sandstoneholder) {
@@ -249,6 +264,19 @@ public class BlockEditor {
             e.setCancelled(true);
             if (RawSlot < 17) {
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length;
+                Member member = Member.getMember(player);
+                member.user.sound(Sound.NOTE_PLING);
+                member.blockskin = x;
+                player.closeInventory();
+                ItemStack stack = ItemStackList.Blocks[x][member.user.lang];
+                player.getInventory().setItem(0, stack);
+                player.getInventory().setItem(1, stack);
+                member.user.sendLangMessage(GlobalString.SavedSettings);
+            }
+        } else if (holder == specialeditor) {
+            e.setCancelled(true);
+            if (RawSlot < 2) { // blockedit-here 幾個方塊就小於幾
+                int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length + ItemStackList.clayeditor.length;
                 Member member = Member.getMember(player);
                 member.user.sound(Sound.NOTE_PLING);
                 member.blockskin = x;

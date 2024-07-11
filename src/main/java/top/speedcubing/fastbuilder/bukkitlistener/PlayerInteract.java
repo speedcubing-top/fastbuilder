@@ -55,9 +55,9 @@ public class PlayerInteract implements Listener {
                     case DIAMOND_PICKAXE:
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
-                            if (member.Blocks.contains(b)) {
+                            if (member.placedBlockList.contains(b)) {
                                 member.replay.replayRecorder.BlockBreakEvent(b);
-                                member.Blocks.remove(b);
+                                member.placedBlockList.remove(b);
                                 Main.setTypeCheck(b, Material.AIR, 17);
 //                                b.setType(Material.AIR);
                             }

@@ -30,11 +30,12 @@ public class ItemStackList {
     public static ItemStack[] RESTART = new ItemStack[4];
     public static ItemStack[] COPYID = new ItemStack[4];
 
-    public static ItemStack[][] Blocks = new ItemStack[72][4];
+    public static ItemStack[][] Blocks = new ItemStack[74][4]; // blockedit-here
 
-    public static ItemStack[][] categoryblockeditor = new ItemStack[7][4];
+    public static ItemStack[][] categoryblockeditor = new ItemStack[8][4];
 
     public static ItemStack[][] blockeditor = new ItemStack[4][4];
+
     public static ItemStack[][] wooleditor = new ItemStack[16][4];
     public static ItemStack[][] sandstoneeditor = new ItemStack[6][4];
     public static ItemStack[][] oreblockeditor = new ItemStack[7][4];
@@ -42,7 +43,7 @@ public class ItemStackList {
     public static ItemStack[][] quartzeditor = new ItemStack[3][4];
     public static ItemStack[][] woodeditor = new ItemStack[12][4];
     public static ItemStack[][] clayeditor = new ItemStack[17][4];
-
+    public static ItemStack[][] specialeditor = new ItemStack[2][4]; // blockedit-here
     public static LangInventory replayBook;
     public static final String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
     public static final String[] sandstoneedit = {"§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone"};
@@ -52,6 +53,7 @@ public class ItemStackList {
     public static final String[] quartzedit = {"§bCategory: Quartz Blocks", "§bCategory: Quartz Blocks", "§bCategory: Quartz Blocks", "§bCategory: Quartz Blocks"};
     public static final String[] woodedit = {"§bCategory: Woods", "§bCategory: Woods", "§bCategory: Woods", "§bCategory: Woods"};
     public static final String[] clayedit = {"§bCategory: Clay", "§bCategory: Clay", "§bCategory: Clay", "§bCategory: Clay"};
+    public static final String[] specialedit = {"§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks"};
 
     public static final Inventory[] ResetConfirm = new Inventory[4];
 
@@ -76,7 +78,8 @@ public class ItemStackList {
                 {"§bOres", "§bOres", "§bOres", "§bOres"},
                 {"§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks"},
                 {"§bWoods", "§bWoods", "§bWoods", "§bWoods"},
-                {"§bClay", "§bClay", "§bClay", "§bClay"}
+                {"§bClay", "§bClay", "§bClay", "§bClay"},
+                {"§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks"}
         };
         String[] yes = {"§aYes", "§aYes", "§aYes", "§aYes"};
         String[] no = {"§cNo", "§cNo", "§cNo", "§cNo"};
@@ -105,7 +108,8 @@ public class ItemStackList {
                     new ItemBuilder(Material.DIAMOND_ORE).name(block[3][i]).lore(GlobalString.category.get(i)).build(),
                     new ItemBuilder(Material.QUARTZ_BLOCK).name(block[4][i]).lore(GlobalString.category.get(i)).build(),
                     new ItemBuilder(Material.WOOD).name(block[5][i]).lore(GlobalString.category.get(i)).build(),
-                    new ItemBuilder(Material.STAINED_CLAY).name(block[6][i]).lore(GlobalString.category.get(i)).build()
+                    new ItemBuilder(Material.STAINED_CLAY).name(block[6][i]).lore(GlobalString.category.get(i)).build(),
+                    new ItemBuilder(Material.BARRIER).name(block[7][i]).lore(GlobalString.category.get(i)).build()
             };
 
             ItemStack[] blockeditor = {
@@ -200,6 +204,14 @@ public class ItemStackList {
                     new ItemBuilder(Material.STAINED_CLAY).durability(15).build(),
                     new ItemBuilder(Material.HARD_CLAY).build()
             };
+
+            // blockedit-here
+            ItemStack[] specialeditor = {
+                    new ItemBuilder(Material.BARRIER).build(),
+                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).build()
+            };
+
+
             ItemStack[] blocks = {
                     new ItemBuilder(Material.SANDSTONE).amount(64).build(),
                     new ItemBuilder(Material.SANDSTONE).durability(1).amount(64).build(),
@@ -269,6 +281,10 @@ public class ItemStackList {
                     new ItemBuilder(Material.STAINED_CLAY).durability(14).amount(64).build(),
                     new ItemBuilder(Material.STAINED_CLAY).durability(15).amount(64).build(),
                     new ItemBuilder(Material.HARD_CLAY).amount(64).build(),
+                    // blockedit-here
+                    new ItemBuilder(Material.BARRIER).amount(64).build(),
+                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).amount(64).build(),
+
                     new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
                     new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
                     new ItemBuilder(Material.OBSIDIAN).amount(64).build(),
@@ -304,6 +320,9 @@ public class ItemStackList {
             }
             for (int j = 0; j < clayeditor.length; j++) {
                 ItemStackList.clayeditor[j][i] = clayeditor[j];
+            }
+            for (int j = 0; j < specialeditor.length; j++) {
+                ItemStackList.specialeditor[j][i] = specialeditor[j];
             }
         }
     }

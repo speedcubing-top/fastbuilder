@@ -8,8 +8,8 @@ import top.speedcubing.fastbuilder.Member;
 
 public class BlockPlace implements Listener {
     @EventHandler
-    public void BlockPlacEvent(BlockPlaceEvent e) {
+    public void BlockPlaceEvent(BlockPlaceEvent e) {
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
-            Member.getMember(e.getPlayer()).Blocks.add(e.getBlock());
+            Member.getMember(e.getPlayer()).placedBlockList.add(e.getBlock());
     }
 }
