@@ -145,7 +145,6 @@ public class Member {
                 Main.setTypeCheck(world.getBlockAt(b.getX(), b.getY(), b.getZ()), Material.AIR, 23);
             }
         }
-
         placedBlockList.clear();
     }
 
