@@ -23,6 +23,7 @@ public class PlayerQuit implements Listener {
             player.teleport(new Location(Normal.instance.world, 0.5, 1000, 0.5, 0, 0));
         }
         member.user.dbUpdate("fastbuild_blockskin=" + member.blockskin + ",fb_blockplace=fb_blockplace+" + member.placedBlock);
+        member.user.dbUpdate("fastbuild_animation=" + member.animation);
         Member.users.remove(member.user.id);
     }
 }

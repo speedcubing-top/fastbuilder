@@ -33,6 +33,10 @@ public class InventoryClick implements Listener {
                     case 12:
                         BlockEditor.createMainPage(player);
                         break;
+                    case 13:
+                        Member.getMember(player).animation = !Member.getMember(player).animation;
+                        Member.getMember(player).openSettings();
+                        break;
                     case 14:
                         if (!player.getWorld().getName().equals("Custom"))
                             player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).user.lang]);

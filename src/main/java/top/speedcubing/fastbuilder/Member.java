@@ -99,6 +99,7 @@ public class Member {
     public Location tped = new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0, 0);
     public boolean locationLock;
     public boolean openingBook;
+    public boolean animation;
     public int placedBlock;
 
     public Member(Player player) {
@@ -110,7 +111,7 @@ public class Member {
     }
 
     public void clear(World world, boolean animation) {
-        if (animation && !currentMode.inclined) {
+        if (animation && !currentMode.inclined && this.animation) {
             TreeMap<Integer, Set<Block>> blockToAnimate = new TreeMap<>(Comparator.comparingInt(o -> o));
 
             Iterator<Block> blockIterator = placedBlockList.iterator();
@@ -149,7 +150,7 @@ public class Member {
     }
 
     public void toFallingBlock(Block b) {
-        b.getWorld().spawnFallingBlock(b.getLocation().add(0.5, 0, 0.5), b.getType(), b.getData());
+        b.getWorld().spawnFallingBlock(b.getLocation().add(0.5, 0, 0.5), b.getType(), b.getData()).setDropItem(false);
         b.setType(Material.AIR);
     }
 
@@ -335,6 +336,9 @@ public class Member {
     public void openSettings() {
         Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings.get(user.lang));
         inventory.setItem(12, ItemStackList.openkit[user.lang]);
+        String animationStatus = !animation ? "§aOn" : "§cOff"; //if off show on, if on show off
+        inventory.setItem(13, new ItemBuilder(Material.FEATHER).name("§eBlock Animation")
+                .addLore("§aClick here to turn " + animationStatus).build());
         if (!user.bGetWorld().getName().equals("Custom"))
             inventory.setItem(14, ItemStackList.Reset[user.lang]);
         else if (user.bGetInventory().getItem(5) != null) {
