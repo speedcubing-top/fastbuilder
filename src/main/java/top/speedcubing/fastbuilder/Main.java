@@ -18,6 +18,7 @@ import top.speedcubing.fastbuilder.bukkitcmd.replay;
 import top.speedcubing.fastbuilder.bukkitcmd.stats;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockBreak;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockPlace;
+import top.speedcubing.fastbuilder.bukkitlistener.EntityChangeBlock;
 import top.speedcubing.fastbuilder.bukkitlistener.EntityDamage;
 import top.speedcubing.fastbuilder.bukkitlistener.FoodLevelChange;
 import top.speedcubing.fastbuilder.bukkitlistener.InventoryClick;
@@ -115,6 +116,7 @@ public class Main extends JavaPlugin implements Listener {
                 new PlayerJoin(),
                 new PlayerQuit(),
                 new PlayerToggleSneak(),
+                new EntityChangeBlock(),
                 new ReplayRecorder(null, null),
                 this);
     }

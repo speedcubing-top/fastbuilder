@@ -30,7 +30,7 @@ public class ItemStackList {
     public static ItemStack[] RESTART = new ItemStack[4];
     public static ItemStack[] COPYID = new ItemStack[4];
 
-    public static ItemStack[][] Blocks = new ItemStack[74][4]; // blockedit-here
+    public static ItemStack[][] Blocks = new ItemStack[79][4]; // blockedit-here
 
     public static ItemStack[][] categoryblockeditor = new ItemStack[8][4];
 
@@ -43,7 +43,7 @@ public class ItemStackList {
     public static ItemStack[][] quartzeditor = new ItemStack[3][4];
     public static ItemStack[][] woodeditor = new ItemStack[12][4];
     public static ItemStack[][] clayeditor = new ItemStack[17][4];
-    public static ItemStack[][] specialeditor = new ItemStack[2][4]; // blockedit-here
+    public static ItemStack[][] specialeditor = new ItemStack[7][4]; // blockedit-here
     public static LangInventory replayBook;
     public static final String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
     public static final String[] sandstoneedit = {"§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone"};
@@ -208,7 +208,12 @@ public class ItemStackList {
             // blockedit-here
             ItemStack[] specialeditor = {
                     new ItemBuilder(Material.BARRIER).build(),
-                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).build()
+                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).build(),
+                    new ItemBuilder(Material.COMMAND).build(),
+                    new ItemBuilder(Material.SLIME_BLOCK).build(),
+                    new ItemBuilder(Material.BEDROCK).build(),
+                    new ItemBuilder(Material.IRON_FENCE).build(),
+                    new ItemBuilder(Material.BIRCH_FENCE).build()
             };
 
 
@@ -281,9 +286,15 @@ public class ItemStackList {
                     new ItemBuilder(Material.STAINED_CLAY).durability(14).amount(64).build(),
                     new ItemBuilder(Material.STAINED_CLAY).durability(15).amount(64).build(),
                     new ItemBuilder(Material.HARD_CLAY).amount(64).build(),
+
                     // blockedit-here
                     new ItemBuilder(Material.BARRIER).amount(64).build(),
                     new ItemBuilder(Material.ENDER_PORTAL_FRAME).amount(64).build(),
+                    new ItemBuilder(Material.COMMAND).amount(64).build(),
+                    new ItemBuilder(Material.SLIME_BLOCK).amount(64).build(),
+                    new ItemBuilder(Material.BEDROCK).amount(64).build(),
+                    new ItemBuilder(Material.IRON_FENCE).amount(64).build(),
+                    new ItemBuilder(Material.BIRCH_FENCE).amount(64).build(),
 
                     new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
                     new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
