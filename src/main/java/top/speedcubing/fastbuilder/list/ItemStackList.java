@@ -2,6 +2,7 @@ package top.speedcubing.fastbuilder.list;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +31,7 @@ public class ItemStackList {
     public static ItemStack[] RESTART = new ItemStack[4];
     public static ItemStack[] COPYID = new ItemStack[4];
 
-    public static ItemStack[][] Blocks = new ItemStack[80][4]; // blockedit-here
+    public static ItemStack[][] Blocks = new ItemStack[81][4]; // blockedit-here
 
     public static ItemStack[][] categoryblockeditor = new ItemStack[8][4];
 
@@ -43,7 +44,7 @@ public class ItemStackList {
     public static ItemStack[][] quartzeditor = new ItemStack[3][4];
     public static ItemStack[][] woodeditor = new ItemStack[12][4];
     public static ItemStack[][] clayeditor = new ItemStack[17][4];
-    public static ItemStack[][] specialeditor = new ItemStack[8][4]; // blockedit-here
+    public static ItemStack[][] specialeditor = new ItemStack[9][4]; // blockedit-here
     public static LangInventory replayBook;
     public static final String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
     public static final String[] sandstoneedit = {"§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone", "§bCategory: Sandstone"};
@@ -214,7 +215,8 @@ public class ItemStackList {
                     new ItemBuilder(Material.BEDROCK).build(),
                     new ItemBuilder(Material.IRON_FENCE).build(),
                     new ItemBuilder(Material.BIRCH_FENCE).build(),
-                    new ItemBuilder(Material.COBBLE_WALL).build()
+                    new ItemBuilder(Material.COBBLE_WALL).build(),
+                    new ItemBuilder(Material.WOOL).durability(0).ench(Enchantment.DURABILITY, 1).hideEnch().name("§cR§6A§eI§aN§bB§9O§5W").build(),
             };
 
 
@@ -297,6 +299,7 @@ public class ItemStackList {
                     new ItemBuilder(Material.IRON_FENCE).amount(64).build(),
                     new ItemBuilder(Material.BIRCH_FENCE).amount(64).build(),
                     new ItemBuilder(Material.COBBLE_WALL).amount(64).build(),
+                    new ItemBuilder(Material.WOOL).durability(0).ench(Enchantment.DURABILITY, 1).hideEnch().name("§cR§6A§eI§aN§bB§9O§5W").amount(64).build(),
 
                     new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
                     new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
