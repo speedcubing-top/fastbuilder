@@ -283,7 +283,7 @@ public class BlockEditor {
             }
         } else if (holder == specialeditor) {
             e.setCancelled(true);
-            if (RawSlot < 8) { // blockedit-here 幾個方塊就小於幾
+            if (RawSlot < 9) { // blockedit-here 幾個方塊就小於幾
                 int x = RawSlot + ItemStackList.sandstoneeditor.length + ItemStackList.wooleditor.length + ItemStackList.oreblockeditor.length + ItemStackList.oreeditor.length + ItemStackList.quartzeditor.length + ItemStackList.woodeditor.length + ItemStackList.clayeditor.length;
                 Member member = Member.getMember(player);
                 member.user.sound(Sound.NOTE_PLING);

@@ -64,31 +64,16 @@ public class ItemStackList {
                     ReplayGUI.openReplayPage(e.getPlayer(), Member.getMember(e.getPlayer()).currentMode.sqlId, false, 0);
                 }, 15);
 
-
-        Length = new LangItem(Material.IRON_INGOT).name("%lang_fb_custom_length%");
-        Height = new LangItem(Material.GOLD_INGOT).name("%lang_fb_custom_height%");
-        navigator = new LangItem(Material.COMPASS).name("%lang_fb_item_switchmode%");
-        pickaxe = new LangItem(Material.DIAMOND_PICKAXE).glow().name("%lang_fb_item_pickaxe%").hideAttr();
-        Replay = new LangItem(Material.BOOK).name("%lang_replay_inv%");
-        Settings = new LangItem(Material.REDSTONE_COMPARATOR).name("%lang_lobby_item_settings%");
-        Reset = new LangItem(Material.BARRIER).name("%lang_fb_reset_current%");
-        TICK = new LangItem(Material.BLAZE_ROD).name("%lang_replay_step%");
-        QUITREPLAY = new LangItem(Material.BARRIER).name("%lang_fb_exit_replay%");
-        START = new LangItem(Material.INK_SACK).durability(10).name("%lang_general_start%");
-        PAUSE = new LangItem(Material.INK_SACK).durability(1).name("%lang_general_pause%");
-        RESTART = new LangItem(Material.INK_SACK).durability(14).name("%lang_general_reset%");
-        openkit = new LangItem(Material.SANDSTONE).durability(2).name("%lang_block_inv%");
-        COPYID = new LangItem(Material.NAME_TAG).name("Copy Replay ID");
-
-        LangItem[] categoryblockeditor = {
-                new LangItem(Material.SANDSTONE).name("%lang_block_item_sandstone%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.WOOL).name("%lang_block_item_wool%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.DIAMOND_BLOCK).name("%lang_block_item_ore%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.DIAMOND_ORE).name("%lang_block_item_ores%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.QUARTZ_BLOCK).name("%lang_block_item_quartz%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.WOOD).name("%lang_block_item_wood%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.STAINED_CLAY).name("%lang_block_item_clay%").lore2("%lang_inventory_see_category%"),
-                new LangItem(Material.BARRIER).name("%lang_block_item_special%").lore2("%lang_inventory_see_category%")
+        String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
+        String[][] block = {
+                {"§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks"},
+                {"§bWool Blocks", "§bWool Blocks", "§bWool Blocks", "§bWool Blocks"},
+                {"§bOre (Blocks)", "§bOre (Blocks)", "§bOre (Blocks)", "§bOre (Blocks)"},
+                {"§bOres", "§bOres", "§bOres", "§bOres"},
+                {"§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks"},
+                {"§bWoods", "§bWoods", "§bWoods", "§bWoods"},
+                {"§bClay", "§bClay", "§bClay", "§bClay"},
+                {"§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks"}
         };
 
         ItemStack[] blockeditor = {
@@ -164,37 +149,38 @@ public class ItemStackList {
         };
 
 
-        ItemStack[] clayeditor = {
-                new ItemBuilder(Material.STAINED_CLAY).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(1).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(2).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(3).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(4).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(5).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(6).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(7).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(8).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(9).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(10).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(11).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(12).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(13).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(14).build(),
-                new ItemBuilder(Material.STAINED_CLAY).durability(15).build(),
-                new ItemBuilder(Material.HARD_CLAY).build()
-        };
+            ItemStack[] clayeditor = {
+                    new ItemBuilder(Material.STAINED_CLAY).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(1).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(2).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(3).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(4).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(5).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(6).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(7).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(8).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(9).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(10).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(11).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(12).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(13).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(14).build(),
+                    new ItemBuilder(Material.STAINED_CLAY).durability(15).build(),
+                    new ItemBuilder(Material.HARD_CLAY).build()
+            };
 
-        // blockedit-here
-        ItemStack[] specialeditor = {
-                new ItemBuilder(Material.BARRIER).build(),
-                new ItemBuilder(Material.ENDER_PORTAL_FRAME).build(),
-                new ItemBuilder(Material.COMMAND).build(),
-                new ItemBuilder(Material.HOPPER).build(),
-                new ItemBuilder(Material.BEDROCK).build(),
-                new ItemBuilder(Material.IRON_FENCE).build(),
-                new ItemBuilder(Material.BIRCH_FENCE).build(),
-                new ItemBuilder(Material.COBBLE_WALL).build()
-        };
+            // blockedit-here
+            ItemStack[] specialeditor = {
+                    new ItemBuilder(Material.BARRIER).build(),
+                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).build(),
+                    new ItemBuilder(Material.COMMAND).build(),
+                    new ItemBuilder(Material.HOPPER).build(),
+                    new ItemBuilder(Material.BEDROCK).build(),
+                    new ItemBuilder(Material.IRON_FENCE).build(),
+                    new ItemBuilder(Material.BIRCH_FENCE).build(),
+                    new ItemBuilder(Material.COBBLE_WALL).build()
+                    new ItemBuilder(Material.WOOL).durability(0).ench(Enchantment.DURABILITY, 1).hideEnch().name("§cR§6A§eI§aN§bB§9O§5W").build(),
+            };
 
 
         ItemStack[] blocks = {
@@ -267,54 +253,56 @@ public class ItemStackList {
                 new ItemBuilder(Material.STAINED_CLAY).durability(15).amount(64).build(),
                 new ItemBuilder(Material.HARD_CLAY).amount(64).build(),
 
-                // blockedit-here
-                new ItemBuilder(Material.BARRIER).amount(64).build(),
-                new ItemBuilder(Material.ENDER_PORTAL_FRAME).amount(64).build(),
-                new ItemBuilder(Material.COMMAND).amount(64).build(),
-                new ItemBuilder(Material.HOPPER).amount(64).build(),
-                new ItemBuilder(Material.BEDROCK).amount(64).build(),
-                new ItemBuilder(Material.IRON_FENCE).amount(64).build(),
-                new ItemBuilder(Material.BIRCH_FENCE).amount(64).build(),
-                new ItemBuilder(Material.COBBLE_WALL).amount(64).build(),
+                    // blockedit-here
+                    new ItemBuilder(Material.BARRIER).amount(64).build(),
+                    new ItemBuilder(Material.ENDER_PORTAL_FRAME).amount(64).build(),
+                    new ItemBuilder(Material.COMMAND).amount(64).build(),
+                    new ItemBuilder(Material.HOPPER).amount(64).build(),
+                    new ItemBuilder(Material.BEDROCK).amount(64).build(),
+                    new ItemBuilder(Material.IRON_FENCE).amount(64).build(),
+                    new ItemBuilder(Material.BIRCH_FENCE).amount(64).build(),
+                    new ItemBuilder(Material.COBBLE_WALL).amount(64).build(),
+                    new ItemBuilder(Material.WOOL).durability(0).ench(Enchantment.DURABILITY, 1).hideEnch().name("§cR§6A§eI§aN§bB§9O§5W").amount(64).build(),
 
-                new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
-                new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
-                new ItemBuilder(Material.OBSIDIAN).amount(64).build(),
-                new ItemBuilder(Material.ENDER_STONE).amount(64).build()
-        };
+                    new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
+                    new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
+                    new ItemBuilder(Material.OBSIDIAN).amount(64).build(),
+                    new ItemBuilder(Material.ENDER_STONE).amount(64).build()
+            };
 
-        for (int j = 0; j < blocks.length; j++) {
-            ItemStackList.Blocks[j] = blocks[j];
-        }
-        for (int j = 0; j < categoryblockeditor.length; j++) {
-            ItemStackList.categoryblockeditor[j] = categoryblockeditor[j];
-        }
-        for (int j = 0; j < blockeditor.length; j++) {
-            ItemStackList.blockeditor[j] = blockeditor[j];
-        }
-        for (int j = 0; j < sandstoneeditor.length; j++) {
-            ItemStackList.sandstoneeditor[j] = sandstoneeditor[j];
-        }
-        for (int j = 0; j < wooleditor.length; j++) {
-            ItemStackList.wooleditor[j] = wooleditor[j];
-        }
-        for (int j = 0; j < oreblockeditor.length; j++) {
-            ItemStackList.oreblockeditor[j] = oreblockeditor[j];
-        }
-        for (int j = 0; j < oreeditor.length; j++) {
-            ItemStackList.oreeditor[j] = oreeditor[j];
-        }
-        for (int j = 0; j < quartzeditor.length; j++) {
-            ItemStackList.quartzeditor[j] = quartzeditor[j];
-        }
-        for (int j = 0; j < woodeditor.length; j++) {
-            ItemStackList.woodeditor[j] = woodeditor[j];
-        }
-        for (int j = 0; j < clayeditor.length; j++) {
-            ItemStackList.clayeditor[j] = clayeditor[j];
-        }
-        for (int j = 0; j < specialeditor.length; j++) {
-            ItemStackList.specialeditor[j] = specialeditor[j];
+            for (int j = 0; j < blocks.length; j++) {
+                ItemStackList.Blocks[j][i] = blocks[j];
+            }
+            for (int j = 0; j < categoryblockeditor.length; j++) {
+                ItemStackList.categoryblockeditor[j][i] = categoryblockeditor[j];
+            }
+            for (int j = 0; j < blockeditor.length; j++) {
+                ItemStackList.blockeditor[j][i] = blockeditor[j];
+            }
+            for (int j = 0; j < sandstoneeditor.length; j++) {
+                ItemStackList.sandstoneeditor[j][i] = sandstoneeditor[j];
+            }
+            for (int j = 0; j < wooleditor.length; j++) {
+                ItemStackList.wooleditor[j][i] = wooleditor[j];
+            }
+            for (int j = 0; j < oreblockeditor.length; j++) {
+                ItemStackList.oreblockeditor[j][i] = oreblockeditor[j];
+            }
+            for (int j = 0; j < oreeditor.length; j++) {
+                ItemStackList.oreeditor[j][i] = oreeditor[j];
+            }
+            for (int j = 0; j < quartzeditor.length; j++) {
+                ItemStackList.quartzeditor[j][i] = quartzeditor[j];
+            }
+            for (int j = 0; j < woodeditor.length; j++) {
+                ItemStackList.woodeditor[j][i] = woodeditor[j];
+            }
+            for (int j = 0; j < clayeditor.length; j++) {
+                ItemStackList.clayeditor[j][i] = clayeditor[j];
+            }
+            for (int j = 0; j < specialeditor.length; j++) {
+                ItemStackList.specialeditor[j][i] = specialeditor[j];
+            }
         }
     }
 }
