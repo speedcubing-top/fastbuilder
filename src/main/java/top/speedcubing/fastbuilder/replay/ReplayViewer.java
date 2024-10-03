@@ -15,10 +15,10 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.speedcubing.fastbuilder.core.Core;
-import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.core.Core;
+import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.entity.NPC;
 import top.speedcubing.lib.bukkit.inventory.ItemUtils;
@@ -102,13 +102,13 @@ public class ReplayViewer {
     public void start() {
         if (!playing)
             if (tick != replay.tickSize - 1) {
-                player.getInventory().setItem(2, ItemStackList.PAUSE[member.user.lang]);
+                member.user.setLangItem(2, ItemStackList.PAUSE);
                 task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
                     addoneTick();
                     if (tick == replay.tickSize - 1) {
                         Bukkit.getScheduler().cancelTask(task);
                         playing = false;
-                        player.getInventory().setItem(2, ItemStackList.RESTART[member.user.lang]);
+                        member.user.setLangItem(2, ItemStackList.RESTART);
                     }
                 }, 0, 1);
             } else {
@@ -121,11 +121,11 @@ public class ReplayViewer {
                     }
                 }
                 resetNPC(true);
-                player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
+                member.user.setLangItem(2, ItemStackList.START);
                 npc.updateNpcLocation();
             }
         else {
-            player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
+            member.user.setLangItem(2, ItemStackList.START);
             Bukkit.getScheduler().cancelTask(task);
         }
         playing = !playing;
@@ -148,7 +148,7 @@ public class ReplayViewer {
         if (tick != 0) {
 
             if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
-                player.getInventory().setItem(2, ItemStackList.START[member.user.lang]);
+                member.user.setLangItem(2, ItemStackList.START);
             ReplayTick replayTick = replay.ticks.get(tick - 1);
             ReplayTick last = tick == 1 ? null : replay.ticks.get(tick - 2);
 

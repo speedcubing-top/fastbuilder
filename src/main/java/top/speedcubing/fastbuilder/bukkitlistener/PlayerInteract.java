@@ -11,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import top.speedcubing.fastbuilder.Main;
+import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.core.Custom;
 import top.speedcubing.fastbuilder.core.timed.ExtraShort;
 import top.speedcubing.fastbuilder.core.timed.Inclined;
@@ -21,14 +23,12 @@ import top.speedcubing.fastbuilder.core.timed.OneStack;
 import top.speedcubing.fastbuilder.core.timed.Short;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.list.StringList;
-import top.speedcubing.fastbuilder.Main;
-import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.SideBar;
-import top.speedcubing.lib.bukkit.inventory.InventoryBuilder;
-import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
-import top.speedcubing.lib.minecraft.text.TextBuilder;
+import top.speedcubing.lib.minecraft.text.ComponentText;
 import top.speedcubing.lib.minecraft.text.TextClickEvent;
 import top.speedcubing.lib.minecraft.text.TextHoverEvent;
+import top.speedcubing.server.lang.LangInv;
+import top.speedcubing.server.lang.LangItem;
 
 public class PlayerInteract implements Listener {
     @EventHandler
@@ -44,7 +44,7 @@ public class PlayerInteract implements Listener {
             if (e.getAction() == Action.PHYSICAL) {
                 if (e.getClickedBlock().getType() == Material.GOLD_PLATE) {
                     if (player.getWorld().getName().equals("Custom"))
-                        Custom.Finish(player, true);
+                        Custom.finish(player, true);
                 }
             } else {
                 Action action = e.getAction();
@@ -56,7 +56,7 @@ public class PlayerInteract implements Listener {
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
                             if (member.placedBlockList.contains(b)) {
-                                member.replay.replayRecorder.BlockBreakEvent(b);
+                                member.replay.replayRecorder.blockBreakEvent(b);
                                 member.placedBlockList.remove(b);
                                 Main.setTypeCheck(b, Material.AIR, 17);
 //                                b.setType(Material.AIR);
@@ -69,61 +69,60 @@ public class PlayerInteract implements Listener {
                         break;
                     case COMPASS: {
 
-                        int lang = Member.getMember(player).user.lang;
-
-                        ItemBuilder[] builders = {
-                                new ItemBuilder(Material.SANDSTONE).amount(51).durability(1).name(StringList.typename[0].get(lang)), //normal 0
-                                new ItemBuilder(Material.SANDSTONE).amount(28).durability(1).name(StringList.typename[1].get(lang)), //short 1
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[2].get(lang)), //long 2
-                                new ItemBuilder(Material.STEP).amount(50).durability(1).name(StringList.typename[3].get(lang)), //inc 3
-                                new ItemBuilder(Material.STEP).amount(30).durability(1).name(StringList.typename[4].get(lang)), //incs 4
-                                new ItemBuilder(Material.SANDSTONE_STAIRS).amount(28).durability(1).name(StringList.typename[5].get(lang)), //onestack 5
-                                new ItemBuilder(Material.SANDSTONE).amount(16).durability(1).name(StringList.typename[6].get(lang)), //extrash 6
-                                new ItemBuilder(Material.SANDSTONE).durability(1).name(StringList.typename[7].get(lang)) //custom
+                        LangItem[] builders = {
+                                new LangItem(Material.SANDSTONE).amount(51).durability(1).name("§b%fb_normal_name%"), //normal 0
+                                new LangItem(Material.SANDSTONE).amount(28).durability(1).name("§b%fb_short_name%"), //short 1
+                                new LangItem(Material.SANDSTONE).durability(1).name("§b%fb_long_name%"), //long 2
+                                new LangItem(Material.STEP).amount(50).durability(1).name("§b%fb_inclined_name%"), //inc 3
+                                new LangItem(Material.STEP).amount(30).durability(1).name("§b%fb_inclinedshort_name%"), //incs 4
+                                new LangItem(Material.SANDSTONE_STAIRS).amount(28).durability(1).name("§b%fb_onestack_name%"), //onestack 5
+                                new LangItem(Material.SANDSTONE).amount(16).durability(1).name("§b%fb_extrashort_name%"), //extrash 6
+                                new LangItem(Material.SANDSTONE).durability(1).name("§b%fb_custom_name%") //custom
                         };
+
                         if (!player.getWorld().getName().equals("Custom"))
                             builders[member.currentMode.sqlId].glow();
                         else builders[builders.length - 1].glow();
 
-                        InventoryBuilder inventory = new InventoryBuilder(36, StringList.MenuTitle.get(lang));
-                        inventory.setItem(builders[2].build(), (event) -> {
+                        LangInv inventory = new LangInv(36, "%lang_fb_inv_menu%");
+                        inventory.setItem(builders[2], (event) -> {
                             if (!player.getWorld().equals(Long.instance.world))
                                 Long.instance.Join(player, false, false);
                         }, 10);
-                        inventory.setItem(builders[0].build(), (event) -> {
+                        inventory.setItem(builders[0], (event) -> {
                             if (!player.getWorld().equals(Normal.instance.world))
                                 Normal.instance.Join(player, false, false);
                         }, 11);
-                        inventory.setItem(builders[1].build(), (event) -> {
+                        inventory.setItem(builders[1], (event) -> {
                             if (!player.getWorld().equals(Short.instance.world))
                                 Short.instance.Join(player, false, false);
                         }, 12);
-                        inventory.setItem(builders[6].build(), (event) -> {
+                        inventory.setItem(builders[6], (event) -> {
                             if (!player.getWorld().equals(ExtraShort.instance.world))
                                 ExtraShort.instance.Join(player, false, false);
                         }, 13);
                         //onestack
-                        inventory.setItem(builders[5].build(), (event) -> {
+                        inventory.setItem(builders[5], (event) -> {
                             if (!player.getWorld().equals(OneStack.instance.world))
                                 OneStack.instance.Join(player, false, false);
                         }, 15);
                         //custom
-                        inventory.setItem(builders[7].build(), (event) -> {
+                        inventory.setItem(builders[7], (event) -> {
                             if (!player.getWorld().getName().equals("Custom"))
                                 Custom.Join(player);
                         }, 16);
 
                         //inc
-                        inventory.setItem(builders[3].build(), (event) -> {
+                        inventory.setItem(builders[3], (event) -> {
                             if (!player.getWorld().equals(Inclined.instance.world))
                                 Inclined.instance.Join(player, false, false);
                         }, 19);
-                        inventory.setItem(builders[4].build(), (event) -> {
+                        inventory.setItem(builders[4], (event) -> {
                             if (!player.getWorld().equals(InclinedShort.instance.world))
                                 InclinedShort.instance.Join(player, false, false);
                         }, 20);
 
-                        player.openInventory(inventory.getInventory());
+                        member.user.openLangInventory(inventory);
                     }
                     break;
                     case IRON_INGOT:
@@ -162,7 +161,7 @@ public class PlayerInteract implements Listener {
                         member.currentMode.Join(player, true, false);
                         break;
                     case NAME_TAG:
-                        member.user.sendComponent(new TextBuilder()
+                        member.user.sendComponent(new ComponentText()
                                 .both("§6" + member.replayViewer.replay.replayID,
                                         TextClickEvent.suggestCommand(member.replayViewer.replay.replayID),
                                         TextHoverEvent.showText("§eClick to put it in chat so you can copy!"))

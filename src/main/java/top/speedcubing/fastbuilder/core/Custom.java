@@ -14,11 +14,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import top.speedcubing.fastbuilder.list.ItemStackList;
-import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
-import top.speedcubing.lib.bukkit.PlayerUtils;
+import top.speedcubing.fastbuilder.list.ItemStackList;
+import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
@@ -34,7 +33,7 @@ public class Custom {
         }
     }
 
-    public static void Finish(Player player, boolean pressure) {
+    public static void finish(Player player, boolean pressure) {
         Member member = Member.getMember(player);
         if (member.times == -1) {
             BungeePluginMessage.switchServer(player, "Lobby");
@@ -44,24 +43,23 @@ public class Custom {
         World world = Bukkit.getWorld("Custom");
         int lang = member.user.lang;
         SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[lang][10] + Core.tickToTime(member.times), 1);
-        PlayerUtils.sendTitle(player, TitleType.TITLE, StringList.timedisplay.get(lang).replace("%1%", Core.tickToTime(member.times)));
+        member.user.sendLangTitle(TitleType.TITLE, "%lang_fb_time_display%", Core.tickToTime(member.times));
         member.times = -1;
         member.user.sound(Sound.LEVEL_UP);
         if (pressure) {
             member.waiting = true;
             member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
                 if (Member.getMember(player) != null) {
-                    member.clear(world,false);
+                    member.clear(world, false);
                     player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
                     member.waiting = false;
-                    Inventory inventory = player.getInventory();
-                    inventory.setItem(5, ItemStackList.Length[lang]);
-                    inventory.setItem(6, ItemStackList.Height[lang]);
+                    member.user.setLangItem(5, ItemStackList.Length);
+                    member.user.setLangItem(6, ItemStackList.Height);
                 }
             }, 40);
         } else {
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                member.clear(world,false);
+                member.clear(world, false);
                 member.finishedOnce = true;
                 int[] center = member.Center;
                 int[] Settings = member.LengthSettings;
@@ -122,12 +120,12 @@ public class Custom {
         int lang = member.user.lang;
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
-        inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);
-        inventory.setItem(1, ItemStackList.pickaxe[lang]);
-        inventory.setItem(7, ItemStackList.Settings[lang]);
-        inventory.setItem(8, ItemStackList.navigator[lang]);
-        inventory.setItem(5, ItemStackList.Length[lang]);
-        inventory.setItem(6, ItemStackList.Height[lang]);
+        inventory.setItem(0, ItemStackList.Blocks[member.blockskin]);
+        member.user.setLangItem(1, ItemStackList.pickaxe);
+        member.user.setLangItem(7, ItemStackList.Settings);
+        member.user.setLangItem(8, ItemStackList.navigator);
+        member.user.setLangItem(5, ItemStackList.Length);
+        member.user.setLangItem(6, ItemStackList.Height);
         inventory.setHeldItemSlot(0);
         member.times = -1;
         member.Blockplaced = 0;
@@ -171,7 +169,7 @@ public class Custom {
         if (member.MainTimer != -1)
             Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
-        member.clear(world,false);
+        member.clear(world, false);
         int[] center = member.Center;
         int[] Settings = member.LengthSettings;
         boolean f = member.finishedOnce;
@@ -224,17 +222,17 @@ public class Custom {
         member.Blockplaced++;
         if (member.Blockplaced > 32) {
             member.Blockplaced = 0;
-            inventory.setItem(0, ItemStackList.Blocks[member.blockskin][lang]);
+            inventory.setItem(0, ItemStackList.Blocks[member.blockskin]);
         }
     }
 
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
         World world = player.getWorld();
-        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world,false));
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world, false));
         Inventory inventory = player.getInventory();
-        inventory.setItem(5, ItemStackList.Length[member.user.lang]);
-        inventory.setItem(6, ItemStackList.Height[member.user.lang]);
+        member.user.setLangItem(5, ItemStackList.Length);
+        member.user.setLangItem(6, ItemStackList.Height);
         if (member.waiting) {
             Bukkit.getScheduler().cancelTask(member.finishedtask);
             member.waiting = false;

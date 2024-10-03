@@ -1,5 +1,15 @@
 package top.speedcubing.fastbuilder;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -28,24 +38,13 @@ import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.ReplayCompressor;
 import top.speedcubing.fastbuilder.replay.ReplayViewer;
-import top.speedcubing.lib.bukkit.PlayerUtils;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.WorldUtils;
-import top.speedcubing.lib.bukkit.inventory.ItemBuilder;
+import top.speedcubing.server.lang.LangInv;
+import top.speedcubing.server.lang.LangItem;
 import top.speedcubing.server.player.User;
 import top.speedcubing.server.speedcubingServer;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
 
 public class Member {
     public static Map<Integer, Member> users = new HashMap<>();
@@ -196,13 +195,13 @@ public class Member {
                 WorldUtils.cloneArea(-4, 83, -9, 5, 132, 100, -4 + ReplayCoord, 83, -9, replayMode.replayWorld);
 
             user.bGetInventory().clear();
-            user.bGetInventory().setItem(2, ItemStackList.START[user.lang]);
-            user.bGetInventory().setItem(4, ItemStackList.TICK[user.lang]);
-            user.bGetInventory().setItem(6, ItemStackList.QUITREPLAY[user.lang]);
+            user.setLangItem(2, ItemStackList.START);
+            user.setLangItem(4, ItemStackList.TICK);
+            user.setLangItem(6, ItemStackList.QUITREPLAY);
             if (!lastAttempt)
-                user.bGetInventory().setItem(8, ItemStackList.COPYID[user.lang]);
+                user.setLangItem(8, ItemStackList.COPYID);
         } else
-            user.sendLangMessage(StringList.replayNotFound);
+            user.sendMessage("%lang_general_notfound%");
     }
 
     public void finish() {
@@ -212,7 +211,7 @@ public class Member {
         boolean OVERLIMIT = time < currentMode.limit;
         boolean qualified = !TAS && !OVERLIMIT;
         if (OVERLIMIT)
-            user.sendLangMessage(StringList.tooFast);
+            user.sendMessage("%lang_fb_score_out%");
         replay.replayRecorder.pause(true, TAS);
         replay = null;
         waiting = true;
@@ -228,21 +227,21 @@ public class Member {
                 fw(user.player);
             });
             if (last == 0)
-                user.sendLangMessage(StringList.firstScore, Core.tickToTime(time));
+                user.sendMessage("%lang_fb_firstscore%", Core.tickToTime(time));
             else
-                user.sendLangMessage(StringList.pb, Core.tickToTime(last / 5), Core.tickToTime(time), Core.tickToTime(last / 5 - time));
+                user.sendMessage("%lang_fb_pb%", Core.tickToTime(last / 5), Core.tickToTime(time), Core.tickToTime(last / 5 - time));
         }
         if (qualified)
             currentMode.a(this, time);
         user.sound(Sound.LEVEL_UP);
-        PlayerUtils.sendTitle(user.player, TitleType.TITLE, StringList.timedisplay.get(user.lang).replace("%1%", display));
+        user.sendLangTitle(TitleType.TITLE, "%lang_fb_time_display%", display);
         finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
             if (PlayerCoord != -1) {
                 clear(currentMode.world, true);
                 setLoc(user.bGetWorld(), PlayerCoord + 0.5, 100, (currentMode.inclined ? PlayerCoord : -4) + 0.5, currentMode.inclined ? 225 : 0, 0);
                 waiting = false;
                 Inventory inventory = user.bGetInventory();
-                ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
+                ItemStack stack = ItemStackList.Blocks[blockskin];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
             }
@@ -254,14 +253,14 @@ public class Member {
         if (replay == null) {
             times = MinecraftServer.currentTick;
             replay = new Replay(this, didntevenfuckingstart.clone());
-            replay.replayRecorder.PlayerMoveEvent(asyncLoc);
+            replay.replayRecorder.playerMoveEvent(asyncLoc);
         }
-        replay.replayRecorder.BlockPlaceEvent(x, y, z);
+        replay.replayRecorder.blockPlaceEvent(x, y, z);
         int empty = 1 - user.bGetInventory().getHeldItemSlot();
         if (empty > 0) {
             Inventory inventory = user.bGetInventory();
             if (inventory.getItem(empty) == null)
-                inventory.setItem(empty, ItemStackList.Blocks[blockskin][user.lang]);
+                inventory.setItem(empty, ItemStackList.Blocks[blockskin]);
         }
     }
 
@@ -272,14 +271,14 @@ public class Member {
             Bukkit.getScheduler().cancelTask(finishedtask);
             waiting = false;
             Inventory inventory = user.bGetInventory();
-            ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
+            ItemStack stack = ItemStackList.Blocks[blockskin];
             inventory.setItem(0, stack);
             inventory.setItem(1, stack);
         } else {
             if (replay != null) {
                 reset = true;
                 Inventory inventory = user.bGetInventory();
-                ItemStack stack = ItemStackList.Blocks[blockskin][user.lang];
+                ItemStack stack = ItemStackList.Blocks[blockskin];
                 inventory.setItem(0, stack);
                 inventory.setItem(1, stack);
                 SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][9] + Core.tickToTime(replay.replayRecorder.NewTick - 1), 1);
@@ -291,7 +290,7 @@ public class Member {
                 int coord = PlayerCoord;
                 int oldroom = currentMode.coordToRoom(coord);
                 int newroom = Core.cal(oldroom, currentMode.inclined ? location.getX() + location.getZ() > coord * 2 : location.getX() > coord, currentMode.rooms);
-                if (newroom == -1) user.sendLangMessage(StringList.nomapsavaliable);
+                if (newroom == -1) user.sendMessage("%lang_fb_nomap%");
                 else {
                     PlayerCoord = currentMode.roomToCoord(newroom);
                     currentMode.setPressurePlate(this);
@@ -334,18 +333,17 @@ public class Member {
     }
 
     public void openSettings() {
-        Inventory inventory = Bukkit.createInventory(ItemStackList.settings, 27, StringList.Settings.get(user.lang));
-        inventory.setItem(12, ItemStackList.openkit[user.lang]);
+        LangInv inventory = new LangInv(27, "%lang_inv_settings%");
+        inventory.setItem(ItemStackList.openkit, 12);
         String animationStatus = !animation ? "§aOn" : "§cOff"; //if off show on, if on show off
-        inventory.setItem(13, new ItemBuilder(Material.FEATHER).name("§eBlock Animation")
-                .addLore("§aClick here to turn " + animationStatus).build());
+        inventory.setItem(new LangItem(Material.FEATHER).name("§eBlock Animation")
+                .lore2("§aClick here to turn " + animationStatus), 13);
         if (!user.bGetWorld().getName().equals("Custom"))
-            inventory.setItem(14, ItemStackList.Reset[user.lang]);
+            inventory.setItem(ItemStackList.Reset, 14);
         else if (user.bGetInventory().getItem(5) != null) {
-            String[] lore = StringList.LoopLore[user.lang];
-            inventory.setItem(14, new ItemBuilder(Material.MINECART).name(lore[0]).lore(lore[1], hits.isEmpty() ? lore[3] : lore[2]).build());
+            inventory.setItem(new LangItem(Material.MINECART).name("%fb_item_custom_loop%").lore2("%fb_lore_custom_loop%", (hits.isEmpty() ? "%lang_general_off%" : "%lang_general_on%")), 14);
         }
-        user.bOpenInventory(inventory);
+        user.openLangInventory(inventory);
     }
 
 

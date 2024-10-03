@@ -28,14 +28,13 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.events.packet.PlayInEvent;
 import top.speedcubing.lib.eventbus.CubingEventHandler;
-import top.speedcubing.lib.minecraft.text.TextBuilder;
+import top.speedcubing.lib.minecraft.text.ComponentText;
 import top.speedcubing.lib.minecraft.text.TextClickEvent;
 import top.speedcubing.lib.minecraft.text.TextHoverEvent;
 import top.speedcubing.server.events.player.NickEvent;
 import top.speedcubing.server.events.player.SkinEvent;
 import top.speedcubing.server.events.player.ToggleFlyEvent;
-import top.speedcubing.server.lang.GlobalString;
-import top.speedcubing.server.lang.LangMessage;
+import top.speedcubing.server.lang.Lang;
 import top.speedcubing.server.player.User;
 import top.speedcubing.server.share.Chat;
 
@@ -68,12 +67,12 @@ public class ServerEvent {
                 return;
 
             if (member.replay != null && member.replay.replayRecorder.isRecording) {
-                member.replay.replayRecorder.PlayerMoveEvent(loc);
+                member.replay.replayRecorder.playerMoveEvent(loc);
                 if (!member.finishNext)
                     SideBar.getSidebar(e.getPlayer()).setLineByScore(StringList.SideBar[member.user.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick > 2400) {
                     member.Fell(false);
-                    member.user.sendLangMessage(StringList.cancelled);
+                    member.user.sendMessage("%lang_fb_timeout%");
                 } else {
                     if (member.finishNext) {
                         member.finish();
@@ -102,7 +101,7 @@ public class ServerEvent {
                         if (!member.hits.isEmpty())
                             for (AxisAlignedBB b : member.hits) {
                                 if (((CraftPlayer) e.getPlayer()).getHandle().getBoundingBox().b(b)) {
-                                    Custom.Finish(e.getPlayer(), false);
+                                    Custom.finish(e.getPlayer(), false);
                                     break;
                                 }
                             }
@@ -179,26 +178,29 @@ public class ServerEvent {
             member.asyncHeldItemSlot = i;
             Replay replay = Member.getMember(e.getPlayer()).replay;
             if (replay != null)
-                replay.replayRecorder.PlayerItemHeldEvent(e.getPlayer().getInventory().getItem(i));
+                replay.replayRecorder.playerItemHeldEvent(e.getPlayer().getInventory().getItem(i));
         } else if (e.getPacket() instanceof PacketPlayInChat) {
             String message = ((PacketPlayInChat) e.getPacket()).a();
             if (message.charAt(0) != '/') {
-                e.setCancelled(true);
                 Player player = e.getPlayer();
-                User user = User.getUser(player);
-                RankFormat rankFormat = user.getFormat(false);
-                String playerName = player.getName();
-                LangMessage format = GlobalString.MessageFormat;
-                TextBuilder[] text = new TextBuilder[4];
-                for (int i = 0; i < text.length; i++) {
-                    text[i] = new TextBuilder()
-                            .both(rankFormat.getPrefix() + playerName,
-                                    TextClickEvent.runCommand("/stats " + playerName),
-                                    TextHoverEvent.showText(StringList.hover.get(i).replace("%1%", user.getColorName(false))))
-                            .str(format.get(i).replace("%1%", "").replace("%2%", rankFormat.getChatColor()));
-                }
-                Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
-                //Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + user.getPrefixName(false) + format.get(1).replace("%text%", "").replace("%text2%", user.getColorName(false)));
+                e.setCancelled(true);
+                RankFormat format = member.user.getFormat(false);
+                Chat.globalChat(player.getWorld().getPlayers(), player, Lang.of("%lang_message_format%"), message, format.getPrefix() + player.getName(), format.getChatColor());
+
+//                User user = User.getUser(player);
+//                RankFormat rankFormat = user.getFormat(false);
+//                String playerName = player.getName();
+//                Lang format = GlobalString.MessageFormat;
+//                TextBuilder[] text = new TextBuilder[4];
+//                for (int i = 0; i < text.length; i++) {
+//                    text[i] = new ComponentText()
+//                            .both(rankFormat.getPrefix() + playerName,
+//                                    TextClickEvent.runCommand("/stats " + playerName),
+//                                    TextHoverEvent.showText(StringList.hover.get(i).replace("%1%", user.getColorName(false))))
+//                            .str(format.get(i).replace("%1%", "").replace("%2%", rankFormat.getChatColor()));
+//                }
+//                Chat.globalChat(Bukkit.getOnlinePlayers(), player, text, message);
+//                //Console.printlnColor("§7[§aChatLog§7] [§b" + player.getWorld().getName() + "§7] " + user.getPrefixName(false) + format.get(1).replace("%text%", "").replace("%text2%", user.getColorName(false)));
             }
         }
     }
@@ -206,18 +208,18 @@ public class ServerEvent {
     @CubingEventHandler
     public void nickEvent(NickEvent e) {
         e.setCancelled(true);
-        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
+        Member.getMember(e.getPlayer()).user.sendMessage("%lang_general_lobby_only%");
     }
 
     @CubingEventHandler
     public void skinEvent(SkinEvent e) {
         e.setCancelled(true);
-        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
+        Member.getMember(e.getPlayer()).user.sendMessage("%lang_general_lobby_only%");
     }
 
     @CubingEventHandler
     public void toggleFlyEvent(ToggleFlyEvent e) {
         e.setCancelled(true);
-        Member.getMember(e.getPlayer()).user.sendLangMessage(GlobalString.OnlyInHub);
+        Member.getMember(e.getPlayer()).user.sendMessage("%lang_general_lobby_only%");
     }
 }

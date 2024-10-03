@@ -38,10 +38,10 @@ public class InventoryClick implements Listener {
                         Member.getMember(player).openSettings();
                         break;
                     case 14:
+                        Member member = Member.getMember(player);
                         if (!player.getWorld().getName().equals("Custom"))
-                            player.openInventory(ItemStackList.ResetConfirm[Member.getMember(player).user.lang]);
+                            member.user.openLangInventory(ItemStackList.ResetConfirm);
                         else if (player.getInventory().getItem(5) != null) {
-                            Member member = Member.getMember(player);
                             int[] center = member.Center;
                             boolean Loop = member.hits.isEmpty();
                             if (Loop)

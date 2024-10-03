@@ -17,7 +17,7 @@ public class ReplayRecorder implements Listener {
     public void a(PlayerToggleSneakEvent e) {
         Replay replay = Member.getMember(e.getPlayer()).replay;
         if (replay != null)
-            replay.replayRecorder.PlayerToggleSneakEvent(e.isSneaking());
+            replay.replayRecorder.playerToggleSneakEvent(e.isSneaking());
     }
 
     public int NewTick = -1;
@@ -32,7 +32,7 @@ public class ReplayRecorder implements Listener {
         this.replay = replay;
     }
 
-    public void PlayerItemHeldEvent(ItemStack stack) {
+    public void playerItemHeldEvent(ItemStack stack) {
         if (isRecording) {
             ReplayTick replayTick = getTick();
             stack = stack == null ? new ItemStack(Material.AIR) : stack;
@@ -42,11 +42,11 @@ public class ReplayRecorder implements Listener {
         }
     }
 
-    public void PlayerToggleSneakEvent(boolean sneak) {
+    public void playerToggleSneakEvent(boolean sneak) {
         if (isRecording) getTick2().sneak = sneak;
     }
 
-    public void BlockBreakEvent(Block block) {
+    public void blockBreakEvent(Block block) {
         if (isRecording) {
             ReplayTick replayTick = getTick2();
             replayTick.breakLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
@@ -55,13 +55,13 @@ public class ReplayRecorder implements Listener {
         }
     }
 
-    public void BlockPlaceEvent(int x, int y, int z) {
+    public void blockPlaceEvent(int x, int y, int z) {
         if (isRecording) {
             getTick2().blockLocation = member.currentMode.world.getBlockAt(x - member.PlayerCoord, y, z - (member.currentMode.inclined ? member.PlayerCoord : 0));
         }
     }
 
-    public void PlayerMoveEvent(Location loc) {
+    public void playerMoveEvent(Location loc) {
         if (isRecording) {
             NewTick ++;
             getTick().location = loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0);
