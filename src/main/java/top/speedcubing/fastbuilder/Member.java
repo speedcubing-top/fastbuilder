@@ -31,7 +31,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import top.speedcubing.fastbuilder.core.BlockEditor;
 import top.speedcubing.fastbuilder.core.Core;
+import top.speedcubing.fastbuilder.core.Custom;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.list.StringList;
@@ -334,15 +336,43 @@ public class Member {
 
     public void openSettings() {
         LangInv inventory = new LangInv(27, "%lang_inv_settings%");
-        inventory.setItem(ItemStackList.openkit, 12);
+
+        inventory.setItem(ItemStackList.openkit, (r) -> {
+            BlockEditor.createMainPage(r.getPlayer());
+        }, 12);
+
         String animationStatus = !animation ? "§aOn" : "§cOff"; //if off show on, if on show off
         inventory.setItem(new LangItem(Material.FEATHER).name("§eBlock Animation")
-                .lore2("§aClick here to turn " + animationStatus), 13);
-        if (!user.bGetWorld().getName().equals("Custom"))
+                .lore2("§aClick here to turn " + animationStatus), (r) -> {
+            Player player = r.getPlayer();
+            Member.getMember(player).animation = !Member.getMember(player).animation;
+            Member.getMember(player).openSettings();
+        }, 13);
+
+        if (!user.bGetWorld().getName().equals("Custom")) {
             inventory.setItem(ItemStackList.Reset, 14);
-        else if (user.bGetInventory().getItem(5) != null) {
+        } else if (user.bGetInventory().getItem(5) != null) {
             inventory.setItem(new LangItem(Material.MINECART).name("%fb_item_custom_loop%").lore2("%fb_lore_custom_loop%", (hits.isEmpty() ? "%lang_general_off%" : "%lang_general_on%")), 14);
         }
+        inventory.setClickEvent((r) -> {
+            Player player = r.getPlayer();
+            Member member = Member.getMember(player);
+            if (!player.getWorld().getName().equals("Custom"))
+                member.user.openLangInventory(ItemStackList.ResetConfirm);
+            else if (player.getInventory().getItem(5) != null) {
+                int[] center = member.Center;
+                boolean Loop = member.hits.isEmpty();
+                if (Loop)
+                    Custom.AddBB(center[0], center[1], member.PlayerCoord, member);
+                else
+                    member.hits.clear();
+                for (int z = -1; z <= 1; z++) {
+                    Main.setTypeCheck(player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z), Loop ? Material.AIR : Material.GOLD_PLATE, 22);
+//                                player.getWorld().getBlockAt(center[0] - 1, center[1] + 100, member.PlayerCoord + z).setType(Loop ? Material.AIR : Material.GOLD_PLATE);
+                }
+                player.closeInventory();
+            }
+        }, 14);
         user.openLangInventory(inventory);
     }
 

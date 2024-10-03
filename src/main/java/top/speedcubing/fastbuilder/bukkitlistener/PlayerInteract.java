@@ -221,7 +221,7 @@ public class PlayerInteract implements Listener {
         }
         if (c) {
             player.updateInventory();
-            player.getInventory().setItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length[member.user.lang] : ItemStackList.Height[member.user.lang]);
+            member.user.setLangItem(horizontal ? 5 : 6, horizontal ? ItemStackList.Length : ItemStackList.Height);
             SideBar.getSidebar(player).setLineByScore(StringList.CustomSideBar[member.user.lang][horizontal ? 4 : 7] + (settings[horizontal ? 0 : 1] + i), horizontal ? 7 : 4);
             member.LengthSettings[horizontal ? 0 : 1] += i;
             center[horizontal ? 0 : 1] += i;
