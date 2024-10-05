@@ -47,7 +47,7 @@ public class ReplayGUI {
                     ResultSet r = Database.systemConnection.select("id,score,time").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + mode + " AND fav=" + (fav ? 1 : 0)).orderBy("time DESC").limit(page * replaySize, replaySize + 1).executeQuery();
 
                     String[] modeName = {"fb_normal_name", "fb_short_name", "fb_long_name", "fb_onestack_name", "fb_inclined_name", "fb_inclinedshort_name", "fb_extrashort_name"};
-                    LangInv inventory = new LangInv(pageSize, "%lang_replay-fastbuilder%%" + modeName[mode] + "%");
+                    LangInv inventory = new LangInv(pageSize, "%lang_replay_fastbuilder%%lang_" + modeName[mode] + "%");
 
                     int i = 0;
                     member.replayPageList.clear();
