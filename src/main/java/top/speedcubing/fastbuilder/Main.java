@@ -1,6 +1,7 @@
 package top.speedcubing.fastbuilder;
 
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.speedcubing.common.database.Database;
 import top.speedcubing.common.events.ConfigReloadEvent;
 import top.speedcubing.fastbuilder.bukkitcmd.replay;
 import top.speedcubing.fastbuilder.bukkitcmd.stats;
@@ -43,6 +45,8 @@ import top.speedcubing.fastbuilder.replay.ReplayGUI;
 import top.speedcubing.fastbuilder.replay.ReplayRecorder;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
+import top.speedcubing.lib.utils.CryptoUtils;
+import top.speedcubing.lib.utils.bytes.DataConversion;
 import top.speedcubing.server.speedcubingServer;
 
 public class Main extends JavaPlugin implements Listener {
@@ -72,27 +76,6 @@ public class Main extends JavaPlugin implements Listener {
         new ItemStackList().Load();
         new BlockEditor().Load();
         new Custom().Load();
-//
-//        try {
-//            int i = 0;
-//            ResultSet resultSet = Database.systemConnection.select("id,datas").from("fbreplay").executeQuery();
-//            while (resultSet.next()) {
-//                System.out.print(i++ + " ");
-//                String id = DataConversion.byteArrayToHexString(resultSet.getBytes("id"));
-//                if (id.length() != 32) {
-//                    System.out.print(id);
-//                }
-//                String hash = CryptoUtils.toMD5(resultSet.getBytes("datas"));
-//                if (id.length() != 32) {
-//                    System.out.print("WRONG");
-//                }
-//                if (!id.equals(hash))
-//                    Database.systemConnection.update("fbreplay").set("id=X'" + hash + "'").where("id=X'" + id + "'");
-//                System.out.println();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
 

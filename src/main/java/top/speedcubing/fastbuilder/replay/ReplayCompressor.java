@@ -1,5 +1,6 @@
 package top.speedcubing.fastbuilder.replay;
 
+import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Blob;
 import java.sql.ResultSet;
@@ -12,8 +13,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.common.database.Database;
-import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.utils.CryptoUtils;
+import top.speedcubing.lib.utils.SystemUtils;
 import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.DataConversion;
 
@@ -72,17 +73,11 @@ public class ReplayCompressor {
             hex = "0" + hex;
         }
 
-        //hash
-        String hash;
-        try {
-            hash = CryptoUtils.toMD5(DataConversion.hexStringToByteArray(hex));
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
-            return;
-        }
+        long time = SystemUtils.getCurrentSecond();
 
+        //hash
         String uuidHex = UUIDUtils.undash(uuid);
-        Database.systemConnection.insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "X'" + hash + "',X'" + uuidHex + "'," + (System.currentTimeMillis() / 1000L) + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
+        Database.systemConnection.insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "UNHEX(MD5(CONCAT(X'" + hex + "'," + time + "))),X'" + uuidHex + "'," + time + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
     }
 
     public static Replay read(String replayID) {
