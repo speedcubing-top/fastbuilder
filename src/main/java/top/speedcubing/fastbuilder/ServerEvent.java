@@ -10,7 +10,6 @@ import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
 import net.minecraft.server.v1_8_R3.PacketPlayInHeldItemSlot;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSetSlot;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,28 +27,22 @@ import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.events.packet.PlayInEvent;
 import top.speedcubing.lib.eventbus.CubingEventHandler;
-import top.speedcubing.lib.minecraft.text.ComponentText;
-import top.speedcubing.lib.minecraft.text.TextClickEvent;
-import top.speedcubing.lib.minecraft.text.TextHoverEvent;
 import top.speedcubing.server.events.player.NickEvent;
 import top.speedcubing.server.events.player.SkinEvent;
 import top.speedcubing.server.events.player.ToggleFlyEvent;
 import top.speedcubing.server.lang.Lang;
-import top.speedcubing.server.player.User;
 import top.speedcubing.server.share.Chat;
 
 public class ServerEvent {
 
     @CubingEventHandler
     public void playInEvent(PlayInEvent e) {
-        Member member;
-        try {
-            member = Member.getMember(e.getPlayer());
-        } catch (Exception ex) {
+        Member member = Member.getMember(e.getPlayer());
+        if (member == null) {
             return;
         }
-        if (e.getPacket() instanceof PacketPlayInFlying) {
-            PacketPlayInFlying packetplayinflying = (PacketPlayInFlying) e.getPacket();
+
+        if (e.getPacket() instanceof PacketPlayInFlying packetplayinflying) {
             member.didntevenfuckingstart = member.asyncLoc.clone();
             Location loc = member.asyncLoc;
             if (packetplayinflying.g() && !(packetplayinflying.g() && packetplayinflying.b() == -999.0D)) {
@@ -130,8 +123,7 @@ public class ServerEvent {
                         }
                 }
             }
-        } else if (e.getPacket() instanceof PacketPlayInBlockPlace) {
-            PacketPlayInBlockPlace p = (PacketPlayInBlockPlace) e.getPacket();
+        } else if (e.getPacket() instanceof PacketPlayInBlockPlace p) {
             if (p.getFace() != 255 && e.getPlayer().getGameMode() == GameMode.SURVIVAL) {
                 ItemStack stack = p.getItemStack() == null ? null : CraftItemStack.asBukkitCopy(p.getItemStack());
                 if (stack == null)

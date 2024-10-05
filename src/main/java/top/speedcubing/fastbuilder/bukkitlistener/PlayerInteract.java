@@ -70,14 +70,14 @@ public class PlayerInteract implements Listener {
                     case COMPASS: {
 
                         LangItem[] builders = {
-                                new LangItem(Material.SANDSTONE).amount(51).durability(1).name("§b%fb_normal_name%"), //normal 0
-                                new LangItem(Material.SANDSTONE).amount(28).durability(1).name("§b%fb_short_name%"), //short 1
-                                new LangItem(Material.SANDSTONE).durability(1).name("§b%fb_long_name%"), //long 2
-                                new LangItem(Material.STEP).amount(50).durability(1).name("§b%fb_inclined_name%"), //inc 3
-                                new LangItem(Material.STEP).amount(30).durability(1).name("§b%fb_inclinedshort_name%"), //incs 4
-                                new LangItem(Material.SANDSTONE_STAIRS).amount(28).durability(1).name("§b%fb_onestack_name%"), //onestack 5
-                                new LangItem(Material.SANDSTONE).amount(16).durability(1).name("§b%fb_extrashort_name%"), //extrash 6
-                                new LangItem(Material.SANDSTONE).durability(1).name("§b%fb_custom_name%") //custom
+                                new LangItem(Material.SANDSTONE).amount(51).durability(1).name("§b%lang_fb_normal_name%"), //normal 0
+                                new LangItem(Material.SANDSTONE).amount(28).durability(1).name("§b%lang_fb_short_name%"), //short 1
+                                new LangItem(Material.SANDSTONE).durability(1).name("§b%lang_fb_long_name%"), //long 2
+                                new LangItem(Material.STEP).amount(50).durability(1).name("§b%lang_fb_inclined_name%"), //inc 3
+                                new LangItem(Material.STEP).amount(30).durability(1).name("§b%lang_fb_inclinedshort_name%"), //incs 4
+                                new LangItem(Material.SANDSTONE_STAIRS).amount(28).durability(1).name("§b%lang_fb_onestack_name%"), //onestack 5
+                                new LangItem(Material.SANDSTONE).amount(16).durability(1).name("§b%lang_fb_extrashort_name%"), //extrash 6
+                                new LangItem(Material.SANDSTONE).durability(1).name("§b%lang_fb_custom_name%") //custom
                         };
 
                         if (!player.getWorld().getName().equals("Custom"))

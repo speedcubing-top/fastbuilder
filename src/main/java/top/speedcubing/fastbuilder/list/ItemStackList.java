@@ -26,7 +26,7 @@ public class ItemStackList {
     public static LangItem PAUSE;
     public static LangItem RESTART;
     public static LangItem COPYID;
-    public static ItemStack[] Blocks = new ItemStack[80]; // blockedit-here
+    public static ItemStack[] Blocks = new ItemStack[81]; // blockedit-here
 
     public static LangItem[] categoryblockeditor = new LangItem[8];
 
@@ -39,7 +39,7 @@ public class ItemStackList {
     public static ItemStack[] quartzeditor = new ItemStack[3];
     public static ItemStack[] woodeditor = new ItemStack[12];
     public static ItemStack[] clayeditor = new ItemStack[17];
-    public static ItemStack[] specialeditor = new ItemStack[8]; // blockedit-here
+    public static ItemStack[] specialeditor = new ItemStack[9]; // blockedit-here
     public static LangInv replayBook;
     public static final LangInv ResetConfirm = new LangInv(27, "%lang_lobby_msg_sure_reset%")
             .setItem(new LangItem(Material.STAINED_CLAY).durability(13).name("%lang_general_yes%"), (r) -> {
@@ -68,23 +68,31 @@ public class ItemStackList {
                     ReplayGUI.openReplayPage(e.getPlayer(), Member.getMember(e.getPlayer()).currentMode.sqlId, false, 0);
                 }, 15);
 
-        String[] blockedit = {"§bBlock Skin", "§bBlock Skin", "§bBlock Skin", "§bBlock Skin"};
-        String[][] block = {
-                {"§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks", "§bSandstone Blocks"},
-                {"§bWool Blocks", "§bWool Blocks", "§bWool Blocks", "§bWool Blocks"},
-                {"§bOre (Blocks)", "§bOre (Blocks)", "§bOre (Blocks)", "§bOre (Blocks)"},
-                {"§bOres", "§bOres", "§bOres", "§bOres"},
-                {"§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks", "§bQuartz Blocks"},
-                {"§bWoods", "§bWoods", "§bWoods", "§bWoods"},
-                {"§bClay", "§bClay", "§bClay", "§bClay"},
-                {"§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks", "§bSpecial Blocks"}
-        };
+        Length = new LangItem(Material.IRON_INGOT).name("%lang_fb_custom_length%");
+        Height = new LangItem(Material.GOLD_INGOT).name("%lang_fb_custom_height%");
+        navigator = new LangItem(Material.COMPASS).name("%lang_fb_item_switchmode%");
+        pickaxe = new LangItem(Material.DIAMOND_PICKAXE).glow().name("%lang_fb_item_pickaxe%").hideAttr();
+        Replay = new LangItem(Material.BOOK).name("%lang_replay_inv%");
+        Settings = new LangItem(Material.REDSTONE_COMPARATOR).name("%lang_lobby_item_settings%");
+        Reset = new LangItem(Material.BARRIER).name("%lang_fb_reset_current%");
+        TICK = new LangItem(Material.BLAZE_ROD).name("%lang_replay_step%");
+        QUITREPLAY = new LangItem(Material.BARRIER).name("%lang_fb_exit_replay%");
+        START = new LangItem(Material.INK_SACK).durability(10).name("%lang_general_start%");
+        PAUSE = new LangItem(Material.INK_SACK).durability(1).name("%lang_general_pause%");
+        RESTART = new LangItem(Material.INK_SACK).durability(14).name("%lang_general_reset%");
+        openkit = new LangItem(Material.SANDSTONE).durability(2).name("%lang_block_inv%");
+        COPYID = new LangItem(Material.NAME_TAG).name("Copy Replay ID");
 
-        ItemStack[] blockeditor = {
-                new ItemBuilder(Material.MELON_BLOCK).build(),
-                new ItemBuilder(Material.SNOW_BLOCK).build(),
-                new ItemBuilder(Material.OBSIDIAN).build(),
-                new ItemBuilder(Material.ENDER_STONE).build()
+        LangItem[] categoryblockeditor = {
+                new LangItem(Material.SANDSTONE).name("%lang_block_item_sandstone%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.WOOL).name("%lang_block_item_wool%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.DIAMOND_BLOCK).name("%lang_block_item_ore%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.DIAMOND_ORE).name("%lang_block_item_ores%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.QUARTZ_BLOCK).name("%lang_block_item_quartz%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.WOOD).name("%lang_block_item_wood%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.STAINED_CLAY).name("%lang_block_item_clay%").lore2("%lang_inventory_see_category%"),
+                new LangItem(Material.BARRIER).name("%lang_block_item_special%").lore2("%lang_inventory_see_category%")
+
         };
 
         ItemStack[] sandstoneeditor = {
@@ -275,6 +283,7 @@ public class ItemStackList {
         };
 
         System.arraycopy(blocks, 0, ItemStackList.Blocks, 0, blocks.length);
+        System.arraycopy(categoryblockeditor, 0, ItemStackList.categoryblockeditor, 0, categoryblockeditor.length);
         System.arraycopy(blockeditor, 0, ItemStackList.blockeditor, 0, blockeditor.length);
         System.arraycopy(sandstoneeditor, 0, ItemStackList.sandstoneeditor, 0, sandstoneeditor.length);
         System.arraycopy(wooleditor, 0, ItemStackList.wooleditor, 0, wooleditor.length);
