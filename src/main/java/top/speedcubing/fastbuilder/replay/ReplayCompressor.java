@@ -77,11 +77,11 @@ public class ReplayCompressor {
 
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
-        Database.systemConnection.insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "UNHEX(MD5(CONCAT(X'" + hex + "'," + time + "))),X'" + uuidHex + "'," + time + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
+        Database.getCubing().insert("fbreplay", "id,uuid,time,datas,name,value,signature,score,mode,tas", "UNHEX(MD5(CONCAT(X'" + hex + "'," + time + "))),X'" + uuidHex + "'," + time + ",X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
     }
 
     public static Replay read(String replayID) {
-        ResultSet resultSet = Database.systemConnection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeQuery();
+        ResultSet resultSet = Database.getCubing().select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeQuery();
         return read(resultSet);
     }
 
