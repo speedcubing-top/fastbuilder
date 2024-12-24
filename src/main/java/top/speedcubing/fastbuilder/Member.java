@@ -52,7 +52,8 @@ public class Member {
     public static Map<Integer, Member> users = new HashMap<>();
 
     public static Member getMember(CommandSender sender) {
-        return getMember(User.getUser(sender).id);
+        User user = User.getUser(sender);
+        return user == null ? null : getMember(user.id);
     }
 
     public static Member getMember(int id) {
