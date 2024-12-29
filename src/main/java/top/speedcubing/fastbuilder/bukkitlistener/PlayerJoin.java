@@ -14,7 +14,7 @@ public class PlayerJoin implements Listener {
     public void PlayerJoinEvent(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         Member member = new Member(player);
-        member.animation = member.user.dbSelect("fastbuild_animation").getBoolean();
+        member.animation = member.user.dbSelect("fastbuild_animation").getBoolean(0);
         player.setGameMode(GameMode.SURVIVAL);
         Normal.instance.Join(player, false, true);
     }

@@ -109,7 +109,7 @@ public class Member {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(0, 30, 5));
         this.asyncLoc = new Location(user.bGetWorld(), 0, 0, 0);
         users.put(user.id, this);
-        blockskin = user.dbSelect("fastbuild_blockskin").getInt();
+        blockskin = user.dbSelect("fastbuild_blockskin").getInt(0);
     }
 
     public void clear(World world, boolean animation) {
@@ -220,7 +220,7 @@ public class Member {
         waiting = true;
         int msrecord = time * 5;
         String display = Core.tickToTime(time);
-        int last = user.dbSelect("fb_" + currentMode.sqlId + "_pb").getInt();
+        int last = user.dbSelect("fb_" + currentMode.sqlId + "_pb").getInt(0);
         if ((last == 0 || last > msrecord) && qualified) {
             user.dbUpdate("fb_" + currentMode.sqlId + "_pb=" + msrecord);
             SideBar.getSidebar(user.player).setLineByScore(StringList.SideBar[user.lang][4] + display, 9);

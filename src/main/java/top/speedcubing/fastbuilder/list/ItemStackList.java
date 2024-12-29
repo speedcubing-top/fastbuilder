@@ -95,6 +95,13 @@ public class ItemStackList {
 
         };
 
+        ItemStack[] blockeditor = {
+                new ItemBuilder(Material.MELON_BLOCK).durability(2).amount(64).build(),
+                new ItemBuilder(Material.SNOW_BLOCK).amount(64).build(),
+                new ItemBuilder(Material.OBSIDIAN).amount(64).build(),
+                new ItemBuilder(Material.ENDER_STONE).amount(64).build()
+        };
+
         ItemStack[] sandstoneeditor = {
                 new ItemBuilder(Material.SANDSTONE).build(),
                 new ItemBuilder(Material.SANDSTONE).durability(1).build(),

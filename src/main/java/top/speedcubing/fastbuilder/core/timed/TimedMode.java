@@ -91,7 +91,7 @@ public abstract class TimedMode {
         System.out.print("[Join] " + room + " " + member.user.bGetName() + " " + world.getName());
         setPressurePlate(member);
         String[] sidebar = StringList.SideBar[member.user.lang];
-        int a = member.user.dbSelect("fb_" + sqlId + "_pb").getInt();
+        int a = member.user.dbSelect("fb_" + sqlId + "_pb").getInt(0);
         SideBar sideBar = new SideBar(player, sidebar[0])
                 .staticLine(sidebar[1], 12)
                 .staticLine(sidebar[2], 11)

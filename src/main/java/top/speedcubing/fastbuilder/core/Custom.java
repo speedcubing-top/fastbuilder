@@ -3,7 +3,6 @@ package top.speedcubing.fastbuilder.core;
 
 import java.util.Set;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,6 +20,7 @@ import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
+import top.speedcubing.lib.utils.SQL.SQLRow;
 
 public class Custom {
     public static final int size = 31;
@@ -131,36 +131,34 @@ public class Custom {
         member.Blockplaced = 0;
         member.hits.clear();
         String[] sidebar = StringList.CustomSideBar[lang];
-        new Thread(() -> {
-            int[] Settings = ArrayUtils.toPrimitive(member.user.dbSelect("customfb_x,customfb_y").getIntArray());
-            member.LengthSettings = Settings;
-            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                new SideBar(player, sidebar[0])
-                        .staticLine(sidebar[1], 10)
-                        .staticLine(sidebar[2], 9)
-                        .staticLine(sidebar[3], 8)
-                        .changeableLine(sidebar[4] + Settings[0], 7)
-                        .staticLine(sidebar[5], 6)
-                        .staticLine(sidebar[6], 5)
-                        .changeableLine(sidebar[7] + Settings[1], 4)
-                        .staticLine(sidebar[8], 3)
-                        .staticLine(sidebar[9], 2)
-                        .changeableLine(sidebar[10] + "§7-,---", 1)
-                        .staticLine(sidebar[11], 0).create();
-                member.Center = new int[]{5 + Settings[0], Settings[1]};
-                for (int X = -2; X <= 2; X++) {
-                    for (int Y = 97; Y <= 99; Y++) {
-                        for (int Z = -2; Z <= 2; Z++) {
-                            Main.setTypeCheck(world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 9);
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+            SQLRow result = member.user.dbSelect("customfb_x,customfb_y");
+            member.LengthSettings = new int[]{result.getInt(0), result.getInt(1)};
+            new SideBar(player, sidebar[0])
+                    .staticLine(sidebar[1], 10)
+                    .staticLine(sidebar[2], 9)
+                    .staticLine(sidebar[3], 8)
+                    .changeableLine(sidebar[4] + result.getInt(0), 7)
+                    .staticLine(sidebar[5], 6)
+                    .staticLine(sidebar[6], 5)
+                    .changeableLine(sidebar[7] + result.getInt(1), 4)
+                    .staticLine(sidebar[8], 3)
+                    .staticLine(sidebar[9], 2)
+                    .changeableLine(sidebar[10] + "§7-,---", 1)
+                    .staticLine(sidebar[11], 0).create();
+            member.Center = new int[]{5 + result.getInt(0), result.getInt(1)};
+            for (int X = -2; X <= 2; X++) {
+                for (int Y = 97; Y <= 99; Y++) {
+                    for (int Z = -2; Z <= 2; Z++) {
+                        Main.setTypeCheck(world.getBlockAt(5 + result.getInt(0) + X, result.getInt(1) + Y, coord + Z), world.getBlockAt(-500 + X, Y, Z).getType(), 9);
 //                            world.getBlockAt(5 + Settings[0] + X, Settings[1] + Y, coord + Z).setType(world.getBlockAt(-500 + X, Y, Z).getType());
-                        }
                     }
                 }
-                player.teleport(new Location(world, -0.5, 100, coord + 0.5, 270, 0));
-                member.PlayerCoord = coord;
-                AddBB(5 + Settings[0], Settings[1], coord, member);
-            });
-        }).start();
+            }
+            player.teleport(new Location(world, -0.5, 100, coord + 0.5, 270, 0));
+            member.PlayerCoord = coord;
+            AddBB(5 + result.getInt(0), result.getInt(1), coord, member);
+        });
     }
 
 
