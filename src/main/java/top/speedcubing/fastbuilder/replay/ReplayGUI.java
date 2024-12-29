@@ -1,14 +1,5 @@
 package top.speedcubing.fastbuilder.replay;
 
-import java.sql.ResultSet;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,10 +9,21 @@ import top.speedcubing.fastbuilder.Main;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.core.Core;
 import top.speedcubing.fastbuilder.list.ItemStackList;
+import top.speedcubing.lib.utils.SQL.SQLConnection;
 import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.DataConversion;
 import top.speedcubing.server.lang.LangInv;
 import top.speedcubing.server.lang.LangItem;
+
+import java.sql.ResultSet;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ReplayGUI {
     public static int pageSize = 54;
@@ -41,10 +43,10 @@ public class ReplayGUI {
         if (!member.openingBook) {
             member.openingBook = true;
             member.isFavoritePage = fav;
+            String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
             executor.execute(() -> {
-                try {
-                    String uuidHex = UUIDUtils.undash(member.user.bGetUniqueId());
-                    ResultSet r = Database.getCubing().select("id,score,time").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + mode + " AND fav=" + (fav ? 1 : 0)).orderBy("time DESC").limit(page * replaySize, replaySize + 1).executeQuery();
+                try (SQLConnection connection = Database.getCubing();
+                     ResultSet r = connection.select("id,score,time").from("fbreplay").where("uuid=X'" + uuidHex + "' AND mode=" + mode + " AND fav=" + (fav ? 1 : 0)).orderBy("time DESC").limit(page * replaySize, replaySize + 1).executeQuery()) {
 
                     String[] modeName = {"fb_normal_name", "fb_short_name", "fb_long_name", "fb_onestack_name", "fb_inclined_name", "fb_inclinedshort_name", "fb_extrashort_name"};
                     LangInv inventory = new LangInv(pageSize, "%lang_replay_fastbuilder%%lang_" + modeName[mode] + "%");
@@ -70,7 +72,7 @@ public class ReplayGUI {
                                     member.joinReplayByReplayID(member.replayPageList.get(e.getEvent().getRawSlot()));
                                     break;
                                 case PICKUP_HALF:
-                                    Database.getCubing().update("fbreplay", "fav=" + (fav ? 0 : 1), "id=X'" + member.replayPageList.get(e.getEvent().getRawSlot()) + "'");
+                                    connection.update("fbreplay", "fav=" + (fav ? 0 : 1), "id=X'" + member.replayPageList.get(e.getEvent().getRawSlot()) + "'");
                                     ReplayGUI.openReplayPage(player, member.currentMode.sqlId, fav, page);
                                     break;
                             }
