@@ -1,5 +1,9 @@
 package top.speedcubing.fastbuilder.replay;
 
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,15 +11,11 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.lib.utils.SQL.SQLConnection;
+import top.speedcubing.lib.utils.SQL.SQLResult;
+import top.speedcubing.lib.utils.SQL.SQLRow;
 import top.speedcubing.lib.utils.SystemUtils;
 import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.DataConversion;
-
-import java.sql.Blob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
 
 public class ReplayCompressor {
 
@@ -82,16 +82,13 @@ public class ReplayCompressor {
     }
 
     public static Replay read(String replayID) {
-        try (SQLConnection connection = Database.getCubing();
-             ResultSet resultSet = connection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeQuery()) {
-            return read(resultSet);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        try (SQLConnection connection = Database.getCubing()) {
+            SQLResult result = connection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
+            return read(result);
         }
-        return null;
     }
 
-    private static Replay read(ResultSet r) {
+    private static Replay read(SQLResult result) {
         StringBuilder s = new StringBuilder();
         Blob datas;
         String id;
@@ -100,9 +97,10 @@ public class ReplayCompressor {
         String signature;
         int mode;
         try {
-            if (!r.next()) {
+            if (result.isEmpty()) {
                 return null;
             }
+            SQLRow r = result.get(0);
             id = DataConversion.byteArrayToHexString(r.getBytes("id"));
             datas = r.getBlob("datas");
             name = r.getString("name");
