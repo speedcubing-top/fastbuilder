@@ -52,7 +52,6 @@ public class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         MinecraftServer.getServer().getPropertyManager().setProperty("server-name", "fastbuilder");
         CubingEventManager.registerListeners(new ServerEvent());
-        new ConfigReloadEvent().call();
         registerCommands();
         registerListeners();
 
