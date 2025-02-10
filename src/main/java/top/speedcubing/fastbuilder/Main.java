@@ -13,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import top.speedcubing.common.events.ConfigReloadEvent;
 import top.speedcubing.fastbuilder.bukkitcmd.replay;
 import top.speedcubing.fastbuilder.bukkitcmd.stats;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockBreak;
