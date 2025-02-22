@@ -2,6 +2,7 @@ package top.speedcubing.fastbuilder.replay;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAbilities;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
@@ -261,9 +262,9 @@ public class ReplayViewer {
             if (inclined)
                 replayTick.location.setZ(replayTick.location.getZ() + coord);
             if (replayTick.blockLocation != null)
-                replayTick.blockLocation = world.getBlockAt(replayTick.blockLocation.getX() + coord, replayTick.blockLocation.getY(), replayTick.blockLocation.getZ() + (inclined ? coord : 0));
+                replayTick.blockLocation = new BlockPosition(replayTick.blockLocation.getX() + coord, replayTick.blockLocation.getY(), replayTick.blockLocation.getZ() + (inclined ? coord : 0));
             if (replayTick.breakLocation != null)
-                replayTick.breakLocation = world.getBlockAt(replayTick.breakLocation.getX() + coord, replayTick.breakLocation.getY(), replayTick.breakLocation.getZ() + (inclined ? coord : 0));
+                replayTick.breakLocation = new BlockPosition(replayTick.breakLocation.getX() + coord, replayTick.breakLocation.getY(), replayTick.breakLocation.getZ() + (inclined ? coord : 0));
         }
     }
 }

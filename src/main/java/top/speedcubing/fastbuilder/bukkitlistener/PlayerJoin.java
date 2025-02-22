@@ -5,9 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import top.speedcubing.common.database.Database;
-import top.speedcubing.fastbuilder.core.timed.Normal;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.core.timed.Normal;
 
 public class PlayerJoin implements Listener {
     @EventHandler

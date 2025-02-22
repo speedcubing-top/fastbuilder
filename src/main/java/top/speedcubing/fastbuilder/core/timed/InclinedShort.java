@@ -2,8 +2,9 @@ package top.speedcubing.fastbuilder.core.timed;
 
 public class InclinedShort extends TimedMode {
     public static TimedMode instance;
+
     public InclinedShort() {
-        super("map_fb_inclinedshort", "map_fb_replay_inclinedshort","fb_inclinedshort_yours", 4, 40, true, 18, 103);
+        super("map_fb_inclinedshort", "map_fb_replay_inclinedshort", "fb_inclinedshort_yours", 4, 40, true, 18, 103);
         instance = this;
     }
 

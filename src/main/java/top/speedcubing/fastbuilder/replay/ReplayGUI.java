@@ -54,7 +54,7 @@ public class ReplayGUI {
                     int i = 0;
                     member.replayPageList.clear();
                     int preserveSide = 2;
-                    for(SQLRow r : result) {
+                    for (SQLRow r : result) {
                         //found next page
                         String replayID = DataConversion.byteArrayToHexString(r.getBytes(0));
                         int score = r.getInt(1);

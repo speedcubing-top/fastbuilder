@@ -1,24 +1,15 @@
 package top.speedcubing.fastbuilder.replay;
 
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.lib.bukkit.inventory.Glow;
 
 public class ReplayRecorder implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void a(PlayerToggleSneakEvent e) {
-        Replay replay = Member.getMember(e.getPlayer()).replay;
-        if (replay != null)
-            replay.replayRecorder.playerToggleSneakEvent(e.isSneaking());
-    }
 
     public int NewTick = -1;
 
@@ -49,7 +40,7 @@ public class ReplayRecorder implements Listener {
     public void blockBreakEvent(Block block) {
         if (isRecording) {
             ReplayTick replayTick = getTick2();
-            replayTick.breakLocation = block.getWorld().getBlockAt(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
+            replayTick.breakLocation = new BlockPosition(block.getX() - member.PlayerCoord, block.getY(), block.getZ() - (member.currentMode.inclined ? member.PlayerCoord : 0));
             replayTick.breakMaterial = block.getType().getId();
             replayTick.breakDatas = block.getData();
         }
@@ -57,13 +48,13 @@ public class ReplayRecorder implements Listener {
 
     public void blockPlaceEvent(int x, int y, int z) {
         if (isRecording) {
-            getTick2().blockLocation = member.currentMode.world.getBlockAt(x - member.PlayerCoord, y, z - (member.currentMode.inclined ? member.PlayerCoord : 0));
+            getTick2().blockLocation = new BlockPosition(x - member.PlayerCoord, y, z - (member.currentMode.inclined ? member.PlayerCoord : 0));
         }
     }
 
     public void playerMoveEvent(Location loc) {
         if (isRecording) {
-            NewTick ++;
+            NewTick++;
             getTick().location = loc.clone().subtract(member.PlayerCoord, 0, member.currentMode.inclined ? member.PlayerCoord : 0);
         }
     }

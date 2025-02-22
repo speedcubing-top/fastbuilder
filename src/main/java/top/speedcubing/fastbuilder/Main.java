@@ -26,6 +26,7 @@ import top.speedcubing.fastbuilder.bukkitlistener.PlayerDropItem;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerInteract;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerJoin;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerQuit;
+import top.speedcubing.fastbuilder.bukkitlistener.PlayerSpawnLocation;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerToggleSneak;
 import top.speedcubing.fastbuilder.core.BlockEditor;
 import top.speedcubing.fastbuilder.core.Custom;
@@ -39,7 +40,6 @@ import top.speedcubing.fastbuilder.core.timed.Short;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.replay.ReplayGUI;
-import top.speedcubing.fastbuilder.replay.ReplayRecorder;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
 import top.speedcubing.server.speedcubingServer;
@@ -92,9 +92,9 @@ public class Main extends JavaPlugin implements Listener {
                 new PlayerInteract(),
                 new PlayerJoin(),
                 new PlayerQuit(),
+                new PlayerSpawnLocation(),
                 new PlayerToggleSneak(),
                 new EntityChangeBlock(),
-                new ReplayRecorder(null, null),
                 this);
     }
 

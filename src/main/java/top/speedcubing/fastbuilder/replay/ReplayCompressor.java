@@ -4,10 +4,8 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.lib.utils.SQL.SQLConnection;
@@ -41,14 +39,14 @@ public class ReplayCompressor {
                     append(doubleToString(location.getYaw())).
                     append(doubleToString(location.getPitch()));
             if (replayTick.blockLocation != null) {
-                Block block = replayTick.blockLocation;
+                BlockPosition block = replayTick.blockLocation;
                 s.append(intToString(1, 2))
                         .append(intToString(block.getX(), 4)).
                         append(intToString(block.getY(), 4)).
                         append(intToString(block.getZ(), 4));
             }
             if (replayTick.breakLocation != null) {
-                Block block = replayTick.breakLocation;
+                BlockPosition block = replayTick.breakLocation;
                 s.append(intToString(2, 2)).
                         append(intToString(block.getX(), 4)).
                         append(intToString(block.getY(), 4)).
@@ -119,20 +117,19 @@ public class ReplayCompressor {
             return null;
         }
 
-        World world = Bukkit.getWorld("world");
         Replay replay = new Replay(id, mode);
         replay.name = name;
         replay.value = value;
         replay.signature = signature;
         replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
-        replay.StartLocation = new Location(world, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
+        replay.StartLocation = new Location(null, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
         ReplayTick replayTick = null;
         while (s.length() != 0) {
             if (s.toString().startsWith("00")) {
                 replayTick = new ReplayTick();
-                replayTick.location = new Location(world,
+                replayTick.location = new Location(null,
                         StringToDouble(s.substring(2, 10)),
                         StringToDouble(s.substring(10, 18)),
                         StringToDouble(s.substring(18, 26)),
@@ -141,10 +138,10 @@ public class ReplayCompressor {
                 replay.ticks.add(replayTick);
                 s = new StringBuilder(s.substring(42));
             } else if (s.toString().startsWith("01")) {
-                replayTick.blockLocation = world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
+                replayTick.blockLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
                 s = new StringBuilder(s.substring(14));
             } else if (s.toString().startsWith("02")) {
-                replayTick.breakLocation = world.getBlockAt(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
+                replayTick.breakLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
                 replayTick.breakMaterial = stringToInt(s.substring(14, 18));
                 replayTick.breakDatas = (byte) stringToInt(s.substring(18, 20));
                 s = new StringBuilder(s.substring(20));

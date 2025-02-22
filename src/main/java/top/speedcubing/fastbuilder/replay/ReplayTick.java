@@ -1,14 +1,14 @@
 package top.speedcubing.fastbuilder.replay;
 
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 
 public class ReplayTick {
     public Location location;
 
-    public Block blockLocation;
+    public BlockPosition blockLocation;
 
-    public Block breakLocation;
+    public BlockPosition breakLocation;
     public int breakMaterial;
     public byte breakDatas;
 

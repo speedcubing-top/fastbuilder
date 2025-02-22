@@ -160,7 +160,7 @@ public abstract class TimedMode {
     }
 
 
-    public void Quit(Player player) {
+    public void quit(Player player) {
         Member member = Member.getMember(player);
         member.replay = null;
         member.updateSidebar(player.getName(), this, true);
