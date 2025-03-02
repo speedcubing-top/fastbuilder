@@ -75,7 +75,9 @@ public class ReplayGUI {
                                 member.joinReplayByReplayID(member.replayPageList.get(e.getEvent().getRawSlot()));
                                 break;
                             case PICKUP_HALF:
-                                connection.update("fbreplay", "fav=" + (fav ? 0 : 1), "id=X'" + member.replayPageList.get(e.getEvent().getRawSlot()) + "'");
+                                try (SQLConnection conn = Database.getCubing()) {
+                                    conn.update("fbreplay", "fav=" + (fav ? 0 : 1), "id=X'" + member.replayPageList.get(e.getEvent().getRawSlot()) + "'");
+                                }
                                 ReplayGUI.openReplayPage(player, member.currentMode.sqlId, fav, page);
                                 break;
                         }
