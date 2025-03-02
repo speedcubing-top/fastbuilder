@@ -3,12 +3,15 @@ package top.speedcubing.fastbuilder.replay;
 import com.mojang.authlib.properties.Property;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
 
 public class Replay {
+    public static ScheduledExecutorService replayReaderPool = Executors.newScheduledThreadPool(5);
     public final ReplayRecorder replayRecorder;
     public final int replayModeID;
     public final List<ReplayTick> ticks = new ArrayList<>();

@@ -172,25 +172,37 @@ public class Member {
     }
 
     public void joinReplayByReplayID(String replayID) {
-        joinReplay(ReplayCompressor.read(replayID), false);
+        Replay.replayReaderPool.execute(() -> {
+            try {
+                joinReplay(ReplayCompressor.read(replayID), false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void joinReplay(Replay replay, boolean lastAttempt) {
         if (replayViewer != null)
             replayViewer.unwatch();
-        if (replay != null) {
-            TimedMode replayMode = Core.getInstanceByID(replay.replayModeID);
-            this.replayMode = replayMode;
+        if (replay == null) {
+            user.sendMessage("%lang_general_notfound%");
+            return;
+        }
 
-            int room = (++replayMode.replayRoom);
-            ReplayCoord = replayMode.roomToCoord(room) / 8 * 500;
+        TimedMode replayMode = Core.getInstanceByID(replay.replayModeID);
+        this.replayMode = replayMode;
 
+        int room = (++replayMode.replayRoom);
+        ReplayCoord = replayMode.roomToCoord(room) / 8 * 500;
+        if (lastAttempt)
+            replay.tickSize = replay.ticks.size();
+
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
             user.bSetGameMode(GameMode.ADVENTURE);
             user.bSetAllowFlight(true);
             user.bSetFlying(true);
             setLoc(replayMode.replayWorld, ReplayCoord + 0.5, 100, replayMode.inclined ? ReplayCoord + 0.5 : -4.5, replayMode.inclined ? 225 : 0, 0);
-            if (lastAttempt)
-                replay.tickSize = replay.ticks.size();
+
             replayViewer = new ReplayViewer(this, replay, lastAttempt);
             if (replayMode.inclined)
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, replayMode.replayWorld);
@@ -203,8 +215,7 @@ public class Member {
             user.setLangItem(6, ItemStackList.QUITREPLAY);
             if (!lastAttempt)
                 user.setLangItem(8, ItemStackList.COPYID);
-        } else
-            user.sendMessage("%lang_general_notfound%");
+        });
     }
 
     public void finish() {

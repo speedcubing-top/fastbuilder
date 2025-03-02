@@ -80,13 +80,13 @@ public class ReplayCompressor {
     }
 
     public static Replay read(String replayID) {
+        SQLResult result;
         try (SQLConnection connection = Database.getCubing()) {
-            SQLResult result = connection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
-            return read(result);
+            result = connection.select("id,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
+        } catch (Exception e) {
+            return null;
         }
-    }
 
-    private static Replay read(SQLResult result) {
         StringBuilder s = new StringBuilder();
         Blob datas;
         String id;
@@ -126,7 +126,7 @@ public class ReplayCompressor {
         replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
         s = new StringBuilder(s.substring(48));
         ReplayTick replayTick = null;
-        while (s.length() != 0) {
+        while (!s.isEmpty()) {
             if (s.toString().startsWith("00")) {
                 replayTick = new ReplayTick();
                 replayTick.location = new Location(null,
