@@ -19,7 +19,6 @@ import top.speedcubing.fastbuilder.bukkitlistener.BlockBreak;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockPlace;
 import top.speedcubing.fastbuilder.bukkitlistener.EntityChangeBlock;
 import top.speedcubing.fastbuilder.bukkitlistener.EntityDamage;
-import top.speedcubing.fastbuilder.bukkitlistener.FoodLevelChange;
 import top.speedcubing.fastbuilder.bukkitlistener.InventoryClick;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerChangedWorld;
 import top.speedcubing.fastbuilder.bukkitlistener.PlayerDropItem;
@@ -84,7 +83,6 @@ public class Main extends JavaPlugin implements Listener {
         speedcubingServer.registerListeners(
                 new BlockBreak(),
                 new BlockPlace(),
-                new FoodLevelChange(),
                 new EntityDamage(),
                 new InventoryClick(),
                 new PlayerChangedWorld(),
