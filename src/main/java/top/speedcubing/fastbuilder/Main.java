@@ -40,6 +40,7 @@ import top.speedcubing.fastbuilder.core.timed.Short;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.replay.ReplayGUI;
+import top.speedcubing.fastbuilder.replay.io.ReplayIO;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
 import top.speedcubing.server.speedcubingServer;
@@ -60,6 +61,7 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getWorld("Custom").setAutoSave(false);
 
         new ReplayGUI().init();
+        ReplayIO.init();
         modes.add(new Normal());
         modes.add(new Short());
         modes.add(new Long());

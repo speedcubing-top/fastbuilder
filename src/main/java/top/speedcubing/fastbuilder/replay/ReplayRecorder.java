@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.io.ReplayIO;
 import top.speedcubing.lib.bukkit.inventory.Glow;
 
 public class ReplayRecorder implements Listener {
@@ -17,10 +18,12 @@ public class ReplayRecorder implements Listener {
     public boolean isRecording = true;
 
     public final Replay replay;
+    public final ReplayIO replayIO;
 
-    public ReplayRecorder(Replay replay, Member member) {
+    public ReplayRecorder(Replay replay, Member member, ReplayIO replayIO) {
         this.member = member;
         this.replay = replay;
+        this.replayIO = replayIO;
     }
 
     public void playerItemHeldEvent(ItemStack stack) {
@@ -78,6 +81,6 @@ public class ReplayRecorder implements Listener {
     public void pause(boolean write, boolean TAS) {
         isRecording = false;
         if (write)
-            ReplayCompressor.write(replay, member.user.bGetUniqueId(), TAS);
+            replayIO.write(replay, member.user.bGetUniqueId(), TAS);
     }
 }

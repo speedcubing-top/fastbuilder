@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
+import top.speedcubing.fastbuilder.replay.io.ReplayIO;
+import top.speedcubing.fastbuilder.replay.io.ReplayIOv2;
 
 public class Replay {
     public static ScheduledExecutorService replayReaderPool = Executors.newScheduledThreadPool(5);
@@ -25,7 +27,7 @@ public class Replay {
     public int tickSize;
 
     public Replay(Member member, Location startLocation) {
-        this.replayRecorder = new ReplayRecorder(this, member);
+        this.replayRecorder = new ReplayRecorder(this, member, ReplayIO.getLatest());
         this.StartSneaking = member.user.bIsSneaking();
         this.StartLocation = startLocation.subtract(member.PlayerCoord, 0, 0);
         this.StartItem = member.user.bGetInventory().getItem(member.asyncHeldItemSlot);

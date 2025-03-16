@@ -38,7 +38,8 @@ import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
-import top.speedcubing.fastbuilder.replay.ReplayCompressor;
+import top.speedcubing.fastbuilder.replay.io.ReplayIO;
+import top.speedcubing.fastbuilder.replay.io.ReplayIOv1;
 import top.speedcubing.fastbuilder.replay.ReplayViewer;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
@@ -174,7 +175,7 @@ public class Member {
     public void joinReplayByReplayID(String replayID) {
         Replay.replayReaderPool.execute(() -> {
             try {
-                joinReplay(ReplayCompressor.read(replayID), false);
+                joinReplay(ReplayIO.readAuto(replayID), false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
