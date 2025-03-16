@@ -26,57 +26,54 @@ public class ReplayIOv2 extends ReplayIO {
     //upload replay object to db
     public void write(Replay replay, UUID uuid, boolean TAS) {
         ByteArrayBuffer buffer = new ByteArrayBuffer();
-        try {
-            buffer.writeBoolean(replay.StartSneaking);
-            buffer.writeDouble(replay.StartLocation.getX());
-            buffer.writeDouble(replay.StartLocation.getY());
-            buffer.writeDouble(replay.StartLocation.getZ());
-            buffer.writeFloat(replay.StartLocation.getYaw());
-            buffer.writeFloat(replay.StartLocation.getPitch());
-            buffer.writeVarInt(replay.StartItem.getTypeId());
-            buffer.writeByte(replay.StartItem.getData().getData());
 
+        // init item
+        buffer.writeBoolean(replay.StartSneaking);
+        buffer.writeDouble(replay.StartLocation.getX());
+        buffer.writeDouble(replay.StartLocation.getY());
+        buffer.writeDouble(replay.StartLocation.getZ());
+        buffer.writeFloat(replay.StartLocation.getYaw());
+        buffer.writeFloat(replay.StartLocation.getPitch());
+        buffer.writeVarInt(replay.StartItem.getTypeId());
+        buffer.writeByte(replay.StartItem.getData().getData());
 
-            List<ReplayTick> ticks = replay.ticks;
-            for (int i = 0; i < ticks.size(); i++) {
-                ReplayTick replayTick = replay.ticks.get(i);
-                Location location = replayTick.location;
+        List<ReplayTick> ticks = replay.ticks;
+        for (int i = 0; i < ticks.size(); i++) {
+            ReplayTick replayTick = replay.ticks.get(i);
+            Location location = replayTick.location;
 
-                buffer.write(0);
-                buffer.writeDouble(location.getX());
-                buffer.writeDouble(location.getY());
-                buffer.writeDouble(location.getZ());
-                buffer.writeFloat(location.getYaw());
-                buffer.writeFloat(location.getPitch());
+            buffer.write(0);
+            buffer.writeDouble(location.getX());
+            buffer.writeDouble(location.getY());
+            buffer.writeDouble(location.getZ());
+            buffer.writeFloat(location.getYaw());
+            buffer.writeFloat(location.getPitch());
 
-                if (replayTick.blockLocation != null) {
-                    BlockPosition block = replayTick.blockLocation;
-                    buffer.write(1);
-                    buffer.writeVarInt(block.getX());
-                    buffer.writeVarInt(block.getY());
-                    buffer.writeVarInt(block.getZ());
-                }
-                if (replayTick.breakLocation != null) {
-                    BlockPosition block = replayTick.breakLocation;
-                    buffer.write(2);
-                    buffer.writeVarInt(block.getX());
-                    buffer.writeVarInt(block.getY());
-                    buffer.writeVarInt(replayTick.breakMaterial);
-                    buffer.writeByte(replayTick.breakDatas);
-                }
-                if (replayTick.sneak != null) {
-                    buffer.write(3);
-                    buffer.writeBoolean(replayTick.sneak);
-                }
-                if (replayTick.handMaterial != null) {
-                    buffer.write(4);
-                    buffer.writeVarInt(replayTick.handMaterial);
-                    buffer.writeBoolean(replayTick.handEchants);
-                    buffer.writeByte(replayTick.handDatas);
-                }
+            if (replayTick.blockLocation != null) {
+                BlockPosition block = replayTick.blockLocation;
+                buffer.write(1);
+                buffer.writeVarInt(block.getX());
+                buffer.writeVarInt(block.getY());
+                buffer.writeVarInt(block.getZ());
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            if (replayTick.breakLocation != null) {
+                BlockPosition block = replayTick.breakLocation;
+                buffer.write(2);
+                buffer.writeVarInt(block.getX());
+                buffer.writeVarInt(block.getY());
+                buffer.writeVarInt(replayTick.breakMaterial);
+                buffer.writeByte(replayTick.breakDatas);
+            }
+            if (replayTick.sneak != null) {
+                buffer.write(3);
+                buffer.writeBoolean(replayTick.sneak);
+            }
+            if (replayTick.handMaterial != null) {
+                buffer.write(4);
+                buffer.writeVarInt(replayTick.handMaterial);
+                buffer.writeBoolean(replayTick.handEchants);
+                buffer.writeByte(replayTick.handDatas);
+            }
         }
 
         byte[] compressed = ReplayCompressor.compress(buffer.toByteArray());
