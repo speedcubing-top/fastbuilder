@@ -11,7 +11,6 @@ import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -101,7 +100,7 @@ public class ReplayViewer {
     }
 
     public void start() {
-        if (!playing)
+        if (!playing) {
             if (tick != replay.tickSize - 1) {
                 member.user.setLangItem(2, ItemStackList.PAUSE);
                 task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
@@ -109,7 +108,6 @@ public class ReplayViewer {
                     if (tick == replay.tickSize - 1) {
                         Bukkit.getScheduler().cancelTask(task);
                         playing = false;
-                        member.user.setLangItem(2, ItemStackList.RESTART);
                     }
                 }, 0, 1);
             } else {
@@ -125,7 +123,7 @@ public class ReplayViewer {
                 member.user.setLangItem(2, ItemStackList.START);
                 npc.updateNpcLocation();
             }
-        else {
+        } else {
             member.user.setLangItem(2, ItemStackList.START);
             Bukkit.getScheduler().cancelTask(task);
         }
@@ -146,101 +144,107 @@ public class ReplayViewer {
     }
 
     public void minusTick() {
-        if (tick != 0) {
-
-            if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
-                member.user.setLangItem(2, ItemStackList.START);
-            ReplayTick replayTick = replay.ticks.get(tick - 1);
-            ReplayTick last = tick == 1 ? null : replay.ticks.get(tick - 2);
-
-            //NPC Location
-            if (tick == 1)
-                setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
-            else
-                setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
-            npc.updateNpcLocation();
-
-            //Undo Place
-            if (replayTick.blockLocation != null) {
-                Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR, 1);
-//                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
-            }
-
-            //Undo Break
-            if (replayTick.breakLocation != null) {
-                Block newP = player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ());
-                Main.setTypeCheck(newP, Material.getMaterial(replayTick.breakMaterial), 3);
-//                newP.setType(Material.getMaterial(replayTick.breakMaterial));
-                Main.setDataCheck(newP, replayTick.breakDatas);
-//                newP.setData(replayTick.breakDatas);
-            }
-
-            //Sneak
-            if (replayTick.sneak != null)
-                npc.setSneaking(!replayTick.sneak);
-
-            //Hand
-            if (replayTick.handMaterial != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
-                if (tick == 1)
-                    currentItem = replay.StartItem;
-                else {
-                    currentItem = new ItemStack(last.handMaterial, 1, last.handDatas);
-                    if (last.handEchants)
-                        ItemUtils.glow(currentItem);
-                }
-                npc.setItemInHand(currentItem);
-            }
-
-            tick--;
-            actionbar();
+        if (tick == 0) {
+            return;
         }
+
+        if (!playing && player.getInventory().getItem(2).getData().getData() == 14)
+            member.user.setLangItem(2, ItemStackList.START);
+        ReplayTick replayTick = replay.ticks.get(tick - 1);
+        ReplayTick last = tick == 1 ? null : replay.ticks.get(tick - 2);
+
+        //NPC Location
+        if (tick == 1)
+            setLocation(replay.StartLocation.getX(), replay.StartLocation.getY(), replay.StartLocation.getZ(), replay.StartLocation.getYaw(), replay.StartLocation.getPitch());
+        else
+            setLocation(last.location.getX(), last.location.getY(), last.location.getZ(), last.location.getYaw(), last.location.getPitch());
+        npc.updateNpcLocation();
+
+        //Undo Place
+        if (replayTick.blockLocation != null) {
+            Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()), Material.AIR, 1);
+//                player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ()).setType(Material.AIR);
+        }
+
+        //Undo Break
+        if (replayTick.breakLocation != null) {
+            Block newP = player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ());
+            Main.setTypeCheck(newP, Material.getMaterial(replayTick.breakMaterial), 3);
+//                newP.setType(Material.getMaterial(replayTick.breakMaterial));
+            Main.setDataCheck(newP, replayTick.breakDatas);
+//                newP.setData(replayTick.breakDatas);
+        }
+
+        //Sneak
+        if (replayTick.sneak != null)
+            npc.setSneaking(!replayTick.sneak);
+
+        //Hand
+        if (replayTick.handMaterial != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
+            if (tick == 1)
+                currentItem = replay.StartItem;
+            else {
+                currentItem = new ItemStack(last.handMaterial, 1, last.handDatas);
+                if (last.handEchants)
+                    ItemUtils.glow(currentItem);
+            }
+            npc.setItemInHand(currentItem);
+        }
+
+        tick--;
+        actionbar();
     }
 
     public void addoneTick() {
-        if (tick != replay.tickSize - 1) {
-
-            ReplayTick replayTick = replay.ticks.get(tick);
-
-            //NPC Location
-            setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
-            npc.updateNpcLocation();
-
-            //Place
-            if (replayTick.blockLocation != null) {
-                Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());
-                ReplayTick next = replay.ticks.get(tick + 1);
-                ItemStack b = currentItem.getType().isBlock() ? currentItem : new ItemStack(next.handMaterial, 1, next.handDatas);
-                Main.setTypeCheck(newP, Material.getMaterial(b.getTypeId()), 4);
-//                newP.setType(Material.getMaterial(currentItem.getTypeId()));
-                Main.setDataCheck(newP, b.getData().getData());
-//                newP.setData(currentItem.getData().getData());
-                npc.animation(0);
-            }
-
-            //Break
-            if (replayTick.breakLocation != null) {
-                Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()), Material.AIR, 5);
-//                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
-                npc.animation(0);
-            }
-
-            //Sneak
-            if (replayTick.sneak != null)
-                npc.setSneaking(replayTick.sneak);
-
-            //Hand
-            if (replayTick.handMaterial != null) {
-                ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
-                if (last != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
-                    currentItem = new ItemStack(replayTick.handMaterial, 1, replayTick.handDatas);
-                    if (replayTick.handEchants)
-                        ItemUtils.glow(currentItem);
-                    npc.setItemInHand(currentItem);
-                }
-            }
-            tick++;
-            actionbar();
+        if (tick == replay.tickSize - 1) {
+            return;
         }
+        if (tick == replay.tickSize - 2) {
+            member.user.setLangItem(2, ItemStackList.RESTART);
+        }
+
+        ReplayTick replayTick = replay.ticks.get(tick);
+
+        //NPC Location
+        setLocation(replayTick.location.getX(), replayTick.location.getY(), replayTick.location.getZ(), replayTick.location.getYaw(), replayTick.location.getPitch());
+        npc.updateNpcLocation();
+
+        //Place
+        if (replayTick.blockLocation != null) {
+            Block newP = player.getWorld().getBlockAt(replayTick.blockLocation.getX(), replayTick.blockLocation.getY(), replayTick.blockLocation.getZ());
+            ReplayTick next = replay.ticks.get(tick + 1);
+            ItemStack b = currentItem.getType().isBlock() ? currentItem : new ItemStack(next.handMaterial, 1, next.handDatas);
+            Main.setTypeCheck(newP, Material.getMaterial(b.getTypeId()), 4);
+//                newP.setType(Material.getMaterial(currentItem.getTypeId()));
+            Main.setDataCheck(newP, b.getData().getData());
+//                newP.setData(currentItem.getData().getData());
+            npc.animation(0);
+        }
+
+        //Break
+        if (replayTick.breakLocation != null) {
+            Main.setTypeCheck(player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()), Material.AIR, 5);
+//                player.getWorld().getBlockAt(replayTick.breakLocation.getX(), replayTick.breakLocation.getY(), replayTick.breakLocation.getZ()).setType(Material.AIR);
+            npc.animation(0);
+        }
+
+        //Sneak
+        if (replayTick.sneak != null) {
+            npc.setSneaking(replayTick.sneak);
+        }
+
+        //Hand
+        if (replayTick.handMaterial != null) {
+            ReplayTick last = tick == 0 ? null : replay.ticks.get(tick - 1);
+            if (last != null && last.handMaterial != null && !replayTick.handMaterial.equals(last.handMaterial)) {
+                currentItem = new ItemStack(replayTick.handMaterial, 1, replayTick.handDatas);
+                if (replayTick.handEchants)
+                    ItemUtils.glow(currentItem);
+                npc.setItemInHand(currentItem);
+            }
+        }
+        tick++;
+        actionbar();
     }
 
     public void unwatch() {
@@ -253,7 +257,6 @@ public class ReplayViewer {
 
     void serial(int coord) {
         boolean inclined = member.replayMode.inclined;
-        World world = replay.StartLocation.getWorld();
         replay.StartLocation.setX(replay.StartLocation.getX() + coord);
         if (inclined)
             replay.StartLocation.setZ(replay.StartLocation.getZ() + coord);
