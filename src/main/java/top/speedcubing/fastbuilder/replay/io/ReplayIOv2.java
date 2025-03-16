@@ -61,6 +61,7 @@ public class ReplayIOv2 extends ReplayIO {
                 buffer.write(2);
                 buffer.writeVarInt(block.getX());
                 buffer.writeVarInt(block.getY());
+                buffer.writeVarInt(block.getZ());
                 buffer.writeVarInt(replayTick.breakMaterial);
                 buffer.writeByte(replayTick.breakDatas);
             }
