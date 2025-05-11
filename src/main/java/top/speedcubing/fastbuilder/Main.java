@@ -7,7 +7,6 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
-import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,6 +42,7 @@ import top.speedcubing.fastbuilder.replay.io.ReplayIO;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
 import top.speedcubing.server.speedcubingServer;
+import top.speedcubing.server.utils.MapManager;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -54,10 +54,12 @@ public class Main extends JavaPlugin implements Listener {
         registerCommands();
         registerListeners();
 
-        getServer().createWorld(new WorldCreator("Custom"));
-        Bukkit.getWorld("Custom").setDifficulty(Difficulty.PEACEFUL);
-        Bukkit.getWorld("Custom").setTime(6000);
-        Bukkit.getWorld("Custom").setAutoSave(false);
+        try {
+            MapManager.install("Custom", "Custom", Difficulty.PEACEFUL, 6000, false);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
 
         new ReplayGUI().init();
         ReplayIO.init();
