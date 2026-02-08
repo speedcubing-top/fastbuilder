@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -31,6 +32,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.github.paperspigot.Title;
 import top.speedcubing.fastbuilder.core.BlockEditor;
 import top.speedcubing.fastbuilder.core.Core;
 import top.speedcubing.fastbuilder.core.Custom;
@@ -199,17 +201,21 @@ public class Member {
             replay.tickSize = replay.ticks.size();
 
         Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+            user.bGetInventory().clear();
+            user.player.sendTitle(new Title("§aReplay Loading...", "", 0, 100, 0));
             user.bSetGameMode(GameMode.ADVENTURE);
             user.bSetAllowFlight(true);
             user.bSetFlying(true);
             setLoc(replayMode.replayWorld, ReplayCoord + 0.5, 100, replayMode.inclined ? ReplayCoord + 0.5 : -4.5, replayMode.inclined ? 225 : 0, 0);
 
             replayViewer = new ReplayViewer(this, replay, lastAttempt);
-            if (replayMode.inclined)
+            if (replayMode.inclined) {
                 WorldUtils.cloneArea(-3, 91, 3, 33, 106, -33, -3 + ReplayCoord, 91, 3 + ReplayCoord, replayMode.replayWorld);
-            else
+            } else {
                 WorldUtils.cloneArea(-4, 83, -9, 5, 132, 100, -4 + ReplayCoord, 83, -9, replayMode.replayWorld);
+            }
 
+            user.player.resetTitle();
             user.bGetInventory().clear();
             user.setLangItem(2, ItemStackList.START);
             user.setLangItem(4, ItemStackList.TICK);
