@@ -56,7 +56,8 @@ public class PlayerInteract implements Listener {
                         if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                             Block b = e.getClickedBlock();
                             if (member.placedBlockList.contains(b)) {
-                                member.replay.replayRecorder.blockBreakEvent(b);
+                                if (member.replay != null)
+                                    member.replay.replayRecorder.blockBreakEvent(b);
                                 member.placedBlockList.remove(b);
                                 Main.setTypeCheck(b, Material.AIR, 17);
 //                                b.setType(Material.AIR);

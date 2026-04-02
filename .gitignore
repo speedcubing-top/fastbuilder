@@ -3,3 +3,5 @@
 /out
 dependency-reduced-pom.xml
 *.iml
+CLAUDE.md
+AGENTS.md

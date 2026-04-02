@@ -44,6 +44,7 @@ public abstract class TimedMode {
     public TimedMode(String world, String replayWorld, String worldName, int sqlId, int limit, boolean inclined, int distance, int height) {
         Arrays.fill(rooms, true);
         Arrays.fill(replayRooms, true);
+        replayRooms[0] = false; // room 0 maps to coord 0, rejected by replay world guard
         this.inclined = inclined;
         this.limit = limit;
         this.sqlId = sqlId;
