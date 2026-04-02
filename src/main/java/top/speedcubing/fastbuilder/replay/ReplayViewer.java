@@ -250,6 +250,12 @@ public class ReplayViewer {
     public void unwatch() {
         timer.cancel();
         Bukkit.getScheduler().cancelTask(task);
+        npc.despawn();
+        npc.delete();
+        if (member.replayRoomSlot != -1 && member.replayMode != null) {
+            member.replayMode.replayRooms[member.replayRoomSlot] = true;
+            member.replayRoomSlot = -1;
+        }
         member.replayViewer = null;
         if (lastAttempt)
             serial(-member.PlayerCoord);

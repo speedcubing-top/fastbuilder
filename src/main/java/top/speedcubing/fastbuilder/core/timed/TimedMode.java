@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -23,6 +21,7 @@ import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
+import top.speedcubing.server.speedcubingServer;
 import top.speedcubing.server.utils.MapManager;
 
 public abstract class TimedMode {
@@ -39,11 +38,12 @@ public abstract class TimedMode {
     public World replayWorld;
     public World world;
     public int used = 0;
-    public int replayRoom = 1;
+    public final boolean[] replayRooms = new boolean[size];
     public final Map<Member, Replay> lastAttempt = new HashMap<>();
 
     public TimedMode(String world, String replayWorld, String worldName, int sqlId, int limit, boolean inclined, int distance, int height) {
         Arrays.fill(rooms, true);
+        Arrays.fill(replayRooms, true);
         this.inclined = inclined;
         this.limit = limit;
         this.sqlId = sqlId;
@@ -62,12 +62,8 @@ public abstract class TimedMode {
         if (used == size) {
             player.sendMessage("There is no enough servers. please report this to speedcubing.");
             if (kick) {
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        BungeePluginMessage.switchServer(player, "lobby");
-                    }
-                }, 500);
+                Bukkit.getScheduler().runTaskLater(speedcubingServer.getInstance(), () ->
+                        BungeePluginMessage.switchServer(player, "lobby"), 10L);
             } else
                 player.closeInventory();
             return;
@@ -163,6 +159,7 @@ public abstract class TimedMode {
     public void quit(Player player) {
         Member member = Member.getMember(player);
         member.replay = null;
+        lastAttempt.remove(member);
         member.updateSidebar(player.getName(), this, true);
         used -= 1;
         rooms[coordToRoom(member.PlayerCoord)] = true;

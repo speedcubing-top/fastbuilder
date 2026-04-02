@@ -77,6 +77,7 @@ public class Member {
     public List<Block> placedBlockList = new ArrayList<>();
     public int PlayerCoord;
     public int ReplayCoord;
+    public int replayRoomSlot = -1;
 
     public TimedMode currentMode;
 
@@ -195,7 +196,19 @@ public class Member {
         TimedMode replayMode = Core.getInstanceByID(replay.replayModeID);
         this.replayMode = replayMode;
 
-        int room = (++replayMode.replayRoom);
+        int room = -1;
+        for (int h = 0; h < replayMode.size; h++) {
+            if (replayMode.replayRooms[h]) {
+                room = h;
+                break;
+            }
+        }
+        if (room == -1) {
+            user.sendMessage("%lang_fb_nomap%");
+            return;
+        }
+        replayMode.replayRooms[room] = false;
+        replayRoomSlot = room;
         ReplayCoord = replayMode.roomToCoord(room) / 8 * 500;
         if (lastAttempt)
             replay.tickSize = replay.ticks.size();
