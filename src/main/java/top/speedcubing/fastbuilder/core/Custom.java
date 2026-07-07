@@ -1,7 +1,6 @@
 package top.speedcubing.fastbuilder.core;
 
 
-import java.util.Set;
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,8 +18,11 @@ import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
-import top.speedcubing.lib.bukkit.pluginMessage.BungeePluginMessage;
 import top.speedcubing.lib.utils.SQL.SQLRow;
+
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
 
 public class Custom {
     public static final int size = 31;
@@ -28,15 +30,12 @@ public class Custom {
     public static boolean[] rooms = new boolean[size];
 
     public void Load() {
-        for (int i = 0; i < size; i++) {
-            rooms[i] = true;
-        }
+        Arrays.fill(rooms, true);
     }
 
     public static void finish(Player player, boolean pressure) {
         Member member = Member.getMember(player);
         if (member.times == -1) {
-            BungeePluginMessage.switchServer(player, "Lobby");
             return;
         }
         Bukkit.getScheduler().cancelTask(member.MainTimer);
@@ -49,13 +48,14 @@ public class Custom {
         if (pressure) {
             member.waiting = true;
             member.finishedtask = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> {
-                if (Member.getMember(player) != null) {
-                    member.clear(world, false);
-                    player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
-                    member.waiting = false;
-                    member.user.setLangItem(5, ItemStackList.Length);
-                    member.user.setLangItem(6, ItemStackList.Height);
+                if (Member.getMember(player) == null) {
+                    return;
                 }
+                member.clear(world, false);
+                player.teleport(new Location(player.getWorld(), -0.5, 100, member.PlayerCoord + 0.5, 270, 0));
+                member.waiting = false;
+                member.user.setLangItem(5, ItemStackList.Length);
+                member.user.setLangItem(6, ItemStackList.Height);
             }, 40);
         } else {
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
@@ -96,6 +96,7 @@ public class Custom {
             player.closeInventory();
             return;
         }
+
         int room = -1;
         for (int h = 0; h < size; h++) {
             if (rooms[h]) {
@@ -105,7 +106,10 @@ public class Custom {
         }
         rooms[room] = false;
         used++;
+
         Member member = Member.getMember(player);
+        Objects.requireNonNull(member);
+
         member.currentMode = null;
         int coord = 250 * (room * (int) Math.pow(-1, room + 1) + room % 2);
         World world = Bukkit.getWorld("Custom");
@@ -164,6 +168,8 @@ public class Custom {
 
     public static void Quit(Player player) {
         Member member = Member.getMember(player);
+        Objects.requireNonNull(member);
+
         if (member.MainTimer != -1)
             Bukkit.getScheduler().cancelTask(member.MainTimer);
         World world = Bukkit.getWorld("Custom");
@@ -226,9 +232,9 @@ public class Custom {
 
     public static void Fell(Player player) {
         Member member = Member.getMember(player);
+        Objects.requireNonNull(member);
         World world = player.getWorld();
         Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> member.clear(world, false));
-        Inventory inventory = player.getInventory();
         member.user.setLangItem(5, ItemStackList.Length);
         member.user.setLangItem(6, ItemStackList.Height);
         if (member.waiting) {

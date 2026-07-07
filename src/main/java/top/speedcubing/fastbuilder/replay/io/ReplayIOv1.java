@@ -1,9 +1,5 @@
 package top.speedcubing.fastbuilder.replay.io;
 
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -11,11 +7,13 @@ import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.fastbuilder.replay.ReplayTick;
 import top.speedcubing.lib.utils.SQL.SQLConnection;
-import top.speedcubing.lib.utils.SQL.SQLResult;
 import top.speedcubing.lib.utils.SQL.SQLRow;
 import top.speedcubing.lib.utils.SystemUtils;
 import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.DataConversion;
+
+import java.util.List;
+import java.util.UUID;
 
 public class ReplayIOv1 extends ReplayIO {
 
@@ -73,18 +71,36 @@ public class ReplayIOv1 extends ReplayIO {
         }
 
         long time = SystemUtils.getCurrentSecond();
+        byte[] data = DataConversion.hexStringToByteArray(hex);
+        String replayId = replayId(data, time);
+        String replayPath;
+        try {
+            replayPath = writeReplayFile(replayId, 1, data);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to write FastBuilder replay file", e);
+        }
 
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
         try (SQLConnection connection = Database.getCubing()) {
-            connection.insert("fbreplay", "id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas", "UNHEX(MD5(CONCAT(X'" + hex + "'," + time + "))),X'" + uuidHex + "'," + time + ",1,X'" + hex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
+            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,datas_path,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,1,NULL,?,?,?,?,?,?,?)")
+                    .setString(1, replayId)
+                    .setString(2, uuidHex)
+                    .setLong(3, time)
+                    .setString(4, replayPath)
+                    .setString(5, replay.name)
+                    .setString(6, replay.value)
+                    .setString(7, replay.signature)
+                    .setInt(8, replay.replayRecorder.NewTick - 1)
+                    .setInt(9, replay.replayRecorder.member.currentMode.sqlId)
+                    .setInt(10, TAS ? 0 : 1)
+                    .executeUpdate();
         }
     }
 
     public Replay read(SQLRow r) {
 
-        StringBuilder s = new StringBuilder();
-        Blob datas;
+        ReplayReader reader;
         String id;
         String name;
         String value;
@@ -92,20 +108,14 @@ public class ReplayIOv1 extends ReplayIO {
         int mode;
         try {
             id = DataConversion.byteArrayToHexString(r.getBytes("id"));
-            datas = r.getBlob("datas");
             name = r.getString("name");
             value = r.getString("value");
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-            String temp;
-            for (int i = 1; i <= datas.length(); i++) {
-                temp = String.format("%x", datas.getBytes(i, 1)[0]);
-                if (temp.length() == 1)
-                    temp = "0" + temp;
-                s.append(temp);
-            }
-        } catch (SQLException e) {
+
+            reader = new ReplayReader(readReplayBytes(r));
+        } catch (Exception e) {
             return null;
         }
 
@@ -113,55 +123,54 @@ public class ReplayIOv1 extends ReplayIO {
         replay.name = name;
         replay.value = value;
         replay.signature = signature;
-        replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
-        replay.StartLocation = new Location(null, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
-        replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
-        s = new StringBuilder(s.substring(48));
+        replay.StartSneaking = reader.readInt() == 0;
+        replay.StartLocation = new Location(null,
+                reader.readDouble(),
+                reader.readDouble(),
+                reader.readDouble(),
+                reader.readFloat(),
+                reader.readFloat());
+        replay.StartItem = new ItemStack(
+                reader.readShort(),
+                1,
+                (short) reader.readByte());
         ReplayTick replayTick = null;
-        while (!s.isEmpty()) {
-            if (s.toString().startsWith("00")) {
+        while (reader.hasRemaining()) {
+            int type = reader.readByte();
+            if (type == 0) {
                 replayTick = new ReplayTick();
                 replayTick.location = new Location(null,
-                        StringToDouble(s.substring(2, 10)),
-                        StringToDouble(s.substring(10, 18)),
-                        StringToDouble(s.substring(18, 26)),
-                        (float) StringToDouble(s.substring(26, 34)),
-                        (float) StringToDouble(s.substring(34, 42)));
+                        reader.readDouble(),
+                        reader.readDouble(),
+                        reader.readDouble(),
+                        (float) reader.readDouble(),
+                        (float) reader.readDouble());
                 replay.ticks.add(replayTick);
-                s = new StringBuilder(s.substring(42));
-            } else if (s.toString().startsWith("01")) {
-                replayTick.blockLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
-                s = new StringBuilder(s.substring(14));
-            } else if (s.toString().startsWith("02")) {
-                replayTick.breakLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
-                replayTick.breakMaterial = stringToInt(s.substring(14, 18));
-                replayTick.breakDatas = (byte) stringToInt(s.substring(18, 20));
-                s = new StringBuilder(s.substring(20));
-            } else if (s.toString().startsWith("03")) {
-                replayTick.sneak = stringToInt(s.substring(2, 4)) == 0;
-                s = new StringBuilder(s.substring(4));
-            } else if (s.toString().startsWith("04")) {
-                replayTick.handMaterial = stringToInt(s.substring(2, 6));
-                replayTick.handEchants = stringToInt(s.substring(6, 8)) == 0;
-                replayTick.handDatas = (byte) stringToInt(s.substring(8, 10));
-                s = new StringBuilder(s.substring(10));
+            } else if (type == 1) {
+                replayTick.blockLocation = new BlockPosition(
+                        reader.readShort(),
+                        reader.readShort(),
+                        reader.readShort());
+            } else if (type == 2) {
+                replayTick.breakLocation = new BlockPosition(
+                        reader.readShort(),
+                        reader.readShort(),
+                        reader.readShort());
+                replayTick.breakMaterial = reader.readShort();
+                replayTick.breakDatas = (byte) reader.readByte();
+            } else if (type == 3) {
+                replayTick.sneak = reader.readByte() == 0;
+            } else if (type == 4) {
+                replayTick.handMaterial = reader.readShort();
+                replayTick.handEchants = reader.readByte() == 0;
+                replayTick.handDatas = (byte) reader.readByte();
             }
         }
         replay.tickSize = replay.ticks.size();
         return replay;
     }
 
-    static int stringToInt(String s) {
-        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length() < 8) {
-            sBuilder.insert(0, c);
-        }
-        s = sBuilder.toString();
-        return (int) Long.parseLong(s, 16);
-    }
-
-    static String intToString(int i, int size) {
+    private String intToString(int i, int size) {
         StringBuilder s = new StringBuilder(Integer.toHexString(i));
         while (s.length() < size) {
             s.insert(0, i < 0 ? "f" : "0");
@@ -169,11 +178,67 @@ public class ReplayIOv1 extends ReplayIO {
         return s.substring(s.length() - size);
     }
 
-    static String doubleToString(double d) {
+    private String doubleToString(double d) {
         return intToString((int) (d * 1024), 8);
     }
+}
 
-    static double StringToDouble(String s) {
-        return stringToInt(s) / 1024D;
+class ReplayReader {
+    private final byte[] data;
+    private int index;
+
+    ReplayReader(byte[] data) {
+        this.data = data;
+        this.index = 0;
+    }
+
+    boolean hasRemaining() {
+        return index < data.length;
+    }
+
+    int readByte() {
+        require(1);
+        return data[index++] & 0xff;
+    }
+
+    int readShort() {
+        require(2);
+
+        int value = ((data[index] & 0xff) << 8)
+                | (data[index + 1] & 0xff);
+
+        index += 2;
+
+        if (value >= 0x8000) {
+            value -= 0x10000;
+        }
+
+        return value;
+    }
+
+    int readInt() {
+        require(4);
+
+        int value = ((data[index] & 0xff) << 24)
+                | ((data[index + 1] & 0xff) << 16)
+                | ((data[index + 2] & 0xff) << 8)
+                | (data[index + 3] & 0xff);
+
+        index += 4;
+        return value;
+    }
+
+    double readDouble() {
+        return readInt() / 1024D;
+    }
+
+    float readFloat() {
+        return (float) readDouble();
+    }
+
+    private void require(int size) {
+        if (index + size > data.length) {
+            throw new IllegalArgumentException("Replay data truncated");
+        }
     }
 }

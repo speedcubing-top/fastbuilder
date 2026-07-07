@@ -150,6 +150,8 @@ public class ServerEvent {
                         if (Math.abs(z - member.PlayerCoord) > 6 || y < 92)
                             e.setCancelled(true);
                         else Custom.validPlaceBlock(e.getPlayer(), e.getPlayer().getWorld().getBlockAt(x, y, z));
+                    } else if (member.currentMode == null) {
+                        e.setCancelled(true);
                     } else if (member.currentMode.inclined) {
                         if ((Math.abs(x + z - 2 * member.PlayerCoord) > 10 || x - z < 1 || x - z > member.currentMode.distance * 2 || y < 92) || (member.replay == null && y > 100))
                             e.setCancelled(true);

@@ -30,11 +30,14 @@ import top.speedcubing.lib.minecraft.text.TextHoverEvent;
 import top.speedcubing.server.lang.LangInv;
 import top.speedcubing.server.lang.LangItem;
 
+import java.util.Objects;
+
 public class PlayerInteract implements Listener {
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         Member member = Member.getMember(player);
+        Objects.requireNonNull(member);
         if (member.waiting) {
             e.setCancelled(true);
             player.updateInventory();
@@ -81,9 +84,7 @@ public class PlayerInteract implements Listener {
                                 new LangItem(Material.SANDSTONE).durability(1).name("§b%lang_fb_custom_name%") //custom
                         };
 
-                        if (!player.getWorld().getName().equals("Custom"))
-                            builders[member.currentMode.sqlId].glow();
-                        else builders[builders.length - 1].glow();
+                        builders[member.currentMode == null ? builders.length - 1 : member.currentMode.sqlId].glow();
 
                         LangInv inventory = new LangInv(36, "%lang_fb_inv_menu%");
                         inventory.setItem(builders[2], (event) -> {

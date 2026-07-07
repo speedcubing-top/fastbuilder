@@ -1,16 +1,5 @@
 package top.speedcubing.fastbuilder;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-
 import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -40,9 +29,8 @@ import top.speedcubing.fastbuilder.core.timed.TimedMode;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.list.StringList;
 import top.speedcubing.fastbuilder.replay.Replay;
-import top.speedcubing.fastbuilder.replay.io.ReplayIO;
-import top.speedcubing.fastbuilder.replay.io.ReplayIOv1;
 import top.speedcubing.fastbuilder.replay.ReplayViewer;
+import top.speedcubing.fastbuilder.replay.io.ReplayIO;
 import top.speedcubing.lib.bukkit.SideBar;
 import top.speedcubing.lib.bukkit.TitleType;
 import top.speedcubing.lib.bukkit.WorldUtils;
@@ -50,6 +38,17 @@ import top.speedcubing.server.lang.LangInv;
 import top.speedcubing.server.lang.LangItem;
 import top.speedcubing.server.player.User;
 import top.speedcubing.server.speedcubingServer;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Member {
     public static Map<Integer, Member> users = new HashMap<>();

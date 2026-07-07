@@ -1,17 +1,11 @@
 package top.speedcubing.fastbuilder;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.bukkitcmd.replay;
@@ -39,14 +33,20 @@ import top.speedcubing.fastbuilder.core.timed.Normal;
 import top.speedcubing.fastbuilder.core.timed.OneStack;
 import top.speedcubing.fastbuilder.core.timed.Short;
 import top.speedcubing.fastbuilder.core.timed.TimedMode;
+import top.speedcubing.fastbuilder.db.DatabaseSchema;
 import top.speedcubing.fastbuilder.list.ItemStackList;
 import top.speedcubing.fastbuilder.replay.ReplayGUI;
 import top.speedcubing.fastbuilder.replay.io.ReplayIO;
 import top.speedcubing.lib.eventbus.CubingEventManager;
 import top.speedcubing.lib.minecraft.MinecraftConsole;
 import top.speedcubing.lib.utils.SQL.SQLConnection;
+import top.speedcubing.lib.utils.SQL.SQLResult;
+import top.speedcubing.lib.utils.SQL.SQLRow;
 import top.speedcubing.server.speedcubingServer;
 import top.speedcubing.server.utils.MapManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends JavaPlugin {
 
@@ -57,6 +57,8 @@ public class Main extends JavaPlugin {
         CubingEventManager.registerListeners(new ServerEvent());
         registerCommands();
         registerListeners();
+
+        DatabaseSchema.ensureSchema();
 
         try {
             MapManager.install("Custom", "Custom", Difficulty.PEACEFUL, 6000, false);
@@ -127,7 +129,12 @@ public class Main extends JavaPlugin {
 
             try (SQLConnection conn = Database.getCubing()) {
 
-                int deleted0 = conn.delete("fbreplay", "fav = 0 AND time < " + sevenDaysAgo);
+                String where = "fav = 0 AND time < " + sevenDaysAgo;
+                SQLResult expired = conn.select("datas_path").from("fbreplay").where(where).executeResult();
+                int deleted0 = conn.delete("fbreplay", where);
+                for (SQLRow row : expired) {
+                    ReplayIO.deleteReplayFile(row.getString("datas_path"));
+                }
 
                 if (deleted0 > 0) {
                     Bukkit.getLogger().info("[Replay清理] 已清理過期紀錄：普通(fav=0) " + deleted0 + " 筆。");

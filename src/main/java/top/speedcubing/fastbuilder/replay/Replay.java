@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import top.speedcubing.fastbuilder.Member;
 import top.speedcubing.fastbuilder.replay.io.ReplayIO;
-import top.speedcubing.fastbuilder.replay.io.ReplayIOv2;
 
 public class Replay {
     public static ScheduledExecutorService replayReaderPool = Executors.newScheduledThreadPool(5);

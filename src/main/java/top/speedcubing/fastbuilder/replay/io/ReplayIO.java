@@ -1,21 +1,29 @@
 package top.speedcubing.fastbuilder.replay.io;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import top.speedcubing.common.database.Database;
 import top.speedcubing.fastbuilder.replay.Replay;
 import top.speedcubing.lib.utils.SQL.SQLConnection;
 import top.speedcubing.lib.utils.SQL.SQLResult;
 import top.speedcubing.lib.utils.SQL.SQLRow;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public abstract class ReplayIO {
     public abstract void write(Replay replay, UUID uuid, boolean TAS);
 
     public abstract Replay read(SQLRow row);
 
+    private static final Path REPLAY_STORAGE_DIR = Path.of("replays");
 
     private static final Map<Integer, ReplayIO> replayIOMap = new HashMap<>();
+
     public static void init() {
         replayIOMap.put(1, new ReplayIOv1());
         replayIOMap.put(2, new ReplayIOv2());
@@ -27,7 +35,7 @@ public abstract class ReplayIO {
 
     public static Replay readAuto(String replayID) {
         try (SQLConnection connection = Database.getCubing()) {
-            SQLResult result = connection.select("id,replay_ver,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
+            SQLResult result = connection.select("id,replay_ver,datas,datas_path,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
             if (result.isEmpty()) {
                 throw new RuntimeException();
             }
@@ -36,6 +44,44 @@ public abstract class ReplayIO {
             return replayIOMap.get(ver).read(row);
         } catch (Exception e) {
             throw e;
+        }
+    }
+
+    protected String replayId(byte[] data, long time) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(data);
+            digest.update(Long.toString(time).getBytes());
+            StringBuilder out = new StringBuilder();
+            for (byte b : digest.digest()) {
+                out.append(String.format("%02x", b & 0xff));
+            }
+            return out.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 digest is unavailable", e);
+        }
+    }
+
+    protected String writeReplayFile(String replayId, int version, byte[] data) throws IOException {
+        String prefix = replayId.substring(0, 2);
+        Path directory = REPLAY_STORAGE_DIR.resolve("v" + version).resolve(prefix);
+        Files.createDirectories(directory);
+        Path file = directory.resolve(replayId + ".fbr");
+        Files.write(file, data);
+        return "v" + version + "/" + prefix + "/" + replayId + ".fbr";
+    }
+
+    protected byte[] readReplayBytes(SQLRow row) throws Exception {
+        String path = row.get("datas_path") == null ? null : row.getString("datas_path");
+        if (path != null && !path.isEmpty()) {
+            return Files.readAllBytes(REPLAY_STORAGE_DIR.resolve(path));
+        }
+        return row.getBlob("datas").getBytes(1, (int) row.getBlob("datas").length());
+    }
+
+    public static void deleteReplayFile(String path) throws IOException {
+        if (path != null && !path.isEmpty()) {
+            Files.deleteIfExists(REPLAY_STORAGE_DIR.resolve(path));
         }
     }
 }

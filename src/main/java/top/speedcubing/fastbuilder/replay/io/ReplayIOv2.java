@@ -3,8 +3,6 @@ package top.speedcubing.fastbuilder.replay.io;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.server.v1_8_R3.BlockPosition;
@@ -78,20 +76,35 @@ public class ReplayIOv2 extends ReplayIO {
         }
 
         byte[] compressed = ReplayCompressor.compress(buffer.toByteArray());
-        String dataHex = DataConversion.byteArrayToHexString(compressed);
 
         long time = SystemUtils.getCurrentSecond();
+        String replayId = replayId(compressed, time);
+        String replayPath;
+        try {
+            replayPath = writeReplayFile(replayId, 2, compressed);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write FastBuilder replay file", e);
+        }
 
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
         try (SQLConnection connection = Database.getCubing()) {
-            connection.insert("fbreplay", "id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas", "UNHEX(MD5(CONCAT(X'" + dataHex + "'," + time + "))),X'" + uuidHex + "'," + time + ",2,X'" + dataHex + "','" + replay.name + "','" + replay.value + "','" + replay.signature + "'," + (replay.replayRecorder.NewTick - 1) + "," + replay.replayRecorder.member.currentMode.sqlId + "," + (TAS ? 0 : 1));
+            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,datas_path,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,2,NULL,?,?,?,?,?,?,?)")
+                    .setString(1, replayId)
+                    .setString(2, uuidHex)
+                    .setLong(3, time)
+                    .setString(4, replayPath)
+                    .setString(5, replay.name)
+                    .setString(6, replay.value)
+                    .setString(7, replay.signature)
+                    .setInt(8, replay.replayRecorder.NewTick - 1)
+                    .setInt(9, replay.replayRecorder.member.currentMode.sqlId)
+                    .setInt(10, TAS ? 0 : 1)
+                    .executeUpdate();
         }
     }
 
     public Replay read(SQLRow r) {
-        Blob datas;
-        byte[] bytes;
         String id;
         String name;
         String value;
@@ -99,15 +112,12 @@ public class ReplayIOv2 extends ReplayIO {
         int mode;
         try {
             id = DataConversion.byteArrayToHexString(r.getBytes("id"));
-            datas = r.getBlob("datas");
             name = r.getString("name");
             value = r.getString("value");
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-            bytes = datas.getBytes(1, (int) datas.length());
-            bytes = ReplayCompressor.decompress(bytes);
-            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(bytes));
+            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(ReplayCompressor.decompress(readReplayBytes(r))));
 
             Replay replay = new Replay(id, mode);
             replay.name = name;
@@ -145,7 +155,7 @@ public class ReplayIOv2 extends ReplayIO {
             }
             replay.tickSize = replay.ticks.size();
             return replay;
-        } catch (SQLException | IOException e) {
+        } catch (Exception e) {
             return null;
         }
     }
