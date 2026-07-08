@@ -98,27 +98,25 @@ public class ReplayIOv1 extends ReplayIO {
         }
     }
 
-    public Replay read(SQLRow r) {
+    public Replay read(String replayId, SQLRow r) {
 
         StringBuilder s;
-        String id;
         String name;
         String value;
         String signature;
         int mode;
         try {
-            id = DataConversion.byteArrayToHexString(r.getBytes("id"));
             name = r.getString("name");
             value = r.getString("value");
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-            s = new StringBuilder(DataConversion.byteArrayToHexString(readReplayFile(1, r)));
+            s = new StringBuilder(DataConversion.byteArrayToHexString(readReplayFile(replayId, 1, r)));
         } catch (Exception e) {
             return null;
         }
 
-        Replay replay = new Replay(id, mode);
+        Replay replay = new Replay(replayId, mode);
         replay.name = name;
         replay.value = value;
         replay.signature = signature;

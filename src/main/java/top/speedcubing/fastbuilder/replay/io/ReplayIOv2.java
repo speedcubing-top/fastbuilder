@@ -1,10 +1,5 @@
 package top.speedcubing.fastbuilder.replay.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -16,8 +11,13 @@ import top.speedcubing.lib.utils.SQL.SQLRow;
 import top.speedcubing.lib.utils.SystemUtils;
 import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.ByteArrayBuffer;
-import top.speedcubing.lib.utils.bytes.DataConversion;
 import top.speedcubing.lib.utils.bytes.IOUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 public class ReplayIOv2 extends ReplayIO {
 
@@ -102,22 +102,20 @@ public class ReplayIOv2 extends ReplayIO {
         }
     }
 
-    public Replay read(SQLRow r) {
-        String id;
+    public Replay read(String replayId, SQLRow r) {
         String name;
         String value;
         String signature;
         int mode;
         try {
-            id = DataConversion.byteArrayToHexString(r.getBytes("id"));
             name = r.getString("name");
             value = r.getString("value");
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(ReplayCompressor.decompress(readReplayFile(2, r))));
+            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(ReplayCompressor.decompress(readReplayFile(replayId, 2, r))));
 
-            Replay replay = new Replay(id, mode);
+            Replay replay = new Replay(replayId, mode);
             replay.name = name;
             replay.value = value;
             replay.signature = signature;
@@ -154,6 +152,7 @@ public class ReplayIOv2 extends ReplayIO {
             replay.tickSize = replay.ticks.size();
             return replay;
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
