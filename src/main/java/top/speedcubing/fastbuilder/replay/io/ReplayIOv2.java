@@ -88,7 +88,7 @@ public class ReplayIOv2 extends ReplayIO {
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
         try (SQLConnection connection = Database.getCubing()) {
-            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,2,NULL,?,?,?,?,?,?,?)")
+            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,2,NULL,?,?,?,?,?,?)")
                     .setString(1, replayId)
                     .setString(2, uuidHex)
                     .setLong(3, time)

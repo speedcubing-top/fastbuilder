@@ -114,7 +114,7 @@ public class ReplayIOv1 extends ReplayIO {
             mode = r.getInt("mode");
 
 
-            reader = new ReplayReader(readReplayFile(1, r));
+            reader = new ReplayReader(DataConversion.byteArrayToHexString(readReplayFile(1, r)));
         } catch (Exception e) {
             return null;
         }
@@ -133,10 +133,10 @@ public class ReplayIOv1 extends ReplayIO {
         replay.StartItem = new ItemStack(
                 reader.readShort(),
                 1,
-                (short) reader.readByte());
+                (short) reader.readInt());
         ReplayTick replayTick = null;
         while (reader.hasRemaining()) {
-            int type = reader.readByte();
+            int type = reader.readInt();
             if (type == 0) {
                 replayTick = new ReplayTick();
                 replayTick.location = new Location(null,
@@ -157,13 +157,13 @@ public class ReplayIOv1 extends ReplayIO {
                         reader.readShort(),
                         reader.readShort());
                 replayTick.breakMaterial = reader.readShort();
-                replayTick.breakDatas = (byte) reader.readByte();
+                replayTick.breakDatas = reader.readByte();
             } else if (type == 3) {
                 replayTick.sneak = reader.readByte() == 0;
             } else if (type == 4) {
                 replayTick.handMaterial = reader.readShort();
                 replayTick.handEchants = reader.readByte() == 0;
-                replayTick.handDatas = (byte) reader.readByte();
+                replayTick.handDatas = reader.readByte();
             }
         }
         replay.tickSize = replay.ticks.size();
@@ -184,48 +184,47 @@ public class ReplayIOv1 extends ReplayIO {
 }
 
 class ReplayReader {
-    private final byte[] data;
+    private final String data;
     private int index;
 
-    ReplayReader(byte[] data) {
+    ReplayReader(String data) {
+        System.out.println("data: " + data);
         this.data = data;
         this.index = 0;
     }
 
     boolean hasRemaining() {
-        return index < data.length;
+        return index < data.length();
     }
 
-    int readByte() {
-        require(1);
-        return data[index++] & 0xff;
+    byte readByte() {
+        return (byte) readInt();
     }
 
     int readShort() {
-        require(2);
-
-        int value = ((data[index] & 0xff) << 8)
-                | (data[index + 1] & 0xff);
-
-        index += 2;
-
-        if (value >= 0x8000) {
-            value -= 0x10000;
+        String s = data.substring(index, index + 4);
+        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 8) {
+            sBuilder.insert(0, c);
         }
-
-        return value;
+        s = sBuilder.toString();
+        index += 4;
+        System.out.println("read short, index=" + index);
+        return (int) Long.parseLong(s, 16);
     }
 
     int readInt() {
-        require(4);
-
-        int value = ((data[index] & 0xff) << 24)
-                | ((data[index + 1] & 0xff) << 16)
-                | ((data[index + 2] & 0xff) << 8)
-                | (data[index + 3] & 0xff);
-
-        index += 4;
-        return value;
+        String s = data.substring(index, index + 2);
+        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 8) {
+            sBuilder.insert(0, c);
+        }
+        s = sBuilder.toString();
+        index += 2;
+        System.out.println("read int, index=" + index);
+        return (int) Long.parseLong(s, 16);
     }
 
     double readDouble() {
@@ -234,11 +233,5 @@ class ReplayReader {
 
     float readFloat() {
         return (float) readDouble();
-    }
-
-    private void require(int size) {
-        if (index + size > data.length) {
-            throw new IllegalArgumentException("Replay data truncated");
-        }
     }
 }
