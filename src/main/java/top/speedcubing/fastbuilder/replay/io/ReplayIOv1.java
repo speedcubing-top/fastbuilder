@@ -100,7 +100,7 @@ public class ReplayIOv1 extends ReplayIO {
 
     public Replay read(SQLRow r) {
 
-        ReplayReader reader;
+        StringBuilder s;
         String id;
         String name;
         String value;
@@ -113,8 +113,7 @@ public class ReplayIOv1 extends ReplayIO {
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-
-            reader = new ReplayReader(DataConversion.byteArrayToHexString(readReplayFile(1, r)));
+            s = new StringBuilder(DataConversion.byteArrayToHexString(readReplayFile(1, r)));
         } catch (Exception e) {
             return null;
         }
@@ -123,51 +122,56 @@ public class ReplayIOv1 extends ReplayIO {
         replay.name = name;
         replay.value = value;
         replay.signature = signature;
-        replay.StartSneaking = reader.readInt() == 0;
-        replay.StartLocation = new Location(null,
-                reader.readDouble(),
-                reader.readDouble(),
-                reader.readDouble(),
-                reader.readFloat(),
-                reader.readFloat());
-        replay.StartItem = new ItemStack(
-                reader.readShort(),
-                1,
-                (short) reader.readInt());
+        replay.StartSneaking = stringToInt(s.substring(0, 2)) == 0;
+        replay.StartLocation = new Location(null, StringToDouble(s.substring(2, 10)), StringToDouble(s.substring(10, 18)), StringToDouble(s.substring(18, 26)), (float) StringToDouble(s.substring(26, 34)), (float) StringToDouble(s.substring(34, 42)));
+        replay.StartItem = new ItemStack(stringToInt(s.substring(42, 46)), 1, (short) stringToInt(s.substring(46, 48)));
+        s = new StringBuilder(s.substring(48));
         ReplayTick replayTick = null;
-        while (reader.hasRemaining()) {
-            int type = reader.readInt();
-            if (type == 0) {
+        while (!s.isEmpty()) {
+            if (s.toString().startsWith("00")) {
                 replayTick = new ReplayTick();
                 replayTick.location = new Location(null,
-                        reader.readDouble(),
-                        reader.readDouble(),
-                        reader.readDouble(),
-                        (float) reader.readDouble(),
-                        (float) reader.readDouble());
+                        StringToDouble(s.substring(2, 10)),
+                        StringToDouble(s.substring(10, 18)),
+                        StringToDouble(s.substring(18, 26)),
+                        (float) StringToDouble(s.substring(26, 34)),
+                        (float) StringToDouble(s.substring(34, 42)));
                 replay.ticks.add(replayTick);
-            } else if (type == 1) {
-                replayTick.blockLocation = new BlockPosition(
-                        reader.readShort(),
-                        reader.readShort(),
-                        reader.readShort());
-            } else if (type == 2) {
-                replayTick.breakLocation = new BlockPosition(
-                        reader.readShort(),
-                        reader.readShort(),
-                        reader.readShort());
-                replayTick.breakMaterial = reader.readShort();
-                replayTick.breakDatas = reader.readByte();
-            } else if (type == 3) {
-                replayTick.sneak = reader.readByte() == 0;
-            } else if (type == 4) {
-                replayTick.handMaterial = reader.readShort();
-                replayTick.handEchants = reader.readByte() == 0;
-                replayTick.handDatas = reader.readByte();
+                s = new StringBuilder(s.substring(42));
+            } else if (s.toString().startsWith("01")) {
+                replayTick.blockLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
+                s = new StringBuilder(s.substring(14));
+            } else if (s.toString().startsWith("02")) {
+                replayTick.breakLocation = new BlockPosition(stringToInt(s.substring(2, 6)), stringToInt(s.substring(6, 10)), stringToInt(s.substring(10, 14)));
+                replayTick.breakMaterial = stringToInt(s.substring(14, 18));
+                replayTick.breakDatas = (byte) stringToInt(s.substring(18, 20));
+                s = new StringBuilder(s.substring(20));
+            } else if (s.toString().startsWith("03")) {
+                replayTick.sneak = stringToInt(s.substring(2, 4)) == 0;
+                s = new StringBuilder(s.substring(4));
+            } else if (s.toString().startsWith("04")) {
+                replayTick.handMaterial = stringToInt(s.substring(2, 6));
+                replayTick.handEchants = stringToInt(s.substring(6, 8)) == 0;
+                replayTick.handDatas = (byte) stringToInt(s.substring(8, 10));
+                s = new StringBuilder(s.substring(10));
             }
         }
         replay.tickSize = replay.ticks.size();
         return replay;
+    }
+
+    static int stringToInt(String s) {
+        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 8) {
+            sBuilder.insert(0, c);
+        }
+        s = sBuilder.toString();
+        return (int) Long.parseLong(s, 16);
+    }
+
+    static double StringToDouble(String s) {
+        return stringToInt(s) / 1024D;
     }
 
     private String intToString(int i, int size) {
@@ -180,58 +184,5 @@ public class ReplayIOv1 extends ReplayIO {
 
     private String doubleToString(double d) {
         return intToString((int) (d * 1024), 8);
-    }
-}
-
-class ReplayReader {
-    private final String data;
-    private int index;
-
-    ReplayReader(String data) {
-        System.out.println("data: " + data);
-        this.data = data;
-        this.index = 0;
-    }
-
-    boolean hasRemaining() {
-        return index < data.length();
-    }
-
-    byte readByte() {
-        return (byte) readInt();
-    }
-
-    int readShort() {
-        String s = data.substring(index, index + 4);
-        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length() < 8) {
-            sBuilder.insert(0, c);
-        }
-        s = sBuilder.toString();
-        index += 4;
-        System.out.println("read short, index=" + index);
-        return (int) Long.parseLong(s, 16);
-    }
-
-    int readInt() {
-        String s = data.substring(index, index + 2);
-        char c = ((int) s.charAt(0)) > 55 ? 'f' : '0';
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length() < 8) {
-            sBuilder.insert(0, c);
-        }
-        s = sBuilder.toString();
-        index += 2;
-        System.out.println("read int, index=" + index);
-        return (int) Long.parseLong(s, 16);
-    }
-
-    double readDouble() {
-        return readInt() / 1024D;
-    }
-
-    float readFloat() {
-        return (float) readDouble();
     }
 }
