@@ -35,7 +35,7 @@ public abstract class ReplayIO {
 
     public static Replay readAuto(String replayID) {
         try (SQLConnection connection = Database.getCubing()) {
-            SQLResult result = connection.select("id,replay_ver,datas,datas_path,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
+            SQLResult result = connection.select("id,replay_ver,datas,name,value,signature,mode").from("fbreplay").where("id=X'" + replayID + "'").executeResult();
             if (result.isEmpty()) {
                 throw new RuntimeException();
             }
@@ -68,20 +68,22 @@ public abstract class ReplayIO {
         Files.createDirectories(directory);
         Path file = directory.resolve(replayId + ".fbr");
         Files.write(file, data);
-        return "v" + version + "/" + prefix + "/" + replayId + ".fbr";
+        return toReplayPath(version, replayId);
     }
 
-    protected byte[] readReplayBytes(SQLRow row) throws Exception {
-        String path = row.get("datas_path") == null ? null : row.getString("datas_path");
-        if (path != null && !path.isEmpty()) {
-            return Files.readAllBytes(REPLAY_STORAGE_DIR.resolve(path));
+    protected byte[] readReplayFile(int version, SQLRow row) throws Exception {
+        String replayId = row.getString("id");
+        if (row.get("datas") != null) {
+            return row.getBlob("datas").getBytes(1, (int) row.getBlob("datas").length());
         }
-        return row.getBlob("datas").getBytes(1, (int) row.getBlob("datas").length());
+        return Files.readAllBytes(REPLAY_STORAGE_DIR.resolve(toReplayPath(version, replayId)));
     }
 
-    public static void deleteReplayFile(String path) throws IOException {
-        if (path != null && !path.isEmpty()) {
-            Files.deleteIfExists(REPLAY_STORAGE_DIR.resolve(path));
-        }
+    public static void deleteReplayFile(int version, String replayId) throws IOException {
+        Files.deleteIfExists(REPLAY_STORAGE_DIR.resolve(toReplayPath(version, replayId)));
+    }
+
+    private static String toReplayPath(int version, String replayId) {
+        return "v" + version + "/" + replayId.substring(0, 2) + "/" + replayId + ".fbr";
     }
 }

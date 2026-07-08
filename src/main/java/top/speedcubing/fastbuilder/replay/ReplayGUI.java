@@ -1,13 +1,5 @@
 package top.speedcubing.fastbuilder.replay;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,6 +16,15 @@ import top.speedcubing.lib.utils.UUIDUtils;
 import top.speedcubing.lib.utils.bytes.DataConversion;
 import top.speedcubing.server.lang.LangInv;
 import top.speedcubing.server.lang.LangItem;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ReplayGUI {
     public static int pageSize = 54;
@@ -72,7 +73,7 @@ public class ReplayGUI {
                     ), (e) -> {
                         switch (e.getEvent().getAction()) {
                             case PICKUP_ALL:
-                                member.joinReplayByReplayID(member.replayPageList.get(e.getEvent().getRawSlot()));
+                                member.joinReplayByReplayID(player, member.replayPageList.get(e.getEvent().getRawSlot()));
                                 break;
                             case PICKUP_HALF:
                                 try (SQLConnection conn = Database.getCubing()) {

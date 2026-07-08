@@ -174,11 +174,12 @@ public class Member {
         joinReplay(currentMode.lastAttempt.get(this), true);
     }
 
-    public void joinReplayByReplayID(String replayID) {
+    public void joinReplayByReplayID(Player player, String replayID) {
         Replay.replayReaderPool.execute(() -> {
             try {
                 joinReplay(ReplayIO.readAuto(replayID), false);
             } catch (Exception e) {
+                player.sendMessage("error while reading replay.");
                 e.printStackTrace();
             }
         });

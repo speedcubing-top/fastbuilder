@@ -83,7 +83,7 @@ public class ReplayIOv1 extends ReplayIO {
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
         try (SQLConnection connection = Database.getCubing()) {
-            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,datas_path,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,1,NULL,?,?,?,?,?,?,?)")
+            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,1,NULL,?,?,?,?,?,?,?)")
                     .setString(1, replayId)
                     .setString(2, uuidHex)
                     .setLong(3, time)
@@ -114,7 +114,7 @@ public class ReplayIOv1 extends ReplayIO {
             mode = r.getInt("mode");
 
 
-            reader = new ReplayReader(readReplayBytes(r));
+            reader = new ReplayReader(readReplayFile(1, r));
         } catch (Exception e) {
             return null;
         }

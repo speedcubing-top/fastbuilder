@@ -79,9 +79,8 @@ public class ReplayIOv2 extends ReplayIO {
 
         long time = SystemUtils.getCurrentSecond();
         String replayId = replayId(compressed, time);
-        String replayPath;
         try {
-            replayPath = writeReplayFile(replayId, 2, compressed);
+            writeReplayFile(replayId, 2, compressed);
         } catch (IOException e) {
             throw new RuntimeException("Failed to write FastBuilder replay file", e);
         }
@@ -89,17 +88,16 @@ public class ReplayIOv2 extends ReplayIO {
         //hash
         String uuidHex = UUIDUtils.undash(uuid);
         try (SQLConnection connection = Database.getCubing()) {
-            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,datas_path,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,2,NULL,?,?,?,?,?,?,?)")
+            connection.prepare("INSERT INTO fbreplay (id,uuid,time,replay_ver,datas,name,value,signature,score,mode,tas) VALUES (UNHEX(?),UNHEX(?),?,2,NULL,?,?,?,?,?,?,?)")
                     .setString(1, replayId)
                     .setString(2, uuidHex)
                     .setLong(3, time)
-                    .setString(4, replayPath)
-                    .setString(5, replay.name)
-                    .setString(6, replay.value)
-                    .setString(7, replay.signature)
-                    .setInt(8, replay.replayRecorder.NewTick - 1)
-                    .setInt(9, replay.replayRecorder.member.currentMode.sqlId)
-                    .setInt(10, TAS ? 0 : 1)
+                    .setString(4, replay.name)
+                    .setString(5, replay.value)
+                    .setString(6, replay.signature)
+                    .setInt(7, replay.replayRecorder.NewTick - 1)
+                    .setInt(8, replay.replayRecorder.member.currentMode.sqlId)
+                    .setInt(9, TAS ? 0 : 1)
                     .executeUpdate();
         }
     }
@@ -117,7 +115,7 @@ public class ReplayIOv2 extends ReplayIO {
             signature = r.getString("signature");
             mode = r.getInt("mode");
 
-            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(ReplayCompressor.decompress(readReplayBytes(r))));
+            DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(ReplayCompressor.decompress(readReplayFile(2, r))));
 
             Replay replay = new Replay(id, mode);
             replay.name = name;

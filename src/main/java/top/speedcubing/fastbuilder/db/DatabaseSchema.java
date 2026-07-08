@@ -14,7 +14,6 @@ public class DatabaseSchema {
                         time         BIGINT        NOT NULL,
                         replay_ver   INT           NOT NULL,
                         datas        LONGBLOB      NULL,
-                        datas_path   VARCHAR(255)  NULL,
                         name         VARCHAR(16)   NOT NULL DEFAULT '',
                         value        TEXT          NULL,
                         signature    TEXT          NULL,
@@ -27,7 +26,6 @@ public class DatabaseSchema {
                         INDEX idx_fbreplay_cleanup (fav, time)
                     )
                     """);
-            connection.execute("ALTER TABLE fbreplay ADD COLUMN IF NOT EXISTS datas_path VARCHAR(255) NULL");
             connection.execute("ALTER TABLE fbreplay MODIFY COLUMN datas LONGBLOB NULL");
             connection.execute("ALTER TABLE fbreplay ADD INDEX IF NOT EXISTS idx_fbreplay_list (uuid, mode, fav, time)");
             connection.execute("ALTER TABLE fbreplay ADD INDEX IF NOT EXISTS idx_fbreplay_cleanup (fav, time)");

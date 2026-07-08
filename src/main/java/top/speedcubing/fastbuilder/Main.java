@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.speedcubing.common.database.Database;
-import top.speedcubing.fastbuilder.bukkitcmd.replay;
 import top.speedcubing.fastbuilder.bukkitcmd.stats;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockBreak;
 import top.speedcubing.fastbuilder.bukkitlistener.BlockPlace;
@@ -43,6 +42,7 @@ import top.speedcubing.lib.utils.SQL.SQLConnection;
 import top.speedcubing.lib.utils.SQL.SQLResult;
 import top.speedcubing.lib.utils.SQL.SQLRow;
 import top.speedcubing.server.speedcubingServer;
+import top.speedcubing.server.system.command.CubingCommandLoader;
 import top.speedcubing.server.utils.MapManager;
 
 import java.util.ArrayList;
@@ -55,6 +55,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         MinecraftServer.getServer().getPropertyManager().setProperty("server-name", "fastbuilder");
         CubingEventManager.registerListeners(new ServerEvent());
+        CubingCommandLoader.loadCommands("top.speedcubing.fastbuilder.cubingcmd", Main.class);
         registerCommands();
         registerListeners();
 
@@ -86,8 +87,6 @@ public class Main extends JavaPlugin {
     private void registerCommands() {
         Bukkit.getPluginCommand("stats").setExecutor(new stats());
         Bukkit.getPluginCommand("stats").setTabCompleter(new stats());
-        Bukkit.getPluginCommand("replay").setExecutor(new replay());
-        Bukkit.getPluginCommand("replay").setTabCompleter(new replay());
     }
 
     private void registerListeners() {
@@ -130,10 +129,10 @@ public class Main extends JavaPlugin {
             try (SQLConnection conn = Database.getCubing()) {
 
                 String where = "fav = 0 AND time < " + sevenDaysAgo;
-                SQLResult expired = conn.select("datas_path").from("fbreplay").where(where).executeResult();
+                SQLResult expired = conn.select("id,replay_ver").from("fbreplay").where(where).executeResult();
                 int deleted0 = conn.delete("fbreplay", where);
                 for (SQLRow row : expired) {
-                    ReplayIO.deleteReplayFile(row.getString("datas_path"));
+                    ReplayIO.deleteReplayFile(row.getInt("replay_ver"), row.getString("id"));
                 }
 
                 if (deleted0 > 0) {
