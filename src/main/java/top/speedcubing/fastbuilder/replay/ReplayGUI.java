@@ -65,12 +65,27 @@ public class ReplayGUI {
                     int time = r.getInt(2);
                     int slot = i + ((i / (9 - preserveSide)) * preserveSide);
                     member.replayPageList.put(slot, replayID);
-                    inventory.setItem(new LangItem(Material.PAPER).name("§aFastBuilder").lore2(
-                            "%lang_fb_lore_replay_single%",
-                            DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochSecond(time), ZoneId.systemDefault())),
-                            Core.tickToTime(score),
-                            replayID
-                    ), (e) -> {
+
+                    LocalDateTime now = LocalDateTime.ofInstant(Instant.ofEpochSecond(time), ZoneId.systemDefault());
+                    LangItem paper = new LangItem(Material.PAPER).name("§aFastBuilder");
+                    if (fav) {
+                        paper.lore2(
+                                "%lang_fb_lore_replay_single_fav%",
+                                DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(now),
+                                Core.tickToTime(score),
+                                replayID
+                        );
+                    } else {
+                        paper.lore2(
+                                "%lang_fb_lore_replay_single%",
+                                DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(now),
+                                Core.tickToTime(score),
+                                replayID,
+                                DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss").format(now.plusDays(7))
+                        );
+                    }
+
+                    inventory.setItem(paper, (e) -> {
                         switch (e.getEvent().getAction()) {
                             case PICKUP_ALL:
                                 member.joinReplayByReplayID(player, member.replayPageList.get(e.getEvent().getRawSlot()));
