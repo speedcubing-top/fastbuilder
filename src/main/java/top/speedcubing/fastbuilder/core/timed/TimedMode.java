@@ -121,6 +121,7 @@ public abstract class TimedMode {
         inventory.setItem(0, stack);
         inventory.setItem(1, stack);
         member.user.setLangItem(2, ItemStackList.pickaxe);
+        member.user.setLangItem(3, ItemStackList.respawn);
         member.user.setLangItem(6, ItemStackList.Replay);
         member.user.setLangItem(7, ItemStackList.Settings);
         member.user.setLangItem(8, ItemStackList.navigator);

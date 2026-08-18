@@ -67,6 +67,9 @@ public class PlayerInteract implements Listener {
                             }
                         }
                         break;
+                    case BED:
+                        member.fell(true);
+                        break;
                     case REDSTONE_COMPARATOR:
                         e.setCancelled(true);
                         member.openSettings();

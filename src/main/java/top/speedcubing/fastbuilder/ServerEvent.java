@@ -64,7 +64,7 @@ public class ServerEvent {
                 if (!member.finishNext)
                     SideBar.getSidebar(e.getPlayer()).setLineByScore(StringList.SideBar[member.user.lang][9] + Core.tickToTime(member.replay.replayRecorder.NewTick), 1);
                 if (member.replay.replayRecorder.NewTick > 2400) {
-                    member.Fell(false);
+                    member.fell(true);
                     member.user.sendMessage("%lang_fb_timeout%");
                 } else {
                     if (member.finishNext) {
@@ -115,11 +115,11 @@ public class ServerEvent {
                         if (member.currentMode.inclined) {
                             boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                             if (fell || Math.abs(loc.getX() + loc.getZ() - 2 * member.PlayerCoord - 1) > 7.5)
-                                member.Fell(fell);
+                                member.fell(fell);
                         } else {
                             boolean fell = loc.getY() <= 100 - TimedMode.FALL;
                             if (fell || Math.abs(loc.getX() - member.PlayerCoord - 0.5) > 5.5)
-                                member.Fell(fell);
+                                member.fell(fell);
                         }
                 }
             }

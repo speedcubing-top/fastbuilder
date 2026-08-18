@@ -15,6 +15,7 @@ public class ItemStackList {
     public static LangItem openkit;
     public static LangItem navigator;
     public static LangItem pickaxe;
+    public static LangItem respawn;
     public static LangItem Settings;
     public static LangItem Reset;
     public static LangItem Length;
@@ -71,6 +72,7 @@ public class ItemStackList {
         Length = new LangItem(Material.IRON_INGOT).name("%lang_fb_custom_length%");
         Height = new LangItem(Material.GOLD_INGOT).name("%lang_fb_custom_height%");
         navigator = new LangItem(Material.COMPASS).name("%lang_fb_item_switchmode%");
+        respawn = new LangItem(Material.BED).name("§cRespawn");
         pickaxe = new LangItem(Material.DIAMOND_PICKAXE).glow().name("%lang_fb_item_pickaxe%").hideAttr();
         Replay = new LangItem(Material.BOOK).name("%lang_replay_inv%");
         Settings = new LangItem(Material.REDSTONE_COMPARATOR).name("%lang_lobby_item_settings%");

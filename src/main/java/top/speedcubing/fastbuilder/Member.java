@@ -298,7 +298,7 @@ public class Member {
         }
     }
 
-    public void Fell(boolean fell) {
+    public void fell(boolean fell) {
         boolean reset = false;
         if (waiting) {
             reset = true;
